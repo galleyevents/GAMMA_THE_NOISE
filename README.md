@@ -23,10 +23,10 @@ prototype behind it.
 | 12 | The Wreck - the flight recorder | Cold | money, Basic Tools, medkits, ammo |
 | 13-14 | The Cipher, a favour for Sid in the Garbage | Cold / Sidorovich | money, medkits, ammo |
 | 15 | The Dead Convoy - Agroprom | Sidorovich | money |
-| 16 | Kamerton - give it to Cold, sell it to Sid, or destroy it with Wolf | - | CS-2a armor / AK-74M + money / Soul |
+| 16 | Kamerton - give it to Cold, sell it to Sid, or destroy it with Wolf | - | CS-2a armor / SKS + money / Soul |
 
 An epilogue message arrives a day after the choice. Reward cap by design: no armor above light,
-no weapon above a mid-tier rifle.
+no weapon above an SKS.
 
 ## Features
 

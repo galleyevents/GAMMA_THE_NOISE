@@ -206,7 +206,7 @@ RECENT_SMARTS = 6
 CHOICES = {
 	cold = { info = "szm_end_cold", rewards = { {"cs_light_outfit", 1}, {"medkit", 3} },   -- CS-2a: good but light
 	         goodwill = { {"csky", 200} } },
-	sid  = { info = "szm_end_sid",  rewards = { {"wpn_ak74m", 1, pristine = true}, {"ammo_5.45x39_fmj", 3} },   -- mid-tier rifle
+	sid  = { info = "szm_end_sid",  rewards = { {"wpn_sks_b", 1, pristine = true}, {"ammo_7.62x39_fmj", 3} },   -- SKS: a modest rifle
 	         money = 15000, goodwill = { {"csky", -300} } },
 	wolf = { info = "szm_end_wolf", rewards = { {"af_soul", 1}, {"medkit", 2} },
 	         goodwill = { {"stalker", 150}, {"csky", 50} } },
