@@ -148,17 +148,17 @@
 
 	<!-- ===================== 10: Kostya's strike team ===================== -->
 	<string id="szm_10_offer_0"><text>What happened to Kostya's squad?</text></string>
-	<string id="szm_10_offer_1"><text>Kostya and three men went to check the place where Viktor photographed the helicopter. They were supposed to report in at the meeting point last night. Nothing, the radio is dead. Go to the meeting point and see for yourself. If something happened to them - Kostya always carried his commander's PDA. Take it.</text></string>
+	<string id="szm_10_offer_1"><text>Kostya and three men went to check the place where Viktor photographed the helicopter. They were supposed to report in at the meeting point last night. Nothing, the radio is dead. Go to the meeting point and see for yourself. If something happened to them - Kostya always carried his commander's PDA. Take it. And you won't go alone: if whoever got Kostya is still there, one rookie won't stand a chance. I'm sending two of our experienced fighters with you.</text></string>
 	<string id="szm_10_offer_2"><text>I'll go to the meeting point.</text></string>
-	<string id="szm_10_offer_4"><text>The meeting point is marked on your PDA. Go carefully, something isn't right here.</text></string>
+	<string id="szm_10_offer_4"><text>The meeting point is marked on your PDA. My two lads are already waiting for you at the base, they'll follow your lead. Go carefully, something isn't right here.</text></string>
 	<string id="szm_task_10_reveal_news"><text>Kostya's PDA, last entry: "We found where the helicopter went down. The army is looking for cargo from Agroprom, they call it the Kamerton. Patrol on our trail..." The entry breaks off. The soldiers' positions are marked in the PDA.</text></string>
 	<string id="szm_10_done_0"><text>Kostya's squad is dead. The army killed them.</text></string>
 	<string id="szm_10_done_1"><text>I knew it... I could feel it. What did you find?</text></string>
 	<string id="szm_10_done_2"><text>Kostya's PDA has an entry about cargo from Agroprom. The army calls it the Kamerton. The soldiers who killed them won't hurt anyone again. Here's the PDA.</text></string>
 	<string id="szm_10_done_3"><text>The Kamerton... This is a matter for Cold now, not for a trader. Here's your pay, everything I can spare right now. Kostya and the boys... we'll make sure they get buried. And Cold needs to hear all of this from you.</text></string>
 	<string id="szm_task_10_name"><text>The Noise: The Strike Team</text></string>
-	<string id="szm_task_10_descr"><text>Kostya's Clear Sky squad never reported in. I need to go to the meeting point marked on my PDA and find out what happened. If they're dead, I should take the commander's PDA.</text></string>
-	<string id="szm_task_10_descr_fight"><text>Kostya's squad is dead. According to the last entry in Kostya's PDA, they were killed by an army patrol looking for something called the Kamerton. Kostya managed to mark their position: the soldiers are still nearby. I need to eliminate them, then return to Spore with the PDA.</text></string>
+	<string id="szm_task_10_descr"><text>Kostya's Clear Sky squad never reported in. I need to go to the meeting point marked on my PDA and find out what happened. If they're dead, I should take the commander's PDA. Spore sent two experienced Clear Sky fighters with me.</text></string>
+	<string id="szm_task_10_descr_fight"><text>Kostya's squad is dead. According to the last entry in Kostya's PDA, they were killed by an army patrol looking for something called the Kamerton. Kostya managed to mark their position: the soldiers are still nearby. Together with the Clear Sky fighters, I need to eliminate them, then return to Spore with the PDA.</text></string>
 	<string id="szm_task_10_descr_return"><text>The army patrol is eliminated. Return to Spore with Kostya's PDA.</text></string>
 
 	<!-- ===================== 11: Cold ===================== -->

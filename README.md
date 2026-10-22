@@ -18,7 +18,7 @@ prototype behind it.
 | 4 | The Missing Courier - the bandit, the cylinder, **the first Noise** | Sidorovich | Leather Jacket, PBF gas mask (TOZ-34 as an advance) |
 | 5 | Jellyfish - the Noise again | Sidorovich | backpack, medicine |
 | 6 | The Road to the Swamps | Sidorovich / Spore | goodwill |
-| 7-10 | Renegades, the missing scout, the bloodsucker, the strike team | Spore | money, medkits, ammo |
+| 7-10 | Renegades, the missing scout, the bloodsucker, the strike team (with two Clear Sky fighters) | Spore | money, medkits, ammo |
 | 11 | Cold | Spore / Cold | goodwill |
 | 12 | The Wreck - the flight recorder | Cold | money, Basic Tools, medkits, ammo |
 | 13-14 | The Cipher, a favour for Sid in the Garbage | Cold / Sidorovich | money, medkits, ammo |
@@ -34,6 +34,8 @@ no weapon above an SKS.
 - Turning in a stage leads straight into the next offer in the same conversation (or "later").
 - Targets, corpses and squads are spawned for each stage, away from anomalies and from locations used
   by the previous stages. Map markers follow the corpse that carries the quest item until it is picked up.
+- In the strike team stage Spore sends two Clear Sky fighters (at least Experienced) along as companions;
+  they help find the bodies and fight the army patrol, then go back to the base.
 - Radio messages from the characters, including all three parties interested in the Kamerton.
 - Custom inventory icons for the quest items, in G.A.M.M.A.'s icon style.
 
