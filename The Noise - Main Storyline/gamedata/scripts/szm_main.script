@@ -53,6 +53,7 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- squad        = squad section spawned for the task (must be killed); carry = item put on its commander
 -- corpse       = NPC section spawned dead, carrying the fetch item
 -- strike       = multi-phase: dead team at a meeting point -> picking up the fetch item spawns a squad
+-- escort       = { squad, smart }: task companions spawned at the smart, they follow the actor until the turn-in
 -- fetch        = { section, amount } to bring back
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
 -- turn_in_to   = story_id the actor reports to, if not the task giver
@@ -124,9 +125,10 @@ STAGES = {
 		area    = { MARSH_SMARTS, 150, 400 },
 		rewards = { {"medkit", 2}, {"@ammo", 2} },
 	},
-	[10] = { -- Kostia's strike team, killed by soldiers
+	[10] = { -- Kostia's strike team, killed by soldiers; Spore sends two of his fighters along
 		task    = "szm_task_10",
 		fetch   = { "szm_strike_pda", 1 },
+		escort  = { squad = "szm_csky_escort_squad", smart = "mar_smart_terrain_base" },
 		strike  = {
 			corpses     = { "sim_default_csky_2", "sim_default_csky_1", "sim_default_csky_1" },
 			corpse_area = { MARSH_SMARTS, 250, 550 },
@@ -217,6 +219,11 @@ EPILOGUE_DELAY_H = 24   -- in-game hours after the choice
 BOAR_LEGS_PER_BOAR = 2
 BOAR_STAGE = 2
 
+-- Escort companions are raised to at least this rank: "experienced" (rating in game_relations.ltx);
+-- their profile (sim_default_csky_2) can also roll a "trainee"
+ESCORT_MIN_RANK = 6500
+ESCORT_RANK_SPREAD = 2000
+
 -- Pristine weapons: condition of every part (%). "G.A.M.M.A. Guns Have No Condition" keeps all guns
 -- at 0.83; matching it stops item_parts.evaluate_parts from re-rolling the parts on pick-up.
 PRISTINE_PART_CON = 100
@@ -244,6 +251,8 @@ local function var_squad(n)  return "szm_squad_" .. n end
 local function var_carrier(n) return "szm_carrier_" .. n end   -- squad member carrying the fetch item
 local function var_corpse(n) return "szm_corpse_" .. n end
 local function var_strike(n) return "szm_strike_" .. n end   -- { phase = "pending"|"goto"|"fight", meet, reveal_corpse }
+local function var_escort(n) return "szm_escort_" .. n end   -- id of the companion squad
+local function escort_info(n) return "szm_escort_given_" .. n end   -- given once, dead companions don't come back
 local VAR_BOARS    = "szm_boar_ids"
 local VAR_MEDUSA   = "szm_medusa_id"
 local VAR_END_TIME = "szm_end_time"     -- game time of the choice, for the epilogue
@@ -653,6 +662,79 @@ local function spawn_medusa()
 	end
 end
 
+---------------------------< Escort companions >---------------------------
+local function get_escort(n)
+	local id = load_var(db.actor, var_escort(n))
+	local squad = id and alife_object(id)
+	return squad and squad:clsid() == clsid.online_offline_group_s and squad or nil
+end
+
+-- Like xr_effects.setup_companion_task: task companions follow the actor, can't be dismissed
+-- and don't count towards the companion limit
+local function spawn_escort(n)
+	local cfg = STAGES[n].escort
+	local smart = SIMBOARD.smarts_by_names[cfg.smart]
+	if not smart then
+		printf("[SZM] stage %s: escort smart %s not found", n, cfg.smart)
+		return
+	end
+	local squad = alife_create(cfg.squad, smart.position, smart.m_level_vertex_id, smart.m_game_vertex_id)
+	if not squad then
+		printf("[SZM] stage %s: failed to create escort %s", n, cfg.squad)
+		return
+	end
+	squad:create_npc(smart)
+	squad:set_squad_relation()
+	axr_companions.companion_squads[squad.id] = squad
+	for k in squad:squad_members() do
+		local se_obj = k.object or alife_object(k.id)
+		if se_obj then
+			se_save_var(se_obj.id, se_obj:name(), "companion", true)
+			se_save_var(se_obj.id, se_obj:name(), "companion_cannot_dismiss", true)
+			SIMBOARD:setup_squad_and_group(se_obj)
+		end
+	end
+	sim_offline_combat.task_squads[squad.id] = true
+	save_var(db.actor, var_escort(n), squad.id)
+	give_info(escort_info(n))
+	printf("[SZM] stage %s: escort %s (id %s) at %s", n, cfg.squad, squad.id, cfg.smart)
+end
+
+-- Called from the status functor: rank floor once they are online
+local function update_escort(n)
+	local squad = get_escort(n)
+	if not squad then return end
+	for k in squad:squad_members() do
+		local npc = db.storage[k.id] and db.storage[k.id].object
+		if npc and npc:alive() and npc:character_rank() < ESCORT_MIN_RANK then
+			npc:set_character_rank(ESCORT_MIN_RANK + math.random(0, ESCORT_RANK_SPREAD))
+		end
+	end
+end
+
+-- On turn-in or fail: no longer companions, they go back to their base
+local function dismiss_escort(n)
+	local squad = get_escort(n)
+	if squad then
+		if axr_companions.companion_squads[squad.id] then
+			axr_companions.dismiss_special_squad(squad)
+		end
+		-- members that were offline (dismiss_special_squad only handles online ones)
+		for k in squad:squad_members() do
+			local se_obj = k.object or alife_object(k.id)
+			if se_obj then
+				se_save_var(se_obj.id, se_obj:name(), "companion", nil)
+				se_save_var(se_obj.id, se_obj:name(), "companion_cannot_dismiss", nil)
+			end
+		end
+		axr_companions.companion_squads[squad.id] = nil
+		sim_offline_combat.task_squads[squad.id] = nil
+		squad.scripted_target = STAGES[n].escort.smart
+		printf("[SZM] stage %s: escort %s dismissed", n, squad.id)
+	end
+	save_var(db.actor, var_escort(n), nil)
+end
+
 ---------------------------< Multi-phase "strike" stages >---------------------------
 -- phase "pending": the meeting point is on another level; bodies spawn when the actor gets there
 -- phase "goto"   : bodies at the meeting point; marker on the body with the reveal item
@@ -776,6 +858,7 @@ local function start_stage(n, first_speaker, second_speaker)
 	end
 	if st.corpse and not spawn_corpse(n, npc:position()) then return end
 	if st.strike and not start_strike(n, npc:position()) then return end
+	if st.escort then spawn_escort(n) end
 	if st.medusa then
 		spawn_medusa()
 		if not has_detector() then
@@ -1014,6 +1097,13 @@ for n = 1, #STAGES do
 		if st.strike then
 			update_strike(n)
 		end
+		if st.escort then
+			-- saves already in this stage before the escort existed get it too
+			if not has_alife_info(escort_info(n)) then
+				spawn_escort(n)
+			end
+			update_escort(n)
+		end
 		if st.squad or st.strike then
 			local squad = get_squad(n)
 			if squad then
@@ -1071,6 +1161,7 @@ xr_effects.szm_cleanup = function(actor, npc, p)
 			itms_manager.relocate_item_from_actor(db.actor, nil, st.strike.reveal, 1)
 		end
 	end
+	if st.escort then dismiss_escort(n) end
 	if st.corpse then save_var(db.actor, var_corpse(n), nil) end
 	if n == BOAR_STAGE then save_var(db.actor, VAR_BOARS, nil) end
 	if st.medusa then save_var(db.actor, VAR_MEDUSA, nil) end

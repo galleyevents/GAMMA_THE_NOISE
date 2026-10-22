@@ -26,6 +26,14 @@ faction             = monster_predatory_night
 npc_random          = bloodsucker_green_weak, bloodsucker_red_weak
 npc_in_squad        = 1, 1
 
+; Stage 10: two Clear Sky fighters Spore sends with the actor (task companions, rank raised to
+; at least experienced in szm_main.script)
+[szm_csky_escort_squad]:online_offline_group
+faction             = csky
+npc_random          = sim_default_csky_2
+npc_in_squad        = 2, 2
+relationship        = friend
+
 ; Stage 10: the army patrol that killed Kostia's team
 [szm_army_squad]:online_offline_group
 faction             = army
