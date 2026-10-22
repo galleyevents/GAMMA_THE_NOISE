@@ -1,4 +1,4 @@
-# The Noise - Main Storyline
+# The Noise - Storyline Tutorial
 
 A story questline for **S.T.A.L.K.E.R. Anomaly / G.A.M.M.A.** It replaces Fanatic's "Training Day" tutorial
 with a 16-stage main story that starts in the Cordon village and ends with a three-way choice.
