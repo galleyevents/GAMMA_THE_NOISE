@@ -14,6 +14,21 @@
 	<string id="szm_later_wolf"><text>Don't take long, kid.</text></string>
 	<string id="szm_declined_wolf"><text>Don't wait too long, kid.</text></string>
 	<string id="szm_declined_act5"><text>Don't take too long. This can't wait.</text></string>
+
+	<!-- ===================== scaled rewards: gear given as money ===================== -->
+	<string id="szm_swap_sid_weapon"><text>Eh, I was going to give you a rifle that's been gathering dust in my stash for ages. But I see you're already carrying something much better than that junk. Here, take the money instead.</text></string>
+	<string id="szm_swap_sid_outfit"><text>Eh, I had a suit put aside for you, it's been lying in my storeroom for ages. But looking at what you're wearing, you'd laugh at it. Here, take the money instead.</text></string>
+	<string id="szm_swap_sid_backpack"><text>Eh, I was going to give you an old backpack from my storeroom, but yours is better than anything I've got lying around. Here, take the money instead.</text></string>
+	<string id="szm_swap_spore_weapon"><text>I set aside a rifle from our armory for you, but next to what you're carrying it's a toy. Take the money instead, you'll find a better use for it.</text></string>
+	<string id="szm_swap_spore_outfit"><text>Our techs had a suit ready for you, but yours is better than anything we could spare. Take the money instead, you'll find a better use for it.</text></string>
+	<string id="szm_swap_spore_backpack"><text>I had a backpack put aside for you, but yours is better than ours. Take the money instead, you'll find a better use for it.</text></string>
+	<string id="szm_swap_cold_weapon"><text>I meant to give you a rifle from our stores. But you're already better armed than half my men. Take the money - buy whatever you need.</text></string>
+	<string id="szm_swap_cold_outfit"><text>I was going to give you one of our suits. But what you're wearing is better than anything in our stores, it would be an insult. Take the money instead.</text></string>
+	<string id="szm_swap_cold_backpack"><text>I meant to give you one of our backpacks, but yours is better. Take the money - buy whatever you need.</text></string>
+	<string id="szm_swap_wolf_weapon"><text>I had a rifle stashed away for you, kid. Kept it oiled and everything. But looks like you've outgrown it - you're better armed than I am. Take the money, then.</text></string>
+	<string id="szm_swap_wolf_outfit"><text>I had a suit stashed away for you, kid. But looks like you've outgrown it - yours is better than mine. Take the money, then.</text></string>
+	<string id="szm_swap_wolf_backpack"><text>I had a backpack stashed away for you, kid, but yours is better than mine. Take the money, then.</text></string>
+	<string id="szm_swap_ok"><text>Fair enough. Money always comes in handy.</text></string>
 	<string id="szm_16_think"><text>I need to think about it.</text></string>
 
 	<!-- ===================== map spot hints ===================== -->
@@ -95,7 +110,7 @@
 	<string id="szm_5_offer_2"><text>I'll bring you the Jellyfish.</text></string>
 	<string id="szm_5_offer_4"><text>The spot is marked on your PDA. Take out your detector and throw bolts ahead of you. And don't keep the Jellyfish in your backpack too long, it's a bit radioactive.</text></string>
 	<string id="szm_5_done_0"><text>I've got the Jellyfish. And Sid, the noise was there again. Louder this time, as if it were right next to me.</text></string>
-	<string id="szm_5_done_1"><text>Twice in Cordon in one week... This is bigger than a lost package. Here's your backpack and the medicine. And listen - I think I know who might have answers.</text></string>
+	<string id="szm_5_done_1"><text>Twice in Cordon in one week... This is bigger than a lost package. Here's the medicine, and something for your trouble. And listen - I think I know who might have answers.</text></string>
 	<string id="szm_task_5_name"><text>The Noise: Jellyfish</text></string>
 	<string id="szm_task_5_descr"><text>A Jellyfish has formed in the anomaly field near the village. Sid wants it, and he wants to know whether the noise can be heard there. I need to find it with my detector. Better throw bolts ahead of me.</text></string>
 	<string id="szm_task_5_descr_return"><text>I have the Jellyfish. The noise was there again, louder. Return to Sidorovich.</text></string>
@@ -233,13 +248,13 @@
 	<string id="szm_16_cold_0"><text>Cold, I have the Kamerton.</text></string>
 	<string id="szm_16_cold_1"><text>By the Zone... You really have it. Give it to us, and we'll make sure nobody ever uses it. Kostya, Viktor and the others deserve that much.</text></string>
 	<string id="szm_16_cold_2"><text>Take it. Let Clear Sky deal with the Noise.</text></string>
-	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Take this CS-2a armor - and know that in this base you'll always be one of us.</text></string>
+	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Take this, you've earned it - and know that in this base you'll always be one of us.</text></string>
 	<string id="szm_16_cold_5"><text>I understand. But don't wait too long, the army is looking for it too.</text></string>
 
 	<string id="szm_16_sid_0"><text>Sid, I have the Kamerton.</text></string>
 	<string id="szm_16_sid_1"><text>...You actually did it. I knew you were a good investment! My buyers will pay a fortune for this. Your cut: fifteen thousand and a little something extra.</text></string>
 	<string id="szm_16_sid_2"><text>Deal. Take it.</text></string>
-	<string id="szm_16_sid_4"><text>Ha! Here's your money and an SKS, straight out of the crate, not a scratch on it. Clear Sky will be furious, but business is business. And don't tell anyone where the money came from.</text></string>
+	<string id="szm_16_sid_4"><text>Ha! Here's your money, and something from my storeroom. Clear Sky will be furious, but business is business. And don't tell anyone where the money came from.</text></string>
 	<string id="szm_16_sid_5"><text>You're thinking too long, stalker. The offer won't last forever.</text></string>
 
 	<string id="szm_16_wolf_0"><text>Wolf, I have the Kamerton. I don't know who to give it to.</text></string>

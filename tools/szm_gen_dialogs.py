@@ -19,8 +19,11 @@ TURNED_IN_TO = {1: "sid", 2: "sid", 3: "wolf", 4: "sid", 5: "sid",
                 17: "cold", 18: "cold", 19: "sid", 20: "sid", 21: "wolf", 22: "wolf",
                 25: "cold", 26: "sid", 27: "wolf"}
 
-def ph(i, text, nexts=(), action=None):
-    s = '<phrase id="%d"><text>%s</text>' % (i, text)
+def ph(i, text, nexts=(), action=None, precond=None):
+    s = '<phrase id="%d">' % i
+    if precond:
+        s += "<precondition>%s</precondition>" % precond
+    s += "<text>%s</text>" % text
     if action:
         s += "<action>%s</action>" % action
     for n in nexts:
@@ -39,6 +42,31 @@ def offer_phrases(m, who, base):
         ph(b + 5, "szm_declined_%s" % who),
     ]
 
+# Scaled rewards: when a gear reward is given as money, the NPC says szm_swap_<who>_<category> first,
+# the actor answers szm_swap_ok and the reward line follows (a copy of it, the original is for "no swap")
+SWAP_CATS = ("weapon", "outfit", "backpack")
+SWAP_BASE, SWAP_OK, SWAP_REWARD = 200, 250, 300
+
+def swap_branch(phrases, before, reward, who):
+    """phrases: list of (id, text, nexts, action, precond); adds the swap lines between phrase `before`
+    (actor) and `reward` (NPC) if `who` has any"""
+    cats = [c for c in SWAP_CATS if "szm_swap_%s_%s" % (who, c) in ids]
+    if not cats:
+        return
+    p = {q[0]: q for q in phrases}
+    i, text, nexts, action, _ = p[reward]
+    phrases[phrases.index(p[reward])] = (i, text, nexts, action, "szm_main.reward_not_swapped")
+    swaps = [SWAP_BASE + j for j in range(len(cats))]
+    b = p[before]
+    phrases[phrases.index(b)] = (b[0], b[1], swaps + [reward], b[3], b[4])
+    for sid, c in zip(swaps, cats):
+        phrases.append((sid, "szm_swap_%s_%s" % (who, c), [SWAP_OK], None, "szm_main.reward_swap_%s" % c))
+    phrases.append((SWAP_OK, "szm_swap_ok", [SWAP_REWARD], None, None))
+    phrases.append((SWAP_REWARD, text, nexts, action, None))
+
+def render(phrases):
+    return [ph(i, text, nexts, action, precond) for i, text, nexts, action, precond in phrases]
+
 def dialog(did, precond, phrases):
     out = ['\t<dialog id="%s">' % did, "\t\t<precondition>%s</precondition>" % precond, "\t\t<phrase_list>"]
     out += ["\t\t\t" + p for p in phrases]
@@ -53,34 +81,37 @@ for n in range(1, 28):
         lines = sorted((int(k) for k in re.findall(r'string id="szm_%d_done_(\d+)"' % n, st)))
         assert lines == list(range(len(lines))) and len(lines) % 2 == 0, (n, lines)
         k = len(lines) - 1          # the NPC's last line: rewards
-        phr = [ph(i, "szm_%d_done_%d" % (n, i), [i + 1]) for i in range(k)]
+        who = TURNED_IN_TO[n]
+        phr = [(i, "szm_%d_done_%d" % (n, i), [i + 1], None, None) for i in range(k)]
         m = NEXT_OFFER.get(n, n + 1)
-        chain = OFFERED_BY.get(m) in (TURNED_IN_TO[n], "act5")
+        chain = OFFERED_BY.get(m) in (who, "act5")
         if chain:
             # straight into the next offer, or "later" (the offer dialog stays available)
-            who = TURNED_IN_TO[n]
-            phr.append(ph(k, "szm_%d_done_%d" % (n, k), [k + 1, k + 2], "szm_main.turn_in_%d" % n))
-            phr.append(ph(k + 1, "szm_%d_offer_0" % m, [k + 3]))
-            phr.append(ph(k + 2, "szm_later", [k + 4]))
-            phr.append(ph(k + 3, "szm_%d_offer_1" % m, [k + 5, k + 6]))
-            phr.append(ph(k + 4, "szm_later_%s" % who))
-            phr.append(ph(k + 5, "szm_%d_offer_2" % m, [k + 7]))
-            phr.append(ph(k + 6, "szm_offer_decline", [k + 8]))
-            phr.append(ph(k + 7, "szm_%d_offer_4" % m, action="szm_main.give_%d" % m))
-            phr.append(ph(k + 8, "szm_declined_%s" % who))
+            phr.append((k, "szm_%d_done_%d" % (n, k), [k + 1, k + 2], "szm_main.turn_in_%d" % n, None))
+            phr.append((k + 1, "szm_%d_offer_0" % m, [k + 3], None, None))
+            phr.append((k + 2, "szm_later", [k + 4], None, None))
+            phr.append((k + 3, "szm_%d_offer_1" % m, [k + 5, k + 6], None, None))
+            phr.append((k + 4, "szm_later_%s" % who, [], None, None))
+            phr.append((k + 5, "szm_%d_offer_2" % m, [k + 7], None, None))
+            phr.append((k + 6, "szm_offer_decline", [k + 8], None, None))
+            phr.append((k + 7, "szm_%d_offer_4" % m, [], "szm_main.give_%d" % m, None))
+            phr.append((k + 8, "szm_declined_%s" % who, [], None, None))
         else:
-            phr.append(ph(k, "szm_%d_done_%d" % (n, k), action="szm_main.turn_in_%d" % n))
-        blocks.append(dialog("szm_%d_done" % n, "szm_main.can_turn_in_%d" % n, phr))
+            phr.append((k, "szm_%d_done_%d" % (n, k), [], "szm_main.turn_in_%d" % n, None))
+        swap_branch(phr, k - 1, k, who)
+        blocks.append(dialog("szm_%d_done" % n, "szm_main.can_turn_in_%d" % n, render(phr)))
 
 for who in ("cold", "sid", "wolf"):
-    blocks.append(dialog("szm_16_%s" % who, "szm_main.can_turn_in_16", [
-        ph(0, "szm_16_%s_0" % who, [1]),
-        ph(1, "szm_16_%s_1" % who, [2, 3]),
-        ph(2, "szm_16_%s_2" % who, [4]),
-        ph(3, "szm_16_think", [5]),
-        ph(4, "szm_16_%s_4" % who, action="szm_main.turn_in_16_%s" % who),
-        ph(5, "szm_16_%s_5" % who),
-    ]))
+    phr = [
+        (0, "szm_16_%s_0" % who, [1], None, None),
+        (1, "szm_16_%s_1" % who, [2, 3], None, None),
+        (2, "szm_16_%s_2" % who, [4], None, None),
+        (3, "szm_16_think", [5], None, None),
+        (4, "szm_16_%s_4" % who, [], "szm_main.turn_in_16_%s" % who, None),
+        (5, "szm_16_%s_5" % who, [], None, None),
+    ]
+    swap_branch(phr, 2, 4, who)
+    blocks.append(dialog("szm_16_%s" % who, "szm_main.can_turn_in_16", render(phr)))
 
 xml = '''<?xml version="1.0" encoding="windows-1251"?>
 <!--
@@ -88,6 +119,7 @@ xml = '''<?xml version="1.0" encoding="windows-1251"?>
 	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
 	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"
 	szm_16_<who>: the Act IV choice (Cold / Sid / Wolf). Who says what is set in modxml_szm.script.
+	200+ / 250 / 300: gear reward given as money - the NPC's swap line, the actor's answer, the reward line
 -->
 <game_dialogs>
 

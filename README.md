@@ -23,7 +23,7 @@ prototype behind it.
 | 12 | The Wreck - the flight recorder | Cold | money, Basic Tools, medkits, ammo |
 | 13-14 | The Cipher, a favour for Sid in the Garbage | Cold / Sidorovich | money, medkits, ammo |
 | 15 | The Dead Convoy - Agroprom | Sidorovich | money |
-| 16 | Kamerton - give it to Cold, sell it to Sid, or destroy it with Wolf | - | CS-2a armor / SKS + money / Soul |
+| 16 | Kamerton - give it to Cold, sell it to Sid, or destroy it with Wolf | - | Clear Sky armor / a rifle + money / Soul |
 
 ### Act V - the Noise returns
 
@@ -43,13 +43,18 @@ into the next job, and in the tunnels under Agroprom the last stages follow over
 | 24 | The Transmitter - its guards and the resonator | all | money |
 | 25-27 | Silence - the resonator to Cold / Sid / Wolf | the chosen side | money + medkits, ammo / money / Night Star |
 
-Reward cap by design: no armor above light, no weapon above an SKS.
+Rewards scale with the player's gear (see below).
 
 Timing is set at the top of `szm_main.script`: `ACT5_FIRST_DELAY_H` (24 in-game hours from the choice to the
 radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set it to `nil` before a release**).
 
 ## Features
 
+- Scaled rewards: the mod remembers the most valuable weapon, armor and backpack the player has had
+  equipped. Gear rewards (Sid's backpack, Cold's armor, Sid's rifle) are the first item of a tier list
+  (`GEAR_TIERS` in `szm_main.script`) clearly better than that; if the player has outgrown the whole
+  list, the giver says so in the report dialog and pays money instead. The same gear level scales the
+  money of every stage and the medkit type. The leather jacket and gas mask of stage 4 stay fixed (tutorial).
 - All tasks are main-story tasks (gold markers); the next quest giver gets a gold map marker too.
 - Turning in a stage leads straight into the next offer in the same conversation (or "later").
 - Targets, corpses and squads are spawned for each stage, away from anomalies and from locations used

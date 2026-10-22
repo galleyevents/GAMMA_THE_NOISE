@@ -2,7 +2,11 @@ THE NOISE - PRZEBIEG WĄTKU (gałąź act5-test)
 =============================================
 
 Nagrody pieniężne to przedziały losowane przy oddaniu zadania.
-Limit nagród: pancerz najwyżej lekki, broń najwyżej SKS.
+Nagrody rosną z ekwipunkiem gracza: kwoty i apteczki zależą od najlepszego sprzętu,
+jaki miał na sobie, a plecak, pancerz i broń są o próg lepsze od jego własnych
+(najwyżej do górnego progu). Jeśli gracz ma już lepszy sprzęt, dostaje pieniądze,
+a zleceniodawca mówi o tym w dialogu. Kurtka i maska z etapu 4 są stałe (samouczek).
+Kwoty podane niżej są dla gracza w słabym sprzęcie.
 
 
 PROLOG - KORDON
@@ -34,7 +38,7 @@ AKT I - KORDON
 5. Jellyfish
    Na polu anomalii pojawiła się Meduza (jeśli nie masz detektora, Sid go daje).
    Przy podniesieniu Meduzy Szum wraca, głośniej.
-   Nagroda: plecak, apteczki, bandaże, 2000-3000 RU.
+   Nagroda: plecak (lub pieniądze), apteczki, bandaże, 2000-3000 RU.
 
 6. The Road to the Swamps
    Sid wysyła cię z cylindrem do Spore'a, handlarza Czystego Nieba na Bagnach,
@@ -95,8 +99,8 @@ AKT IV - WYBÓR
 16. Kamerton
    Cold, Sid i Wilk odzywają się przez radio i każdy chce Kamertonu. Wszyscy trzej
    mają znaczniki na mapie, a wygrywa ten, komu oddasz pierwszemu:
-   - Cold: pancerz CS-2a, apteczki, +200 u Czystego Nieba
-   - Sid:  SKS w idealnym stanie, amunicja, 15 000 RU, -300 u Czystego Nieba
+   - Cold: pancerz CS-2a lub lepszy (albo pieniądze), apteczki, +200 u Czystego Nieba
+   - Sid:  SKS lub lepsza broń w idealnym stanie (albo pieniądze), amunicja, 15 000 RU, -300 u Czystego Nieba
    - Wilk: niszczycie Kamerton; artefakt Dusza, apteczki, +150 u samotników
    Pojawia się baner "The Noise - storyline complete".
 
