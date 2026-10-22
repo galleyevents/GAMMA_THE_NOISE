@@ -1,0 +1,158 @@
+THE NOISE - PRZEBIEG WĄTKU (gałąź act5-test)
+=============================================
+
+Nagrody pieniężne to przedziały losowane przy oddaniu zadania.
+Limit nagród: pancerz najwyżej lekki, broń najwyżej SKS.
+
+
+PROLOG - KORDON
+---------------
+1. A Job Offer
+   Minutę po wejściu do Kordonu (nowa gra jako samotnik) Sidorowicz woła przez
+   radio: słyszał, że jesteś nowy, i szuka ludzi do roboty. Idziesz do bunkra.
+   Sid mówi wprost: "ja daję robotę, ty robisz, ja płacę".
+
+
+AKT I - KORDON
+--------------
+2. The Hunt
+   Sid wysyła cię na dziki, które podchodzą pod wioskę. Trzeba je zabić i wyciąć
+   nożem dwie nogi (każdy dzik ma gwarantowane nogi).
+   Nagroda: 1500-2500 RU.
+
+3. By the Campfire
+   Sid daje kuchenkę, węgiel i mięso dzika. Pieczesz przy ognisku i zanosisz
+   Wilkowi. Wilk wspomina, że kurier Sida się nie pojawił.
+   Nagroda: 1000-2000 RU.
+
+4. The Missing Courier
+   Kurier Grisza zaginął, a koło wioski kręci się bandyta z cudzą torbą. Sid daje
+   zaliczkę: TOZ-34 w idealnym stanie i amunicję. Zabijasz bandytę i przeszukujesz
+   ciało. Przy podniesieniu metalowego cylindra PIERWSZY RAZ słyszysz Szum.
+   Nagroda: Leather Jacket, maska PBF, 1500-2500 RU.
+
+5. Jellyfish
+   Na polu anomalii pojawiła się Meduza (jeśli nie masz detektora, Sid go daje).
+   Przy podniesieniu Meduzy Szum wraca, głośniej.
+   Nagroda: plecak, apteczki, bandaże, 2000-3000 RU.
+
+6. The Road to the Swamps
+   Sid wysyła cię z cylindrem do Spore'a, handlarza Czystego Nieba na Bagnach,
+   bo Grisza szedł od niego.
+
+
+AKT II - BAGNA
+--------------
+7. Renegades at the Base
+   Renegaci strzelają do każdego, kto wychodzi z bazy.
+   Nagroda: apteczki, amunicja do twojej broni, pieniądze.
+
+8. The Missing Scout
+   Zwiadowca Wiktor szukał źródła Szumu. Znajdujesz jego ciało i PDA ze zdjęciem
+   wojskowego śmigłowca.
+   Nagroda: apteczki, amunicja, pieniądze.
+
+9. Bloodsucker in the Reeds
+   Krwiopijca wygoniony przez Szum poluje pod płotem bazy.
+   Nagroda: apteczki, amunicja, pieniądze.
+
+10. The Strike Team
+   Oddział Kosti się nie zameldował. Spore wysyła z tobą dwóch ludzi Czystego
+   Nieba. Na miejscu spotkania leżą ciała, a w PDA Kosti jest wpis o ładunku
+   "Kamerton". Po podniesieniu PDA pojawia się patrol wojska, który ich zabił.
+   Nagroda: apteczki, amunicja, pieniądze.
+
+11. Cold
+   Spore wysyła cię do Colda. Cold wyjaśnia: Kamerton to wojskowy prototyp do
+   wywoływania i mierzenia emisji, a cylinder jest jego częścią.
+
+12. The Wreck
+   Przy wraku śmigłowca leży pilot z rejestratorem lotu. Po jego podniesieniu
+   nadchodzą renegaci-szabrownicy.
+   Nagroda: Basic Tools, apteczki, amunicja, pieniądze.
+
+
+AKT III - KORDON, WYSYPISKO, AGROPROM
+-------------------------------------
+13. The Cipher
+   Rejestrator jest zaszyfrowany. Cold wysyła cię z nim do Sida, który zna ludzi
+   od szyfrów.
+
+14. A Favour for Sid
+   Ceną za odszyfrowanie jest paczka Sida, którą przejęli bandyci na Wysypisku.
+   Zabijasz ich i odbierasz paczkę od herszta.
+   Nagroda: apteczki, amunicja, pieniądze.
+
+15. The Dead Convoy
+   Rejestrator pokazuje trasę konwoju z Kamertonem. W Agropromie leżą żołnierze
+   bez ran, z krwią z uszu. Po podniesieniu PDA oficera pojawiają się najemnicy
+   z Kamertonem. Zabijasz ich i zabierasz go.
+   Nagroda: pieniądze.
+
+
+AKT IV - WYBÓR
+--------------
+16. Kamerton
+   Cold, Sid i Wilk odzywają się przez radio i każdy chce Kamertonu. Wszyscy trzej
+   mają znaczniki na mapie, a wygrywa ten, komu oddasz pierwszemu:
+   - Cold: pancerz CS-2a, apteczki, +200 u Czystego Nieba
+   - Sid:  SKS w idealnym stanie, amunicja, 15 000 RU, -300 u Czystego Nieba
+   - Wilk: niszczycie Kamerton; artefakt Dusza, apteczki, +150 u samotników
+   Pojawia się baner "The Noise - storyline complete".
+
+
+AKT V - SZUM WRACA
+------------------
+Po dobie gry (w wersji testowej po 60 sekundach) słychać szum, przychodzi
+wezwanie przez radio od wybranej osoby i jej złoty znacznik na mapie. To jedyne
+oczekiwanie w Akcie V. Dalej każdy meldunek od razu przechodzi w kolejne zlecenie
+(zawsze jest też opcja "wrócę później").
+
+Gałąź Colda
+17. Reprisal
+   Wojsko szukające Kamertonu zaatakowało posterunek Czystego Nieba, a patrol jest
+   jeszcze na Bagnach. Przy meldunku Cold wyjaśnia, że Kamerton był odbiornikiem,
+   a nadajnik jest gdzie indziej.
+18. Frequency Logs
+   Wojskowy zespół łączności w Agropromie ma rejestrator częstotliwości. Cold
+   odczytuje z niego, że sygnał idzie spod Agropromu.
+
+Gałąź Sida
+19. The Buyer
+   Kupiec nie dopłacił, a Szum wrócił. Ludzie kupca są na Wysypisku. Jego PDA
+   pokazuje, że pracował dla "Pułkownika", więc Kamerton wrócił do twórców.
+20. Clear Sky's Debt
+   Czyste Niebo wie, kto sprzedał Kamerton, i wysyła do Kordonu wrogi oddział.
+   Potem Sid odczytuje z PDA, że trop prowadzi pod Agroprom.
+
+Gałąź Wilka
+21. Echo
+   Tam, gdzie Kamerton zniknął w anomalii, powstał buczący artefakt "Echo".
+   Jego podniesienie wywołuje Szum.
+22. Strangers in Cordon
+   Zwiadowcy najemników wypytują o Kamerton. Ich rozkazy mówią o nadajniku pod
+   Agropromem, który bez wzmacniacza nie działa.
+
+Część wspólna - podziemia Agropromu
+23. Under Agroprom
+   Zleca ją wybrana osoba. Na dole leżą ciała naukowców, a po podniesieniu ich
+   dziennika atakują najemnicy (co najmniej 40 m od ciebie). Etap kończy się sam.
+24. The Transmitter
+   Przychodzi od razu przez radio, jeszcze w tunelach. Strażnicy nadajnika
+   pojawiają się co najmniej 80 m od ciebie, a ich dowódca ma Rezonator R-7B.
+   Etap kończy się sam.
+
+Finał
+25/26/27. Silence
+   Radio od razu zleca zanieść rezonator do wybranej osoby. Nagrody:
+   - Cold: apteczki, amunicja, pieniądze, +150 u Czystego Nieba
+   - Sid:  15-18 tys. RU i amunicja
+   - Wilk: artefakt Night Star, apteczki, pieniądze, +100 u samotników
+   Na koniec pojawia się baner "The Noise: Aftermath - complete".
+
+
+PODSUMOWANIE
+------------
+Jedno przejście to 21 etapów (16 + 5 w Akcie V). W sumie jest 27 etapów
+w trzech gałęziach Aktu V. Każdy etap Aktu V daje też pieniądze z definicji
+zadań.
