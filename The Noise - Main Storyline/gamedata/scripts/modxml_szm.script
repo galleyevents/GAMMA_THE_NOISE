@@ -1,4 +1,4 @@
--- Szum - main storyline
+-- The Noise - main storyline
 -- DXML: add the story dialogs to the NPCs without overwriting their character_desc files
 -- (several GAMMA mods ship their own copies of those files).
 
@@ -8,9 +8,9 @@ local INSERTS = {
 		esc_2_12_stalker_trader = {     -- Sidorovich
 			"szm_1_done",
 			"szm_2_offer", "szm_2_done",
-			"szm_3_offer", "szm_3_done",
+			"szm_3_offer",
 			"szm_4_offer", "szm_4_done",
-			"szm_5_offer",
+			"szm_5_offer", "szm_5_done",
 			"szm_6_offer",
 			"szm_13_done",
 			"szm_14_offer", "szm_14_done",
@@ -18,7 +18,7 @@ local INSERTS = {
 			"szm_16_sid",
 		},
 		esc_2_12_stalker_wolf = {       -- Wolf
-			"szm_5_done",
+			"szm_3_done",
 			"szm_16_wolf",
 		},
 	},

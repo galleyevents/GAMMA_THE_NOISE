@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="windows-1251"?>
-<!-- Szum (The Hum) - main storyline. ASCII only: the game reads texts as windows-1251. -->
+<!-- The Noise - main storyline (working title "Szum"). ASCII only: the game reads texts as windows-1251. -->
 <string_table>
 
 	<!-- ===================== shared ===================== -->
@@ -14,15 +14,13 @@
 	<string id="szm_16_think"><text>I need to think about it.</text></string>
 
 	<!-- ===================== map spot hints ===================== -->
-	<string id="szm_offer_hint"><text>The Hum: someone has the next step of the story for you. Talk to them.</text></string>
-	<string id="szm_choice_hint_cold"><text>The Hum: the Kamerton for Clear Sky. Give it to Cold.</text></string>
-	<string id="szm_choice_hint_sid"><text>The Hum: the Kamerton for sale. Give it to Sidorovich.</text></string>
-	<string id="szm_choice_hint_wolf"><text>The Hum: destroy the Kamerton. Talk to Wolf.</text></string>
+	<string id="szm_offer_hint"><text>The Noise: someone has the next step of the story for you. Talk to them.</text></string>
+	<string id="szm_choice_hint_cold"><text>The Noise: the Kamerton for Clear Sky. Give it to Cold.</text></string>
+	<string id="szm_choice_hint_sid"><text>The Noise: the Kamerton for sale. Give it to Sidorovich.</text></string>
+	<string id="szm_choice_hint_wolf"><text>The Noise: destroy the Kamerton. Talk to Wolf.</text></string>
 
-	<!-- ===================== the Hum (PDA messages) ===================== -->
-	<string id="szm_hum_prologue"><text>Unknown transmitter: "...courier... Grisha... package for Sid... bandits near... can't make it..." The rest drowns in a strange, pulsing noise.</text></string>
-	<string id="szm_hum_medusa"><text>The detector went crazy. The PDA earpiece carries the same noise as the courier's message, only louder, as if it were right next to you. A few seconds later, silence.</text></string>
-	<string id="szm_epilogue_cold"><text>Message from Cold: "Our techs took the Kamerton apart. The Hum stopped... almost. Last night we heard it again, quieter, from the north. The Kamerton wasn't the only one."</text></string>
+	<!-- ===================== radio / PDA messages ===================== -->
+	<string id="szm_epilogue_cold"><text>Message from Cold: "Our techs took the Kamerton apart. The Noise stopped... almost. Last night we heard it again, quieter, from the north. The Kamerton wasn't the only one."</text></string>
 	<string id="szm_epilogue_sid"><text>Message from Sidorovich: "The buyers are happy, deal's done. But listen... last night the radio caught that noise again. Maybe someone built another one..."</text></string>
 	<string id="szm_epilogue_wolf"><text>Message from Wolf: "The Kamerton vanished into an anomaly, I saw it with my own eyes. But last night I heard the noise again. Quieter, far off, from the north. The Zone doesn't forget, kid."</text></string>
 
@@ -43,70 +41,75 @@
 	<string id="szm_kamerton_descr"><text>A military prototype in a heavy crate. The casing is warm to the touch, and a barely audible noise comes from inside. People die because of it.</text></string>
 
 	<!-- ===================== 1: Prologue ===================== -->
-	<string id="szm_task_1_name"><text>The Hum: A Strange Message</text></string>
-	<string id="szm_task_1_descr"><text>My PDA picked up a garbled message about a courier carrying a package for Sidorovich. I should talk to him.</text></string>
+	<string id="szm_task_1_name"><text>The Noise: A Job Offer</text></string>
+	<string id="szm_task_1_descr"><text>Sidorovich, the trader in the Cordon village bunker, called me on the radio. He's heard I'm new in the Zone and says he's looking for workers. I should go and see him.</text></string>
 	<string id="szm_task_1_descr_return"><text>Talk to Sidorovich.</text></string>
-	<string id="szm_1_done_0"><text>Sid, my PDA picked up a weird message. Someone was talking about a courier and a package for you.</text></string>
-	<string id="szm_1_done_1"><text>Let me see... Damn. That's Grisha, my courier from the Swamps. He was supposed to be here yesterday. And that noise at the end, you hear it? I've been catching it on the radio for weeks, always right before an emission.</text></string>
-	<string id="szm_1_done_2"><text>What was in that package?</text></string>
-	<string id="szm_1_done_3"><text>Something a client paid for up front, and paid a lot. Listen, rookie. You've got nothing to lose yet, and I've just lost a courier. So let's make a deal: I invest in you, and you help me get back what's mine.</text></string>
+	<string id="szm_1_done_0"><text>You called me on the radio. Something about work?</text></string>
+	<string id="szm_1_done_1"><text>Right, the rookie. Let me take a look at you... Thin, hungry, and with gear that wouldn't scare a blind dog. Good. The hungry ones work hard.</text></string>
+	<string id="szm_1_done_2"><text>What kind of work?</text></string>
+	<string id="szm_1_done_3"><text>Honest work, for now. Here's how it goes, rookie: I give you jobs, you do them, I pay. Do them well, and the jobs get better, and so does the pay. We'll start with something simple.</text></string>
 
-	<!-- ===================== 2: the bandit ===================== -->
-	<string id="szm_2_offer_0"><text>About that deal. What do you need?</text></string>
-	<string id="szm_2_offer_1"><text>Bandits jumped Grisha, and one of them has been hanging around the village ever since. Take him out and search the body. If he's got anything from the package, bring it to me. Do it and you get a decent double-barrel. Deal?</text></string>
-	<string id="szm_2_offer_2"><text>I'll deal with him.</text></string>
-	<string id="szm_2_offer_4"><text>He's marked on your PDA. And don't get yourself shot - dead men don't collect payment.</text></string>
-	<string id="szm_2_done_0"><text>The bandit's dead. He had this on him - some kind of metal cylinder.</text></string>
-	<string id="szm_2_done_1"><text>That's all? So the rest of the package is gone... Let me see. Hmm, military make, never seen anything like it. Hold on to it for now, too many eyes around my counter. Here's your double-barrel, you've earned it. But before you're any real use to me, you've got a few things to learn.</text></string>
-	<string id="szm_task_2_name"><text>The Hum: The Bandit and the Courier</text></string>
-	<string id="szm_task_2_descr"><text>The bandit who robbed Sid's courier is hanging around the village. I need to kill him and search the body. The target is marked on my PDA.</text></string>
-	<string id="szm_task_2_descr_return"><text>The bandit is dead and I have a metal cylinder from the courier's package. Return to Sidorovich.</text></string>
+	<!-- ===================== 2: boars ===================== -->
+	<string id="szm_2_offer_0"><text>Something simple? Go on.</text></string>
+	<string id="szm_2_offer_1"><text>Boars. A small herd has been coming right up to the village these past few days. Hunt them down, cut off two legs with your knife and bring them to me. Boar meat sells, and I'll pay you for it.</text></string>
+	<string id="szm_2_offer_2"><text>I'm going hunting.</text></string>
+	<string id="szm_2_offer_4"><text>I've marked where they were seen. Aim for the head and don't get trampled. Once they're down, walk up to the carcass and use your knife.</text></string>
+	<string id="szm_2_done_0"><text>The boars are dead. Here are the legs.</text></string>
+	<string id="szm_2_done_1"><text>Fresh, good. Here's your money. But hunting is only half of it. Nobody will feed you in the Zone, and canned food runs out faster than you think. You'd better learn to cook.</text></string>
+	<string id="szm_task_2_name"><text>The Noise: The Hunt</text></string>
+	<string id="szm_task_2_descr"><text>Sidorovich wants me to hunt the boars that have been coming up to the village, cut off two legs with my knife and bring them to him. The herd is marked on my PDA.</text></string>
+	<string id="szm_task_2_descr_return"><text>The boars are dead and I have two legs. Return to Sidorovich.</text></string>
 
-	<!-- ===================== 3: boars ===================== -->
-	<string id="szm_3_offer_0"><text>What else do I need to learn?</text></string>
-	<string id="szm_3_offer_1"><text>Somebody will have to look at that cylinder, and people who know their stuff don't work for free. So you need to learn how to make money in the Zone. The boars have been acting strange for days, coming right up to the village as if they were running from something. Hunt them down, cut off two legs with your knife and bring them to me. You'll get a leather jacket. Not much, but it beats walking around in a hoodie.</text></string>
-	<string id="szm_3_offer_2"><text>I'm going hunting.</text></string>
-	<string id="szm_3_offer_4"><text>I've marked where they were seen. Aim for the head and don't get trampled. Once they're down, walk up to the carcass and use your knife.</text></string>
-	<string id="szm_3_done_0"><text>The boars are dead. Here are the legs.</text></string>
-	<string id="szm_3_done_1"><text>Fresh, good. Here's your jacket. You know, Wolf says those boars were running from the anomaly field. Interesting... Anyway, time you earned some real money.</text></string>
-	<string id="szm_task_3_name"><text>The Hum: The Hunt</text></string>
-	<string id="szm_task_3_descr"><text>For a few days now boars have been coming up to the village, as if running from something. I need to hunt them, cut off two legs with my knife and bring them to Sid.</text></string>
-	<string id="szm_task_3_descr_return"><text>The boars are dead and I have two legs. Return to Sidorovich.</text></string>
+	<!-- ===================== 3: campfire with Wolf ===================== -->
+	<string id="szm_3_offer_0"><text>Cook? You want me to make you dinner?</text></string>
+	<string id="szm_3_offer_1"><text>Not me - Wolf. He keeps order in the village, and he's been sitting by the fire since morning without a bite. Here's a cooker, some charcoal and a cut of boar meat. Cook it at the campfire and take it to him. Wolf is a good man to know around here, and it won't hurt you to be on his good side.</text></string>
+	<string id="szm_3_offer_2"><text>I'll cook the meat and take it to Wolf.</text></string>
+	<string id="szm_3_offer_4"><text>Here's everything you need. Use the cooker at the campfire and pick the boar meat. Keep the cooker, you'll need it. And come back to me afterwards - I'll have a real job for you.</text></string>
+	<string id="szm_3_done_0"><text>Wolf, Sid sent you some food. Cooked it myself.</text></string>
+	<string id="szm_3_done_1"><text>Fresh boar, look at that. Thanks, kid. So the old miser already has you on his payroll?</text></string>
+	<string id="szm_3_done_2"><text>Something like that. He says he'll have a real job for me.</text></string>
+	<string id="szm_3_done_3"><text>Then go and see him, and keep your eyes open. One of his couriers was supposed to come through here yesterday and never showed up. If Sid starts talking about bandits, take it seriously. Here, a little something for the meal.</text></string>
+	<string id="szm_task_3_name"><text>The Noise: By the Campfire</text></string>
+	<string id="szm_task_3_descr"><text>Sidorovich gave me a cooker, charcoal and boar meat. I need to cook it at the campfire and take it to Wolf.</text></string>
+	<string id="szm_task_3_descr_return"><text>The meat is cooked. Take it to Wolf.</text></string>
 
-	<!-- ===================== 4: Jellyfish + first Hum ===================== -->
-	<string id="szm_4_offer_0"><text>Real money? I'm listening.</text></string>
-	<string id="szm_4_offer_1"><text>Artifacts. They form inside anomalies and they're worth a fortune, but you won't see one without a detector. A Jellyfish has turned up in the anomaly field near the village. Bring it to me and you get a gas mask. And keep your eyes open out there - that's where the boars were running from.</text></string>
-	<string id="szm_4_offer_2"><text>I'll bring you the Jellyfish.</text></string>
-	<string id="szm_4_offer_4"><text>The spot is marked on your PDA. Take out your detector and throw bolts ahead of you. And don't keep it in your backpack too long, it's a bit radioactive.</text></string>
-	<string id="szm_4_done_0"><text>I've got the Jellyfish. Sid, when I picked it up, I heard the noise. The same one as in the courier's message.</text></string>
-	<string id="szm_4_done_1"><text>...The same? Here, in Cordon? That's bad. Fine, here's your mask, you've earned it. But before I send you anywhere, you need to learn to survive on your own.</text></string>
-	<string id="szm_task_4_name"><text>The Hum: Jellyfish</text></string>
-	<string id="szm_task_4_descr"><text>A Jellyfish has appeared in the anomaly field near the village. I need to find it with my detector and bring it to Sid. Better throw bolts ahead of me.</text></string>
-	<string id="szm_task_4_descr_return"><text>I have the Jellyfish. When I picked it up, I heard the noise. Return to Sidorovich.</text></string>
+	<!-- ===================== 4: the missing courier, the first Noise ===================== -->
+	<string id="szm_4_offer_0"><text>Wolf is fed and happy. You mentioned a real job?</text></string>
+	<string id="szm_4_offer_1"><text>I did. Grisha, my courier from the Swamps, was due here yesterday with a package. He never arrived. This morning a bandit was seen near the village carrying a bag that isn't his. Find him, take him out and search the body. Whatever he took from Grisha is mine - bring it back. And take this double-barrel, call it an advance. You won't do this job with your bare hands.</text></string>
+	<string id="szm_4_offer_2"><text>I'll find him.</text></string>
+	<string id="szm_4_offer_4"><text>He's marked on your PDA. And don't get yourself shot - dead men don't collect payment.</text></string>
+	<string id="szm_4_done_0"><text>The bandit's dead. He had this on him - a metal cylinder.</text></string>
+	<string id="szm_4_done_1"><text>That's all? So the rest of the package is gone... Let me see. Military make, never seen anything like it.</text></string>
+	<string id="szm_4_done_2"><text>There's something else. When I picked it up, my PDA started hissing. A strange, pulsing noise, and then it just stopped.</text></string>
+	<string id="szm_4_done_3"><text>...A noise. I've been catching something like that on my radio for weeks, always right before an emission. I don't like this, rookie. Hold on to the cylinder for now, too many eyes around my counter. And here - a jacket and a gas mask. You've earned them, and you'll need them for what comes next.</text></string>
+	<string id="szm_task_4_name"><text>The Noise: The Missing Courier</text></string>
+	<string id="szm_task_4_descr"><text>Sidorovich's courier Grisha never arrived. A bandit seen near the village may have robbed him. I need to kill the bandit and search the body. The target is marked on my PDA.</text></string>
+	<string id="szm_task_4_descr_return"><text>The bandit is dead and I have a metal cylinder from the courier's package. When I picked it up, my PDA caught a strange noise. Return to Sidorovich.</text></string>
 
-	<!-- ===================== 5: campfire with Wolf ===================== -->
-	<string id="szm_5_offer_0"><text>Survive how? What do you have in mind?</text></string>
-	<string id="szm_5_offer_1"><text>Nobody's going to feed you in the Zone, and canned food runs out faster than you think. Here's a cooker, some charcoal and a cut of boar meat from your hunt. Cook it at the campfire and take it to Wolf - he's been sitting by the fire since morning without a bite. And while you're at it, ask him about the noise. Wolf has walked the Zone longer than anyone in the village.</text></string>
-	<string id="szm_5_offer_2"><text>I'll cook the meat and talk to Wolf.</text></string>
-	<string id="szm_5_offer_4"><text>Here's everything you need. Use the cooker at the campfire and pick the boar meat. Keep the cooker, you'll need it.</text></string>
-	<string id="szm_5_done_0"><text>Wolf, Sid sent you some food. And I wanted to ask you about the noise.</text></string>
-	<string id="szm_5_done_1"><text>Fresh meat, look at that. Thanks, kid. The noise, you say... You've heard it?</text></string>
-	<string id="szm_5_done_2"><text>At the anomaly field, when I picked up the Jellyfish. And before that, in a strange message on my PDA.</text></string>
-	<string id="szm_5_done_3"><text>In the Swamps they've been hearing it for weeks, or so the Clear Sky boys say. Mutants go crazy after it, and Clear Sky knows something, they just won't talk. Oh, and Sid told me to give you this: a backpack, tools and medkits. You've earned them. Now go see him - I'd bet he already has plans for you.</text></string>
-	<string id="szm_task_5_name"><text>The Hum: By the Campfire</text></string>
-	<string id="szm_task_5_descr"><text>Sid gave me a cooker, charcoal and boar meat. I need to cook it at the campfire, take it to Wolf and ask him about the noise.</text></string>
-	<string id="szm_task_5_descr_return"><text>The meat is cooked. Take it to Wolf.</text></string>
+	<!-- ===================== 5: Jellyfish, the Noise again ===================== -->
+	<string id="szm_5_offer_0"><text>What comes next?</text></string>
+	<string id="szm_5_offer_1"><text>The anomaly field near the village. A Jellyfish has formed there - an artifact, worth good money. But I want more than money this time: if that noise has anything to do with anomalies, that's where you'll hear it. Bring me the Jellyfish and tell me what you heard. You'll get a proper backpack and some medicine.</text></string>
+	<string id="szm_5_offer_2"><text>I'll bring you the Jellyfish.</text></string>
+	<string id="szm_5_offer_4"><text>The spot is marked on your PDA. Take out your detector and throw bolts ahead of you. And don't keep the Jellyfish in your backpack too long, it's a bit radioactive.</text></string>
+	<string id="szm_5_done_0"><text>I've got the Jellyfish. And Sid, the noise was there again. Louder this time, as if it were right next to me.</text></string>
+	<string id="szm_5_done_1"><text>Twice in Cordon in one week... This is bigger than a lost package. Here's your backpack and the medicine. And listen - I think I know who might have answers.</text></string>
+	<string id="szm_task_5_name"><text>The Noise: Jellyfish</text></string>
+	<string id="szm_task_5_descr"><text>A Jellyfish has formed in the anomaly field near the village. Sid wants it, and he wants to know whether the noise can be heard there. I need to find it with my detector. Better throw bolts ahead of me.</text></string>
+	<string id="szm_task_5_descr_return"><text>I have the Jellyfish. The noise was there again, louder. Return to Sidorovich.</text></string>
 
 	<!-- ===================== 6: to Spore ===================== -->
-	<string id="szm_6_offer_0"><text>Wolf says the people who know most about the noise are in the Swamps.</text></string>
-	<string id="szm_6_offer_1"><text>Wolf's right, as usual. Grisha was coming from Spore, the Clear Sky trader in the Great Swamps. Take him the cylinder - he'll know what it is and who it was meant for. Tell him I sent you. Will you go?</text></string>
+	<string id="szm_6_offer_0"><text>Who might have answers?</text></string>
+	<string id="szm_6_offer_1"><text>Grisha was coming from Spore, the Clear Sky trader in the Great Swamps. Clear Sky have been listening to the Swamps for years - if anyone knows what this noise is, it's them. Take Spore the cylinder, he'll know what it is and who it was meant for. Tell him I sent you. Will you go?</text></string>
+	<string id="szm_prologue_msg"><text>Hey, you - the new face in the village. Sidorovich here, the trader in the bunker. Word travels fast: you're fresh in the Zone and short on everything. I'm always looking for people who can work. Drop by my bunker and we'll talk.</text></string>
+	<string id="szm_hum_bandit"><text>The moment you lift the cylinder, the PDA earpiece crackles: a strange, pulsing noise, like a heartbeat under static. A few seconds later, silence.</text></string>
+	<string id="szm_hum_medusa"><text>The detector went crazy. The PDA earpiece carries the same pulsing noise as by the bandit's body, only louder, as if it were right next to you. A few seconds later, silence.</text></string>
 	<string id="szm_6_offer_2"><text>I'm heading to the Swamps.</text></string>
 	<string id="szm_6_offer_4"><text>Spore is marked on your PDA. In the Swamps, stick to dry ground and stay out of the reeds after dark. And don't trust anyone who asks about the cylinder.</text></string>
 	<string id="szm_6_done_0"><text>Sidorovich sent me. I've got something his courier was carrying.</text></string>
 	<string id="szm_6_done_1"><text>Grisha... so he didn't make it. Show me.</text></string>
 	<string id="szm_6_done_2"><text>A metal cylinder. The bandits had it.</text></string>
 	<string id="szm_6_done_3"><text>Hmm. I don't know what this is, and I don't like it. Leave it with me, I'll have our techs look at it. Look, I don't know you, and in this base we don't discuss things like this with strangers. But I could use a hand. Help us out, and we'll talk as friends.</text></string>
-	<string id="szm_task_6_name"><text>The Hum: The Road to the Swamps</text></string>
+	<string id="szm_task_6_name"><text>The Noise: The Road to the Swamps</text></string>
 	<string id="szm_task_6_descr"><text>Sid is sending me with the cylinder to Spore, the trader at the Clear Sky base in the Great Swamps. Grisha the courier was coming from him.</text></string>
 	<string id="szm_task_6_descr_return"><text>Take the cylinder to Spore at the Clear Sky base.</text></string>
 
@@ -117,7 +120,7 @@
 	<string id="szm_7_offer_4"><text>They're marked on your PDA. Careful, there's a group of them. The Swamps give plenty of cover - use it.</text></string>
 	<string id="szm_7_done_0"><text>The renegades won't bother you anymore.</text></string>
 	<string id="szm_7_done_1"><text>I heard shooting, then silence. Good silence. Here's your money and ammo. As for the cylinder: our techs say it's part of some military device. But right now there's something more urgent.</text></string>
-	<string id="szm_task_7_name"><text>The Hum: Renegades at the Base</text></string>
+	<string id="szm_task_7_name"><text>The Noise: Renegades at the Base</text></string>
 	<string id="szm_task_7_descr"><text>A group of renegades is prowling near the Clear Sky base. Spore wants me to get rid of them. Their position is marked on my PDA.</text></string>
 	<string id="szm_task_7_descr_return"><text>The renegades are dead. Return to Spore.</text></string>
 
@@ -127,20 +130,20 @@
 	<string id="szm_8_offer_2"><text>I'll find him.</text></string>
 	<string id="szm_8_offer_4"><text>I've marked the spot his last signal came from. Search the area.</text></string>
 	<string id="szm_8_done_0"><text>I found Viktor. He's dead. I have his PDA.</text></string>
-	<string id="szm_8_done_1"><text>Poor kid... Show me. There's a recording of the noise. And a photo: a military helicopter flying low over the swamp, no markings. So it's the army... Here's your pay. And be careful - after every Hum the mutants go wild. Something is already prowling around the base.</text></string>
-	<string id="szm_task_8_name"><text>The Hum: The Missing Scout</text></string>
+	<string id="szm_8_done_1"><text>Poor kid... Show me. There's a recording of the noise. And a photo: a military helicopter flying low over the swamp, no markings. So it's the army... Here's your pay. And be careful - after every burst of the Noise the mutants go wild. Something is already prowling around the base.</text></string>
+	<string id="szm_task_8_name"><text>The Noise: The Missing Scout</text></string>
 	<string id="szm_task_8_descr"><text>Viktor, a Clear Sky scout, went looking for the source of the noise and never came back. I need to find him and bring his PDA to Spore. The location of his last signal is marked on my PDA.</text></string>
 	<string id="szm_task_8_descr_return"><text>I have Viktor's PDA. Return to Spore.</text></string>
 
 	<!-- ===================== 9: bloodsucker ===================== -->
 	<string id="szm_9_offer_0"><text>What's prowling around the base?</text></string>
-	<string id="szm_9_offer_1"><text>A bloodsucker. They used to keep their distance, but ever since the Hum started, this one has been hunting our people right by the fence. I won't lie to you, it's no boar. If you don't have a decent gun and a few medkits, don't go. But kill it and I'll pay you better than for anything so far.</text></string>
+	<string id="szm_9_offer_1"><text>A bloodsucker. They used to keep their distance, but ever since the Noise started, this one has been hunting our people right by the fence. I won't lie to you, it's no boar. If you don't have a decent gun and a few medkits, don't go. But kill it and I'll pay you better than for anything so far.</text></string>
 	<string id="szm_9_offer_2"><text>I'll hunt it down.</text></string>
 	<string id="szm_9_offer_4"><text>I've marked where it was last seen. When you hear heavy breathing and see the air shimmer, shoot. Don't wait for it to show itself. And aim for the head.</text></string>
 	<string id="szm_9_done_0"><text>The bloodsucker is dead.</text></string>
 	<string id="szm_9_done_1"><text>Really? Ha! The boys will drink to your health for a week. Here, you've earned every coupon. But don't celebrate just yet - we've got trouble with Kostya's squad.</text></string>
-	<string id="szm_task_9_name"><text>The Hum: Bloodsucker in the Reeds</text></string>
-	<string id="szm_task_9_descr"><text>A bloodsucker, driven from its lair by the Hum, is hunting near the Clear Sky base. Spore wants me to kill it. The place where it was seen is marked on my PDA.</text></string>
+	<string id="szm_task_9_name"><text>The Noise: Bloodsucker in the Reeds</text></string>
+	<string id="szm_task_9_descr"><text>A bloodsucker, driven from its lair by the Noise, is hunting near the Clear Sky base. Spore wants me to kill it. The place where it was seen is marked on my PDA.</text></string>
 	<string id="szm_task_9_descr_return"><text>The bloodsucker is dead. Return to Spore.</text></string>
 
 	<!-- ===================== 10: Kostya's strike team ===================== -->
@@ -153,7 +156,7 @@
 	<string id="szm_10_done_1"><text>I knew it... I could feel it. What did you find?</text></string>
 	<string id="szm_10_done_2"><text>Kostya's PDA has an entry about cargo from Agroprom. The army calls it the Kamerton. The soldiers who killed them won't hurt anyone again. Here's the PDA.</text></string>
 	<string id="szm_10_done_3"><text>The Kamerton... This is a matter for Cold now, not for a trader. Here's your pay, everything I can spare right now. Kostya and the boys... we'll make sure they get buried. And Cold needs to hear all of this from you.</text></string>
-	<string id="szm_task_10_name"><text>The Hum: The Strike Team</text></string>
+	<string id="szm_task_10_name"><text>The Noise: The Strike Team</text></string>
 	<string id="szm_task_10_descr"><text>Kostya's Clear Sky squad never reported in. I need to go to the meeting point marked on my PDA and find out what happened. If they're dead, I should take the commander's PDA.</text></string>
 	<string id="szm_task_10_descr_fight"><text>Kostya's squad is dead. According to the last entry in Kostya's PDA, they were killed by an army patrol looking for something called the Kamerton. Kostya managed to mark their position: the soldiers are still nearby. I need to eliminate them, then return to Spore with the PDA.</text></string>
 	<string id="szm_task_10_descr_return"><text>The army patrol is eliminated. Return to Spore with Kostya's PDA.</text></string>
@@ -167,7 +170,7 @@
 	<string id="szm_11_done_1"><text>Spore told me about you. The Kamerton... Do you even know what it is?</text></string>
 	<string id="szm_11_done_2"><text>Only that the army is looking for it and that people die because of it.</text></string>
 	<string id="szm_11_done_3"><text>A military prototype. It's meant to trigger and measure emissions. The noise you keep hearing is the echo of its tests. If it works, emissions become a weapon. The cylinder you brought is a part of it. And now I need your help.</text></string>
-	<string id="szm_task_11_name"><text>The Hum: Cold</text></string>
+	<string id="szm_task_11_name"><text>The Noise: Cold</text></string>
 	<string id="szm_task_11_descr"><text>Spore is sending me to Cold, the leader of Clear Sky. I need to tell him about the cylinder, Viktor, Kostya and the Kamerton.</text></string>
 	<string id="szm_task_11_descr_return"><text>Talk to Cold.</text></string>
 
@@ -178,8 +181,8 @@
 	<string id="szm_12_offer_4"><text>The crash site is marked on your PDA. Come back quickly.</text></string>
 	<string id="szm_task_12_reveal_news"><text>The recorder survived, though the casing is scorched. Voices in the distance - someone is heading for the crash site. Renegades, looters.</text></string>
 	<string id="szm_12_done_0"><text>I've got the recorder. The renegades wanted it too.</text></string>
-	<string id="szm_12_done_1"><text>Good work. But it's encrypted with a military code - we won't crack it here. Your Sidorovich, though, knows people who can crack anything.</text></string>
-	<string id="szm_task_12_name"><text>The Hum: The Wreck</text></string>
+	<string id="szm_12_done_1"><text>Good work. Take these tools as well, our techs can spare them - out here you will be fixing your own gear. As for the recorder, it's encrypted with a military code - we won't crack it here. Your Sidorovich, though, knows people who can crack anything.</text></string>
+	<string id="szm_task_12_name"><text>The Noise: The Wreck</text></string>
 	<string id="szm_task_12_descr"><text>A military helicopter went down at the edge of the Swamps. The pilot's body should have a flight recorder on it. I need to get it.</text></string>
 	<string id="szm_task_12_descr_fight"><text>I have the recorder, but renegade looters are heading for the crash site. I need to deal with them.</text></string>
 	<string id="szm_task_12_descr_return"><text>I have the recorder. Return to Cold.</text></string>
@@ -193,7 +196,7 @@
 	<string id="szm_13_done_1"><text>Well, well, my investment comes back from the Swamps bearing gifts! Let me see... Military cipher. It can be done, I know a guy. But it'll cost you.</text></string>
 	<string id="szm_13_done_2"><text>How much?</text></string>
 	<string id="szm_13_done_3"><text>Not money. A favour. Bandits in the Garbage grabbed a package of mine. Get it back, and in the meantime my guy will work on your recorder.</text></string>
-	<string id="szm_task_13_name"><text>The Hum: The Cipher</text></string>
+	<string id="szm_task_13_name"><text>The Noise: The Cipher</text></string>
 	<string id="szm_task_13_descr"><text>The recorder is encrypted with a military code. Cold is sending me with it to Sidorovich, who knows people who can crack ciphers.</text></string>
 	<string id="szm_task_13_descr_return"><text>Take the recorder to Sidorovich.</text></string>
 
@@ -204,7 +207,7 @@
 	<string id="szm_14_offer_4"><text>They're marked on your PDA. The Garbage isn't Cordon, rookie. Over there they shoot first and never bother with questions.</text></string>
 	<string id="szm_14_done_0"><text>I've got your package.</text></string>
 	<string id="szm_14_done_1"><text>Not a scratch on it, excellent. Here's your pay. And your recorder is already decrypted - my guy did a fine job. You'll want to hear what's on it.</text></string>
-	<string id="szm_task_14_name"><text>The Hum: A Favour for Sid</text></string>
+	<string id="szm_task_14_name"><text>The Noise: A Favour for Sid</text></string>
 	<string id="szm_task_14_descr"><text>A gang in the Garbage has Sidorovich's package. I need to kill the bandits and get the package back from their boss. Their position is marked on my PDA.</text></string>
 	<string id="szm_task_14_descr_return"><text>I have Sid's package. Return to Sidorovich.</text></string>
 
@@ -214,19 +217,19 @@
 	<string id="szm_15_offer_2"><text>I'll find the convoy.</text></string>
 	<string id="szm_15_offer_4"><text>Agroprom is crawling with soldiers, mercs and worse. I've marked the convoy's last position from the recorder. Come back alive, I've got money invested in you.</text></string>
 	<string id="szm_task_15_reveal_news"><text>Convoy officer's PDA, last entry: "The noise keeps growing, men are bleeding from their ears, we can't switch it off... Mercenaries near..." The entry breaks off. According to the signals logged in the PDA, a mercenary squad took the crate and is close by.</text></string>
-	<string id="szm_task_15_name"><text>The Hum: The Dead Convoy</text></string>
+	<string id="szm_task_15_name"><text>The Noise: The Dead Convoy</text></string>
 	<string id="szm_task_15_descr"><text>The convoy carrying the Kamerton vanished in Agroprom. Its last known position from the recorder is marked on my PDA. I need to go there and find the convoy. The officer's PDA should be on site.</text></string>
 	<string id="szm_task_15_descr_fight"><text>The convoy soldiers lie there without a scratch, blood trickling from their ears. Mercenaries took the Kamerton. Their position is marked on my PDA. I need to eliminate them and recover the Kamerton.</text></string>
 	<string id="szm_task_15_descr_return"><text>I have the Kamerton.</text></string>
 
 	<!-- ===================== 16: the choice ===================== -->
-	<string id="szm_task_16_name"><text>The Hum: Kamerton</text></string>
+	<string id="szm_task_16_name"><text>The Noise: Kamerton</text></string>
 	<string id="szm_task_16_descr"><text>I have the Kamerton. I can give it to Cold and Clear Sky (Great Swamps), sell it to Sidorovich, or destroy it with Wolf's help (both in Cordon). All three are marked on my PDA map. The choice is mine.</text></string>
 	<string id="szm_task_16_descr_return"><text>Decide who gets the Kamerton.</text></string>
 
 	<string id="szm_16_cold_0"><text>Cold, I have the Kamerton.</text></string>
 	<string id="szm_16_cold_1"><text>By the Zone... You really have it. Give it to us, and we'll make sure nobody ever uses it. Kostya, Viktor and the others deserve that much.</text></string>
-	<string id="szm_16_cold_2"><text>Take it. Let Clear Sky deal with the Hum.</text></string>
+	<string id="szm_16_cold_2"><text>Take it. Let Clear Sky deal with the Noise.</text></string>
 	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Take this CS-2a armor - and know that in this base you'll always be one of us.</text></string>
 	<string id="szm_16_cold_5"><text>I understand. But don't wait too long, the army is looking for it too.</text></string>
 
@@ -246,12 +249,12 @@
 	<string id="szm_name_cold"><text>Cold (Clear Sky)</text></string>
 	<string id="szm_name_sid"><text>Sidorovich</text></string>
 	<string id="szm_name_wolf"><text>Wolf</text></string>
-	<string id="szm_choice_msg_cold"><text>Stalker, Cold here. We heard about the convoy in Agroprom. If you have the Kamerton, bring it to the Swamps. Clear Sky will study it and find out what the Hum really is. Don't give it to anyone else.</text></string>
+	<string id="szm_choice_msg_cold"><text>Stalker, Cold here. We heard about the convoy in Agroprom. If you have the Kamerton, bring it to the Swamps. Clear Sky will study it and find out what the Noise really is. Don't give it to anyone else.</text></string>
 	<string id="szm_choice_msg_sid"><text>Hey, rookie, Sidorovich here. I know what you carried out of Agroprom. Bring that box to my bunker in Cordon and I'll pay you enough to stay out of the Zone for a month. Don't listen to those idealists from the Swamps.</text></string>
 	<string id="szm_choice_msg_wolf"><text>Wolf here. I heard what you've got. That thing has killed too many already. Come see me in the Cordon village and we'll destroy it together. Nobody should have it.</text></string>
-	<string id="szm_story_end_title"><text>The Hum - storyline complete</text></string>
-	<string id="szm_story_end_cold"><text>The Kamerton went to Clear Sky. Cold and his techs will study the Hum, and you have allies in the Swamps. The main storyline "The Hum" is complete - the rest of the Zone is yours.</text></string>
-	<string id="szm_story_end_sid"><text>The Kamerton went to Sidorovich, and your pockets are full of rubles. Clear Sky won't forget this betrayal. The main storyline "The Hum" is complete - the rest of the Zone is yours.</text></string>
-	<string id="szm_story_end_wolf"><text>You and Wolf destroyed the Kamerton. Nobody profits from it, and nobody else dies because of it. The main storyline "The Hum" is complete - the rest of the Zone is yours.</text></string>
+	<string id="szm_story_end_title"><text>The Noise - storyline complete</text></string>
+	<string id="szm_story_end_cold"><text>The Kamerton went to Clear Sky. Cold and his techs will study the Noise, and you have allies in the Swamps. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
+	<string id="szm_story_end_sid"><text>The Kamerton went to Sidorovich, and your pockets are full of rubles. Clear Sky won't forget this betrayal. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
+	<string id="szm_story_end_wolf"><text>You and Wolf destroyed the Kamerton. Nobody profits from it, and nobody else dies because of it. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 
 </string_table>

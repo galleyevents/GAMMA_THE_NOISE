@@ -1,4 +1,4 @@
--- Szum (The Hum) - main storyline for a loner starting in the Cordon village.
+-- The Noise (working title "Szum") - main storyline for a loner starting in the Cordon village.
 -- Replaces Fanatic's "Training Day". Prefix: szm_
 --
 -- Prologue  1      : a garbled PDA message, Sid's lost courier
@@ -64,40 +64,40 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- Money and goodwill come from on_complete in tm_szm.ltx.
 STAGES = {
 	-- ===== Prologue =====
-	[1] = {  -- garbled message, talk to Sid (given automatically)
+	[1] = {  -- Sid calls the new stalker on the radio, talk to him (given automatically)
 		task    = "szm_task_1",
 		talk_to = SID,
 	},
 	-- ===== Act I: Cordon =====
-	[2] = {  -- the bandit who robbed the courier; he carries the cylinder
+	[2] = {  -- boars, bring two legs (money only, from tm_szm.ltx)
 		task    = "szm_task_2",
+		squad   = "szm_boar_squad",
+		area    = { CORDON_SMARTS, 0, 300 },
+		fetch   = { "mutant_part_boar_leg", 2 },
+	},
+	[3] = {  -- cook boar meat, bring it to Wolf at the campfire (money only)
+		task    = "szm_task_3",
+		turn_in_to = WOLF,
+		start_items = { {"army_bowler", 1}, {"charcoal", 2}, {"mutant_part_boar_chop", 1} },
+		fetch   = { "meat_boar", 1 },
+	},
+	[4] = {  -- the missing courier: the bandit carrying the cylinder; picking it up -> the first Noise
+		task    = "szm_task_4",
 		squad   = "szm_bandit_squad",
 		carry   = "szm_cylinder",
 		area    = { CORDON_SMARTS, 0, 300 },
 		fetch   = { "szm_cylinder", 1 },
 		keep_fetch = true,      -- Sid gives the cylinder back for stage 6
-		rewards = { {"wpn_toz34", 1, pristine = true}, {"ammo_12x70_buck", 2} },
+		hum_on_fetch = "szm_hum_bandit",
+		start_items = { {"wpn_toz34", 1, pristine = true}, {"ammo_12x70_buck", 2} },   -- Sid's advance for the job
+		rewards = { {"novice_outfit", 1}, {"helm_respirator", 1} },   -- Leather Jacket + Refitted PBF: the weakest armor and gas mask
 	},
-	[3] = {  -- boars, bring two legs
-		task    = "szm_task_3",
-		squad   = "szm_boar_squad",
-		area    = { CORDON_SMARTS, 0, 300 },
-		fetch   = { "mutant_part_boar_leg", 2 },
-		rewards = { {"novice_outfit", 1} },          -- Leather Jacket, the weakest armor
-	},
-	[4] = {  -- Jellyfish; picking it up triggers the first Hum
-		task    = "szm_task_4",
+	[5] = {  -- Jellyfish in the anomaly field; picking it up -> the Noise again
+		task    = "szm_task_5",
 		fetch   = { "af_medusa", 1 },
 		medusa  = true,
-		hum_on_fetch = true,
-		rewards = { {"helm_respirator", 1} },         -- Refitted PBF, the cheapest real gas mask
-	},
-	[5] = {  -- cook boar meat, bring it to Wolf at the campfire
-		task    = "szm_task_5",
-		turn_in_to = WOLF,
-		start_items = { {"army_bowler", 1}, {"charcoal", 2}, {"mutant_part_boar_chop", 1} },
-		fetch   = { "meat_boar", 1 },
-		rewards = { {"itm_backpack", 1}, {"itm_basickit", 1}, {"medkit", 3}, {"bandage", 5} },
+		hum_on_fetch = "szm_hum_medusa",
+		rewards = { {"itm_backpack", 1}, {"medkit", 3}, {"bandage", 5} },
 	},
 	[6] = {  -- take the cylinder to Spore
 		task    = "szm_task_6",
@@ -150,7 +150,7 @@ STAGES = {
 			squad       = "szm_renegade_squad",
 			squad_area  = { MARSH_SMARTS, 60, 250 },
 		},
-		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		rewards = { {"itm_basickit", 1}, {"medkit", 2}, {"@ammo", 2} },   -- basic tools only here
 	},
 	-- ===== Act III: Cordon, Garbage, Agroprom =====
 	[13] = { -- take the flight recorder to Sid
@@ -213,9 +213,9 @@ CHOICES = {
 }
 EPILOGUE_DELAY_H = 24   -- in-game hours after the choice
 
--- Each boar of the stage 3 squad is guaranteed at least this many legs when butchered
+-- Each boar of the stage 2 squad is guaranteed at least this many legs when butchered
 BOAR_LEGS_PER_BOAR = 2
-BOAR_STAGE = 3
+BOAR_STAGE = 2
 
 -- Pristine weapons: condition of every part (%). "G.A.M.M.A. Guns Have No Condition" keeps all guns
 -- at 0.83; matching it stops item_parts.evaluate_parts from re-rolling the parts on pick-up.
@@ -251,7 +251,6 @@ local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offe
 
 local function done_info(n)  return "szm_stage_" .. n .. "_done" end
 local INFO_STARTED  = "szm_started"
-local INFO_HUM      = "szm_hum_heard"
 local INFO_CHOICE_MSGS = "szm_choice_msgs_sent"
 local INFO_EPILOGUE = "szm_epilogue_done"
 
@@ -432,9 +431,14 @@ local CHOICE_MSGS = {
 	{ name = "szm_name_wolf", icon = "ui_inGame2_wolf", text = "szm_choice_msg_wolf", delay = 25 },
 }
 
+-- PDA/radio message from a story character (name and text are string ids, delay in seconds)
+local function radio_msg(name, text, icon, delay)
+	db.actor:give_game_news(tr(name), tr(text), icon, (delay or 0) * 1000, 15000, 0)
+end
+
 local function send_choice_messages()
 	for _, m in ipairs(CHOICE_MSGS) do
-		db.actor:give_game_news(tr(m.name), tr(m.text), m.icon, m.delay * 1000, 15000, 0)
+		radio_msg(m.name, m.text, m.icon, m.delay)
 	end
 	CreateTimeEvent("szm_choice_msgs", "snd", 0, function()
 		xr_sound.set_sound_play(AC_ID, "pda_tips")
@@ -1016,9 +1020,9 @@ for n = 1, #STAGES do
 				sim_offline_combat.task_squads[squad.id] = true
 			end
 		end
-		if st.hum_on_fetch and not has_alife_info(INFO_HUM) and has_fetch(n) then
-			give_info(INFO_HUM)
-			play_hum("szm_hum_medusa")
+		if st.hum_on_fetch and not has_alife_info("szm_hum_heard_" .. n) and has_fetch(n) then
+			give_info("szm_hum_heard_" .. n)
+			play_hum(st.hum_on_fetch)
 		end
 
 		if st.choice then
@@ -1095,7 +1099,8 @@ local function try_prologue()
 	CreateTimeEvent("szm_prologue", "start", PROLOGUE_DELAY, function()
 		if not has_alife_info(INFO_STARTED) then
 			give_info(INFO_STARTED)
-			play_hum("szm_hum_prologue")
+			radio_msg("szm_name_sid", "szm_prologue_msg", "ui_inGame2_sid")
+			xr_sound.set_sound_play(AC_ID, "pda_tips")
 			give_stage_task(1, sid.id)
 		end
 		return true
@@ -1116,7 +1121,7 @@ local function check_epilogue()
 end
 
 ---------------------------< Callbacks >---------------------------
--- Guarantee boar legs from the stage 3 boars (base GAMMA drop: 4 rolls at 18%)
+-- Guarantee boar legs from the stage 2 boars (base GAMMA drop: 4 rolls at 18%)
 local function monster_on_loot_init(victim, loot_table)
 	if not (victim and loot_table) then return end
 	local ids = load_var(db.actor, VAR_BOARS)
