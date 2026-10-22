@@ -315,7 +315,7 @@ STAGES = {
 -- Act V timing: only the first stage waits. ACT5_TEST_DELAY (real seconds) overrides it for testing;
 -- nil for a release. A stage that fails to start (no spawn smart, giver away) is retried a minute later.
 ACT5_FIRST_DELAY_H = 24   -- in-game hours from the Act IV choice to the first Act V stage
-ACT5_TEST_DELAY    = 60
+ACT5_TEST_DELAY    = nil
 ACT5_FIRST = { cold = 17, sid = 19, wolf = 21 }
 
 -- Who calls on the radio
