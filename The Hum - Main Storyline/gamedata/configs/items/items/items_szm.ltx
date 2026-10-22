@@ -1,0 +1,116 @@
+; Szum - main storyline
+; Auto-included by items\items\base.ltx (#include "items_*.ltx").
+; Quest items: quest_item = true keeps bodies carrying them from being cleaned up and stops NPC looting.
+; Based on Spore's vanilla task PDA (mar_base_owl_stalker_trader_task_1_pda).
+
+[szm_quest_base]:tch_quest
+$spawn                  = "quest_items\szm_quest_base"
+kind                    = i_quest
+visual                  = dynamics\devices\dev_pda\dev_pda.ogf
+can_trade               = false
+quest_item              = true
+cost                    = 0
+icons_texture           = ui\ui_szm_icons
+inv_grid_width          = 1
+inv_grid_height         = 1
+inv_grid_x              = 0
+inv_grid_y              = 0
+upgr_icon_path          = ui\actor_items\ui_actor_items_1
+upgr_icon_x             = 150
+upgr_icon_y             = 0
+upgr_icon_width         = 150
+upgr_icon_height        = 100
+
+; Stage 2-6: part of the courier's package
+[szm_cylinder]:szm_quest_base
+inv_grid_x              = 4
+inv_grid_y              = 0
+inv_grid_width          = 1
+inv_grid_height         = 2
+$spawn                  = "quest_items\szm_cylinder"
+inv_name                = szm_cylinder_name
+inv_name_short          = szm_cylinder_name
+description             = szm_cylinder_descr
+inv_weight              = 1.2
+
+; Stage 8: scout Wiktor's PDA
+[szm_scout_pda]:szm_quest_base
+inv_grid_x              = 0
+inv_grid_y              = 0
+inv_grid_width          = 2
+inv_grid_height         = 1
+$spawn                  = "quest_items\szm_scout_pda"
+inv_name                = szm_scout_pda_name
+inv_name_short          = szm_scout_pda_name
+description             = szm_scout_pda_descr
+
+; Stage 10: Kostia's PDA
+[szm_strike_pda]:szm_quest_base
+inv_grid_x              = 2
+inv_grid_y              = 0
+inv_grid_width          = 2
+inv_grid_height         = 1
+$spawn                  = "quest_items\szm_strike_pda"
+inv_name                = szm_strike_pda_name
+inv_name_short          = szm_strike_pda_name
+description             = szm_strike_pda_descr
+
+; Stage 12-13: the helicopter's flight recorder
+[szm_flight_recorder]:szm_quest_base
+inv_grid_x              = 0
+inv_grid_y              = 2
+inv_grid_width          = 2
+inv_grid_height         = 2
+$spawn                  = "quest_items\szm_flight_recorder"
+inv_name                = szm_flight_recorder_name
+inv_name_short          = szm_flight_recorder_name
+description             = szm_flight_recorder_descr
+inv_weight              = 2.5
+
+; Stage 14: Sid's package from the Garbage
+[szm_sid_package]:szm_quest_base
+inv_grid_x              = 2
+inv_grid_y              = 3
+inv_grid_width          = 2
+inv_grid_height         = 2
+$spawn                  = "quest_items\szm_sid_package"
+inv_name                = szm_sid_package_name
+inv_name_short          = szm_sid_package_name
+description             = szm_sid_package_descr
+inv_weight              = 3.0
+
+; Stage 15: the convoy officer's PDA
+[szm_officer_pda]:szm_quest_base
+inv_grid_x              = 0
+inv_grid_y              = 1
+inv_grid_width          = 2
+inv_grid_height         = 1
+$spawn                  = "quest_items\szm_officer_pda"
+inv_name                = szm_officer_pda_name
+inv_name_short          = szm_officer_pda_name
+description             = szm_officer_pda_descr
+
+; Stage 12: the crashed helicopter. Same model and setup as the vanilla Pripyat wreck
+; (pri_a28_earth_helli_1) without its story_id; spawned with alife_create like New Tasks' static heli.
+[szm_heli_wreck]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_heli_wreck"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\vehicles\mi24\veh_mi24_u_02.ogf
+startup_animation       = idle
+fixed_bones             = korpus1
+
+; Stage 15-16: the Kamerton prototype
+[szm_kamerton]:szm_quest_base
+inv_grid_x              = 2
+inv_grid_y              = 1
+inv_grid_width          = 2
+inv_grid_height         = 2
+$spawn                  = "quest_items\szm_kamerton"
+inv_name                = szm_kamerton_name
+inv_name_short          = szm_kamerton_name
+description             = szm_kamerton_descr
+inv_weight              = 6.0

@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	Szum - main storyline. Generated layout:
+	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
+	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"; szm_16_<who>: the Act IV choice (Cold / Sid / Wolf)
+	Who says what is set in modxml_szm.script.
+-->
+<game_dialogs>
+
+	<dialog id="szm_1_done">
+		<precondition>szm_main.can_turn_in_1</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_1_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_1_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_1_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_1_done_3</text><action>szm_main.turn_in_1</action><next>4</next><next>5</next></phrase>
+			<phrase id="4"><text>szm_2_offer_0</text><next>6</next></phrase>
+			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
+			<phrase id="6"><text>szm_2_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="7"><text>szm_later_sid</text></phrase>
+			<phrase id="8"><text>szm_2_offer_2</text><next>10</next></phrase>
+			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
+			<phrase id="10"><text>szm_2_offer_4</text><action>szm_main.give_2</action></phrase>
+			<phrase id="11"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_2_offer">
+		<precondition>szm_main.can_offer_2</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_2_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_2_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_2_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_2_offer_4</text><action>szm_main.give_2</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_2_done">
+		<precondition>szm_main.can_turn_in_2</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_2_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_2_done_1</text><action>szm_main.turn_in_2</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_3_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_3_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_sid</text></phrase>
+			<phrase id="6"><text>szm_3_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_3_offer_4</text><action>szm_main.give_3</action></phrase>
+			<phrase id="9"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_3_offer">
+		<precondition>szm_main.can_offer_3</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_3_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_3_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_3_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_3_offer_4</text><action>szm_main.give_3</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_3_done">
+		<precondition>szm_main.can_turn_in_3</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_3_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_3_done_1</text><action>szm_main.turn_in_3</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_4_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_4_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_sid</text></phrase>
+			<phrase id="6"><text>szm_4_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_4_offer_4</text><action>szm_main.give_4</action></phrase>
+			<phrase id="9"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_4_offer">
+		<precondition>szm_main.can_offer_4</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_4_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_4_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_4_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_4_offer_4</text><action>szm_main.give_4</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_4_done">
+		<precondition>szm_main.can_turn_in_4</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_4_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_4_done_1</text><action>szm_main.turn_in_4</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_5_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_5_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_sid</text></phrase>
+			<phrase id="6"><text>szm_5_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_5_offer_4</text><action>szm_main.give_5</action></phrase>
+			<phrase id="9"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_5_offer">
+		<precondition>szm_main.can_offer_5</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_5_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_5_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_5_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_5_offer_4</text><action>szm_main.give_5</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_5_done">
+		<precondition>szm_main.can_turn_in_5</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_5_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_5_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_5_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_5_done_3</text><action>szm_main.turn_in_5</action></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_6_offer">
+		<precondition>szm_main.can_offer_6</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_6_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_6_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_6_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_6_offer_4</text><action>szm_main.give_6</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_6_done">
+		<precondition>szm_main.can_turn_in_6</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_6_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_6_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_6_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
+			<phrase id="4"><text>szm_7_offer_0</text><next>6</next></phrase>
+			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
+			<phrase id="6"><text>szm_7_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="7"><text>szm_later_spore</text></phrase>
+			<phrase id="8"><text>szm_7_offer_2</text><next>10</next></phrase>
+			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
+			<phrase id="10"><text>szm_7_offer_4</text><action>szm_main.give_7</action></phrase>
+			<phrase id="11"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_7_offer">
+		<precondition>szm_main.can_offer_7</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_7_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_7_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_7_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_7_offer_4</text><action>szm_main.give_7</action></phrase>
+			<phrase id="5"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_7_done">
+		<precondition>szm_main.can_turn_in_7</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_7_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_7_done_1</text><action>szm_main.turn_in_7</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_8_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_8_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_spore</text></phrase>
+			<phrase id="6"><text>szm_8_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_8_offer_4</text><action>szm_main.give_8</action></phrase>
+			<phrase id="9"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_8_offer">
+		<precondition>szm_main.can_offer_8</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_8_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_8_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_8_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_8_offer_4</text><action>szm_main.give_8</action></phrase>
+			<phrase id="5"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_8_done">
+		<precondition>szm_main.can_turn_in_8</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_8_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_8_done_1</text><action>szm_main.turn_in_8</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_9_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_9_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_spore</text></phrase>
+			<phrase id="6"><text>szm_9_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_9_offer_4</text><action>szm_main.give_9</action></phrase>
+			<phrase id="9"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_9_offer">
+		<precondition>szm_main.can_offer_9</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_9_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_9_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_9_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_9_offer_4</text><action>szm_main.give_9</action></phrase>
+			<phrase id="5"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_9_done">
+		<precondition>szm_main.can_turn_in_9</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_9_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_9_done_1</text><action>szm_main.turn_in_9</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_10_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_10_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_spore</text></phrase>
+			<phrase id="6"><text>szm_10_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_10_offer_4</text><action>szm_main.give_10</action></phrase>
+			<phrase id="9"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_10_offer">
+		<precondition>szm_main.can_offer_10</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_10_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_10_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_10_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_10_offer_4</text><action>szm_main.give_10</action></phrase>
+			<phrase id="5"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_10_done">
+		<precondition>szm_main.can_turn_in_10</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_10_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_10_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_10_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_10_done_3</text><action>szm_main.turn_in_10</action><next>4</next><next>5</next></phrase>
+			<phrase id="4"><text>szm_11_offer_0</text><next>6</next></phrase>
+			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
+			<phrase id="6"><text>szm_11_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="7"><text>szm_later_spore</text></phrase>
+			<phrase id="8"><text>szm_11_offer_2</text><next>10</next></phrase>
+			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
+			<phrase id="10"><text>szm_11_offer_4</text><action>szm_main.give_11</action></phrase>
+			<phrase id="11"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_11_offer">
+		<precondition>szm_main.can_offer_11</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_11_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_11_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_11_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_11_offer_4</text><action>szm_main.give_11</action></phrase>
+			<phrase id="5"><text>szm_declined_spore</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_11_done">
+		<precondition>szm_main.can_turn_in_11</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_11_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_11_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_11_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_11_done_3</text><action>szm_main.turn_in_11</action><next>4</next><next>5</next></phrase>
+			<phrase id="4"><text>szm_12_offer_0</text><next>6</next></phrase>
+			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
+			<phrase id="6"><text>szm_12_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="7"><text>szm_later_cold</text></phrase>
+			<phrase id="8"><text>szm_12_offer_2</text><next>10</next></phrase>
+			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
+			<phrase id="10"><text>szm_12_offer_4</text><action>szm_main.give_12</action></phrase>
+			<phrase id="11"><text>szm_declined_cold</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_12_offer">
+		<precondition>szm_main.can_offer_12</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_12_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_12_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_12_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_12_offer_4</text><action>szm_main.give_12</action></phrase>
+			<phrase id="5"><text>szm_declined_cold</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_12_done">
+		<precondition>szm_main.can_turn_in_12</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_12_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_12_done_1</text><action>szm_main.turn_in_12</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_13_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_13_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_cold</text></phrase>
+			<phrase id="6"><text>szm_13_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_13_offer_4</text><action>szm_main.give_13</action></phrase>
+			<phrase id="9"><text>szm_declined_cold</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_13_offer">
+		<precondition>szm_main.can_offer_13</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_13_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_13_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_13_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_13_offer_4</text><action>szm_main.give_13</action></phrase>
+			<phrase id="5"><text>szm_declined_cold</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_13_done">
+		<precondition>szm_main.can_turn_in_13</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_13_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_13_done_1</text><next>2</next></phrase>
+			<phrase id="2"><text>szm_13_done_2</text><next>3</next></phrase>
+			<phrase id="3"><text>szm_13_done_3</text><action>szm_main.turn_in_13</action><next>4</next><next>5</next></phrase>
+			<phrase id="4"><text>szm_14_offer_0</text><next>6</next></phrase>
+			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
+			<phrase id="6"><text>szm_14_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="7"><text>szm_later_sid</text></phrase>
+			<phrase id="8"><text>szm_14_offer_2</text><next>10</next></phrase>
+			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
+			<phrase id="10"><text>szm_14_offer_4</text><action>szm_main.give_14</action></phrase>
+			<phrase id="11"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_14_offer">
+		<precondition>szm_main.can_offer_14</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_14_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_14_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_14_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_14_offer_4</text><action>szm_main.give_14</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+	<dialog id="szm_14_done">
+		<precondition>szm_main.can_turn_in_14</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_14_done_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_14_done_1</text><action>szm_main.turn_in_14</action><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_15_offer_0</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_15_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="5"><text>szm_later_sid</text></phrase>
+			<phrase id="6"><text>szm_15_offer_2</text><next>8</next></phrase>
+			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
+			<phrase id="8"><text>szm_15_offer_4</text><action>szm_main.give_15</action></phrase>
+			<phrase id="9"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_15_offer">
+		<precondition>szm_main.can_offer_15</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_15_offer_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_15_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_15_offer_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_15_offer_4</text><action>szm_main.give_15</action></phrase>
+			<phrase id="5"><text>szm_declined_sid</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_16_cold">
+		<precondition>szm_main.can_turn_in_16</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_16_cold_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_16_cold_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_16_cold_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
+			<phrase id="5"><text>szm_16_cold_5</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_16_sid">
+		<precondition>szm_main.can_turn_in_16</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_16_sid_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_16_sid_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_16_sid_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_16_sid_4</text><action>szm_main.turn_in_16_sid</action></phrase>
+			<phrase id="5"><text>szm_16_sid_5</text></phrase>
+		</phrase_list>
+	</dialog>
+
+	<dialog id="szm_16_wolf">
+		<precondition>szm_main.can_turn_in_16</precondition>
+		<phrase_list>
+			<phrase id="0"><text>szm_16_wolf_0</text><next>1</next></phrase>
+			<phrase id="1"><text>szm_16_wolf_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_16_wolf_2</text><next>4</next></phrase>
+			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
+			<phrase id="4"><text>szm_16_wolf_4</text><action>szm_main.turn_in_16_wolf</action></phrase>
+			<phrase id="5"><text>szm_16_wolf_5</text></phrase>
+		</phrase_list>
+	</dialog>
+
+</game_dialogs>

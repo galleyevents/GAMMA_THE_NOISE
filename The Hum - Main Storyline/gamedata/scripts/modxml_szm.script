@@ -1,0 +1,72 @@
+-- Szum - main storyline
+-- DXML: add the story dialogs to the NPCs without overwriting their character_desc files
+-- (several GAMMA mods ship their own copies of those files).
+
+-- file -> { specific_character id -> dialogs }
+local INSERTS = {
+	[ [[gameplay\character_desc_escape.xml]] ] = {
+		esc_2_12_stalker_trader = {     -- Sidorovich
+			"szm_1_done",
+			"szm_2_offer", "szm_2_done",
+			"szm_3_offer", "szm_3_done",
+			"szm_4_offer", "szm_4_done",
+			"szm_5_offer",
+			"szm_6_offer",
+			"szm_13_done",
+			"szm_14_offer", "szm_14_done",
+			"szm_15_offer",
+			"szm_16_sid",
+		},
+		esc_2_12_stalker_wolf = {       -- Wolf
+			"szm_5_done",
+			"szm_16_wolf",
+		},
+	},
+	[ [[gameplay\character_desc_marsh.xml]] ] = {
+		mar_base_owl_stalker_trader = { -- Spore, Clear Sky trader
+			"szm_6_done",
+			"szm_7_offer", "szm_7_done",
+			"szm_8_offer", "szm_8_done",
+			"szm_9_offer", "szm_9_done",
+			"szm_10_offer", "szm_10_done",
+			"szm_11_offer",
+		},
+		mar_smart_terrain_base_stalker_leader_marsh = { -- Cold, Clear Sky leader
+			"szm_11_done",
+			"szm_12_offer", "szm_12_done",
+			"szm_13_offer",
+			"szm_16_cold",
+		},
+	},
+}
+
+function on_xml_read()
+	RegisterScriptCallback("on_xml_read", function(xml_file_name, xml_obj)
+		if xml_file_name == [[ui\map_spots.xml]] or xml_file_name == [[ui\map_spots_16.xml]]
+			or xml_file_name == [[ui\map_spots_21.xml]] then
+			-- gold "story" spot for szm_main's offer/choice markers: same look as storyline_task_location,
+			-- but its own type, so it never collides with the task's marker on the same NPC
+			xml_obj:insertFromXMLString([[
+<szm_story_location>
+	<level_map spot="storyline_task_spot" pointer="quest_pointer2"/>
+	<mini_map spot="storyline_task_spot_mini" pointer="quest_pointer2"/>
+</szm_story_location>]])
+			printf("[SZM] DXML: szm_story_location added to %s", xml_file_name)
+			return
+		end
+		local chars = INSERTS[xml_file_name]
+		if not chars then return end
+
+		for char_id, dialogs in pairs(chars) do
+			if is_empty(xml_obj:query("specific_character[id=" .. char_id .. "]")) then
+				printf("[SZM] DXML: %s not found in %s", char_id, xml_file_name)
+			else
+				-- inserted before actor_break_dialog by default
+				for _, dialog_id in ipairs(dialogs) do
+					local el = xml_obj:insertActorDialog(char_id, dialog_id)
+					printf("[SZM] DXML: insertActorDialog %s for %s -> %s", dialog_id, char_id, el and "OK" or "FAILED")
+				end
+			end
+		end
+	end)
+end

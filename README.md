@@ -1,0 +1,66 @@
+# The Hum - Main Storyline
+
+A story questline for **S.T.A.L.K.E.R. Anomaly / G.A.M.M.A.** It replaces Fanatic's "Training Day" tutorial
+with a 16-stage main story that starts in the Cordon village and ends with a three-way choice.
+
+A garbled radio message about Sidorovich's missing courier leads from Cordon to the Great Swamps,
+Garbage and Agroprom, and to the military prototype behind the strange noise everyone keeps hearing
+on the radio.
+
+## Story outline
+
+| Act | Where | Stages |
+|---|---|---|
+| Prologue | Cordon | A strange message: talk to Sidorovich |
+| I | Cordon | The bandit and the courier, the hunt, Jellyfish, by the campfire (Wolf) |
+| II | Great Swamps | The road to the Swamps, renegades at the base, the missing scout, bloodsucker in the reeds, the strike team |
+| III | Swamps, Cordon, Garbage, Agroprom | Cold, the wreck, the cipher, a favour for Sid, the dead convoy |
+| IV | Swamps / Cordon | The Kamerton: give it to Cold, sell it to Sidorovich, or destroy it with Wolf |
+
+An epilogue message arrives a day after the choice.
+
+## Features
+
+- All tasks are main-story tasks (gold markers); the next quest giver gets a gold map marker too.
+- Turning in a stage leads straight into the next offer in the same conversation (or "later").
+- Targets, corpses and squads are spawned for each stage, away from anomalies and from locations used
+  by the previous stages. Map markers follow the corpse that carries the quest item until it is picked up.
+- Radio messages from the characters, including all three parties interested in the Kamerton.
+- Custom inventory icons for the quest items, built from G.A.M.M.A.'s own icon style.
+- Rewards: a pristine double-barrel, a leather jacket, a gas mask and a starter kit early on; money,
+  medkits and ammo for your weapon in the Swamps; an ending reward that depends on your choice
+  (CS-2a armor, an AK-74M with money, or a Soul artifact).
+
+## Requirements
+
+- G.A.M.M.A. (or Anomaly 1.5.2 with the modded exes and DXML / DLTX support).
+- English language.
+
+## Installation (Mod Organizer 2)
+
+1. Copy the `The Hum - Main Storyline` folder into your MO2 `mods` folder
+   (for G.A.M.M.A.: `<GAMMA>\mods\`).
+2. Refresh MO2 (F5) and enable the mod. Load order doesn't matter much: it adds its own files and uses DXML/DLTX
+   instead of overwriting shared configs.
+3. Start a new game as a loner in Cordon. The prologue starts about 20 seconds after you load in.
+
+## Notes
+
+- The story starts only on a fresh game as a loner starting in Cordon. It disables Fanatic's "Training Day".
+- Internal ids use the `szm_` prefix (from the working title "Szum"). Don't rename them: saves depend on them.
+- Uninstalling mid-story leaves the quest items and task entries orphaned in your save.
+
+## Files
+
+```
+The Hum - Main Storyline/gamedata/
+  scripts/szm_main.script                    story engine (stages, spawns, markers, rewards)
+  scripts/modxml_szm.script                  DXML: dialogs on Sid, Wolf, Spore, Cold; gold map spot
+  configs/mod_system_szm.ltx                 DLTX: registers the dialog file
+  configs/gameplay/dialogs_szm.xml           dialogs
+  configs/misc/task/tm_szm.ltx               tasks
+  configs/misc/squad_descr/squad_descr_szm.ltx  spawned squads
+  configs/items/items/items_szm.ltx          quest items
+  configs/text/eng/st_szm.xml                all texts
+  textures/ui/ui_szm_icons.dds               quest item icons
+```

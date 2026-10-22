@@ -1,0 +1,1162 @@
+-- Szum (The Hum) - main storyline for a loner starting in the Cordon village.
+-- Replaces Fanatic's "Training Day". Prefix: szm_
+--
+-- Prologue  1      : a garbled PDA message, Sid's lost courier
+-- Act I     2-6    : Cordon, Sid's lessons (bandit, boars, Jellyfish + first Hum, campfire with Wolf), go to Spore
+-- Act II    7-12   : Great Swamp, Spore's jobs, Cold, the helicopter wreck
+-- Act III   13-15  : Sid decrypts the flight recorder, Garbage, the dead convoy in Agroprom
+-- Act IV    16     : who gets the Kamerton: Cold, Sid or Wolf (destroy it); epilogue a day later
+--
+-- Every stage: offer dialog -> task stage 0 (objective) -> task stage 1 (report) -> turn-in dialog -> rewards
+-- The next stage is offered only after the previous one has been turned in.
+
+---------------------------< Spawn areas >---------------------------
+-- Smart terrains with no fixed residents (see configs\misc\simulation.ltx)
+CORDON_SMARTS = {   -- the village (2_12), the army checkpoint (3_16) and the 5_7 camp are left out
+	"esc_smart_terrain_1_11", "esc_smart_terrain_2_14", "esc_smart_terrain_3_7",
+	"esc_smart_terrain_4_9",  "esc_smart_terrain_4_11", "esc_smart_terrain_4_13",
+	"esc_smart_terrain_5_2",  "esc_smart_terrain_5_4",  "esc_smart_terrain_5_6",
+	"esc_smart_terrain_5_9",  "esc_smart_terrain_5_12", "esc_smart_terrain_6_6",
+	"esc_smart_terrain_6_8",  "esc_smart_terrain_7_11", "esc_smart_terrain_8_9",
+	"esc_smart_terrain_8_10", "esc_smart_terrain_9_7",  "esc_smart_terrain_9_10",
+}
+MARSH_SMARTS = {
+	"mar_smart_terrain_10_10", "mar_smart_terrain_10_7", "mar_smart_terrain_3_10",
+	"mar_smart_terrain_3_7",   "mar_smart_terrain_4_5",  "mar_smart_terrain_4_7",
+	"mar_smart_terrain_6_10",  "mar_smart_terrain_6_4",  "mar_smart_terrain_6_7",
+	"mar_smart_terrain_6_8",   "mar_smart_terrain_7_3",  "mar_smart_terrain_7_7",
+	"mar_smart_terrain_8_4",   "mar_smart_terrain_8_8",  "mar_smart_terrain_8_9",
+}
+GARBAGE_SMARTS = {
+	"gar_smart_terrain_1_5", "gar_smart_terrain_1_7", "gar_smart_terrain_2_4",
+	"gar_smart_terrain_4_2", "gar_smart_terrain_4_5", "gar_smart_terrain_5_4",
+	"gar_smart_terrain_5_5", "gar_smart_terrain_5_6", "gar_smart_terrain_6_1",
+	"gar_smart_terrain_6_6", "gar_smart_terrain_6_7", "gar_smart_terrain_7_4",
+	"gar_smart_terrain_8_5",
+}
+AGROPROM_SMARTS = {
+	"agr_smart_terrain_2_2", "agr_smart_terrain_4_4_near_3", "agr_smart_terrain_4_6",
+	"agr_smart_terrain_5_2", "agr_smart_terrain_5_3", "agr_smart_terrain_5_7",
+	"agr_smart_terrain_6_4", "agr_smart_terrain_7_5",
+}
+ANYWHERE = 1000000   -- max distance meaning "any smart of the list" (giver on another level)
+
+---------------------------< NPCs >---------------------------
+-- story_ids. Sid's story_id is "esc_m_trader" (a script_trader object, like axr_task_manager uses);
+-- "esc_2_12_stalker_trader" is only his character profile, used by DXML in modxml_szm.script
+SID   = "esc_m_trader"
+WOLF  = "esc_2_12_stalker_wolf"
+SPORE = "mar_base_owl_stalker_trader"
+COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
+
+---------------------------< Stages >---------------------------
+-- squad        = squad section spawned for the task (must be killed); carry = item put on its commander
+-- corpse       = NPC section spawned dead, carrying the fetch item
+-- strike       = multi-phase: dead team at a meeting point -> picking up the fetch item spawns a squad
+-- fetch        = { section, amount } to bring back
+-- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
+-- turn_in_to   = story_id the actor reports to, if not the task giver
+-- area         = { smarts, min_dist, max_dist }: ring around the task giver
+-- start_items / rewards = { {section, amount}, ... }
+--   { section, amount, pristine = true } : weapon with every part at PRISTINE_PART_CON
+--   { "@ammo", boxes }                   : boxes of ammo for the weapons in the actor's slots
+-- auto_next    = the task completes on its own when the objective is done and gives this stage
+-- Money and goodwill come from on_complete in tm_szm.ltx.
+STAGES = {
+	-- ===== Prologue =====
+	[1] = {  -- garbled message, talk to Sid (given automatically)
+		task    = "szm_task_1",
+		talk_to = SID,
+	},
+	-- ===== Act I: Cordon =====
+	[2] = {  -- the bandit who robbed the courier; he carries the cylinder
+		task    = "szm_task_2",
+		squad   = "szm_bandit_squad",
+		carry   = "szm_cylinder",
+		area    = { CORDON_SMARTS, 0, 300 },
+		fetch   = { "szm_cylinder", 1 },
+		keep_fetch = true,      -- Sid gives the cylinder back for stage 6
+		rewards = { {"wpn_toz34", 1, pristine = true}, {"ammo_12x70_buck", 2} },
+	},
+	[3] = {  -- boars, bring two legs
+		task    = "szm_task_3",
+		squad   = "szm_boar_squad",
+		area    = { CORDON_SMARTS, 0, 300 },
+		fetch   = { "mutant_part_boar_leg", 2 },
+		rewards = { {"novice_outfit", 1} },          -- Leather Jacket, the weakest armor
+	},
+	[4] = {  -- Jellyfish; picking it up triggers the first Hum
+		task    = "szm_task_4",
+		fetch   = { "af_medusa", 1 },
+		medusa  = true,
+		hum_on_fetch = true,
+		rewards = { {"helm_respirator", 1} },         -- Refitted PBF, the cheapest real gas mask
+	},
+	[5] = {  -- cook boar meat, bring it to Wolf at the campfire
+		task    = "szm_task_5",
+		turn_in_to = WOLF,
+		start_items = { {"army_bowler", 1}, {"charcoal", 2}, {"mutant_part_boar_chop", 1} },
+		fetch   = { "meat_boar", 1 },
+		rewards = { {"itm_backpack", 1}, {"itm_basickit", 1}, {"medkit", 3}, {"bandage", 5} },
+	},
+	[6] = {  -- take the cylinder to Spore
+		task    = "szm_task_6",
+		talk_to = SPORE,
+		fetch   = { "szm_cylinder", 1 },
+	},
+	-- ===== Act II: Great Swamp =====
+	[7] = {  -- renegades near the base
+		task    = "szm_task_7",
+		squad   = "szm_renegade_squad",
+		area    = { MARSH_SMARTS, 120, 350 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+	},
+	[8] = {  -- the missing scout Wiktor and his PDA
+		task    = "szm_task_8",
+		corpse  = "sim_default_csky_0",
+		area    = { MARSH_SMARTS, 200, 500 },
+		fetch   = { "szm_scout_pda", 1 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+	},
+	[9] = {  -- the bloodsucker the Hum drove to the base
+		task    = "szm_task_9",
+		squad   = "szm_bloodsucker_squad",
+		area    = { MARSH_SMARTS, 150, 400 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+	},
+	[10] = { -- Kostia's strike team, killed by soldiers
+		task    = "szm_task_10",
+		fetch   = { "szm_strike_pda", 1 },
+		strike  = {
+			corpses     = { "sim_default_csky_2", "sim_default_csky_1", "sim_default_csky_1" },
+			corpse_area = { MARSH_SMARTS, 250, 550 },
+			squad       = "szm_army_squad",
+			squad_area  = { MARSH_SMARTS, 150, 400 },
+		},
+		rewards = { {"medkit", 3}, {"@ammo", 3} },
+	},
+	[11] = { -- Spore sends the actor to Cold
+		task    = "szm_task_11",
+		talk_to = COLD,
+	},
+	[12] = { -- the helicopter crash site: pilot's body and the flight recorder, then looters
+		task    = "szm_task_12",
+		fetch   = { "szm_flight_recorder", 1 },
+		keep_fetch = true,      -- Cold gives it back to take to Sid
+		strike  = {
+			corpses     = { "sim_default_military_1" },
+			corpse_area = { MARSH_SMARTS, 300, 700 },
+			prop        = "szm_heli_wreck",          -- spawned next to the pilot, removed when the stage is turned in
+			squad       = "szm_renegade_squad",
+			squad_area  = { MARSH_SMARTS, 60, 250 },
+		},
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+	},
+	-- ===== Act III: Cordon, Garbage, Agroprom =====
+	[13] = { -- take the flight recorder to Sid
+		task    = "szm_task_13",
+		talk_to = SID,
+		fetch   = { "szm_flight_recorder", 1 },
+	},
+	[14] = { -- Sid's package, stolen by bandits in the Garbage
+		task    = "szm_task_14",
+		squad   = "szm_garbage_bandit_squad",
+		carry   = "szm_sid_package",
+		area    = { GARBAGE_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_sid_package", 1 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+	},
+	[15] = { -- the dead convoy in Agroprom, the officer's PDA, the mercenaries with the Kamerton
+		task    = "szm_task_15",
+		fetch   = { "szm_kamerton", 1 },
+		strike  = {
+			corpses     = { "sim_default_military_2", "sim_default_military_1", "sim_default_military_0", "sim_default_military_1" },
+			corpse_area = { AGROPROM_SMARTS, 0, ANYWHERE },
+			reveal      = "szm_officer_pda",   -- picked up -> the mercenaries spawn
+			squad       = "szm_merc_squad",
+			squad_carry = "szm_kamerton",
+			squad_area  = { AGROPROM_SMARTS, 100, 450 },
+		},
+		auto_next = 16,
+	},
+	-- ===== Act IV: the choice =====
+	[16] = { -- give the Kamerton to Cold, Sid or Wolf (first one wins); rewards per choice below
+		task    = "szm_task_16",
+		fetch   = { "szm_kamerton", 1 },
+		choice  = true,
+	},
+}
+
+-- Who offers each stage: after a stage is turned in, this NPC gets a map spot until the next offer is accepted
+OFFER_AT = {
+	[2] = SID,   [3] = SID,   [4] = SID,   [5] = SID,   [6] = SID,
+	[7] = SPORE, [8] = SPORE, [9] = SPORE, [10] = SPORE, [11] = SPORE,
+	[12] = COLD, [13] = COLD,
+	[14] = SID,  [15] = SID,
+}
+-- Gold like the story task markers (own type, defined in modxml_szm.script, so removing it
+-- never takes away the task's own marker on the same NPC)
+OFFER_SPOT = "szm_story_location"
+OLD_OFFER_SPOT = "secondary_task_location"   -- used before; removed from our NPCs in older saves
+
+-- Spawn smarts used by the last few stages are skipped, so consecutive tasks don't share a location
+RECENT_SMARTS = 6
+
+-- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
+CHOICES = {
+	cold = { info = "szm_end_cold", rewards = { {"cs_light_outfit", 1}, {"medkit", 3} },   -- CS-2a: good but light
+	         goodwill = { {"csky", 200} } },
+	sid  = { info = "szm_end_sid",  rewards = { {"wpn_ak74m", 1, pristine = true}, {"ammo_5.45x39_fmj", 3} },   -- mid-tier rifle
+	         money = 15000, goodwill = { {"csky", -300} } },
+	wolf = { info = "szm_end_wolf", rewards = { {"af_soul", 1}, {"medkit", 2} },
+	         goodwill = { {"stalker", 150}, {"csky", 50} } },
+}
+EPILOGUE_DELAY_H = 24   -- in-game hours after the choice
+
+-- Each boar of the stage 3 squad is guaranteed at least this many legs when butchered
+BOAR_LEGS_PER_BOAR = 2
+BOAR_STAGE = 3
+
+-- Pristine weapons: condition of every part (%). "G.A.M.M.A. Guns Have No Condition" keeps all guns
+-- at 0.83; matching it stops item_parts.evaluate_parts from re-rolling the parts on pick-up.
+PRISTINE_PART_CON = 100
+local function pristine_wpn_cond()
+	return grok_gun_condition_fixed and grok_gun_condition_fixed.cond or 1
+end
+
+FALLBACK_AMMO = "ammo_12x70_buck"    -- "@ammo" without a firearm in the slots
+
+-- Corpses are placed at least this far (m) from any anomaly (static or dynamic, e.g. DRX "Arrival")
+ANOMALY_SAFE_DIST     = 15
+ANOMALY_SAFE_DIST_RAD = 30
+
+-- Jellyfish spot: the anomaly field Fanatic's tutorial uses (dialogs_mlr.spawn_1_11_af_medusa_kmb)
+MEDUSA_SPAWN = { pos = {-249.45230102539, -13.491371154785, -29.858497619629}, lvid = 12990, gvid = 386 }
+
+DETECTORS = { "detector_simple", "detector_advanced", "detector_elite", "detector_scientific", "detector_grizzly" }
+
+-- Prologue starts this many seconds after the first update on a fresh loner game in Cordon
+PROLOGUE_DELAY = 20
+
+---------------------------< Save vars / infos >---------------------------
+local function var_squad(n)  return "szm_squad_" .. n end
+local function var_carrier(n) return "szm_carrier_" .. n end   -- squad member carrying the fetch item
+local function var_corpse(n) return "szm_corpse_" .. n end
+local function var_strike(n) return "szm_strike_" .. n end   -- { phase = "pending"|"goto"|"fight", meet, reveal_corpse }
+local VAR_BOARS    = "szm_boar_ids"
+local VAR_MEDUSA   = "szm_medusa_id"
+local VAR_END_TIME = "szm_end_time"     -- game time of the choice, for the epilogue
+local VAR_USED     = "szm_used_smarts"  -- names of recently used spawn smarts
+local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offer" map spot
+
+local function done_info(n)  return "szm_stage_" .. n .. "_done" end
+local INFO_STARTED  = "szm_started"
+local INFO_HUM      = "szm_hum_heard"
+local INFO_CHOICE_MSGS = "szm_choice_msgs_sent"
+local INFO_EPILOGUE = "szm_epilogue_done"
+
+---------------------------< Helpers >---------------------------
+local function get_task(n)
+	local task_id = STAGES[n].task
+	if db.actor:get_task(task_id, true) == nil then return end
+	return task_manager.get_task_manager().task_info[task_id]
+end
+
+local function count_items(section)
+	local cnt = 0
+	local multiuse = IsItem("multiuse", section)
+	db.actor:iterate_inventory(function(owner, obj)
+		if obj:section() == section then
+			cnt = cnt + (multiuse and obj:get_remaining_uses() or 1)
+		end
+	end, db.actor)
+	return cnt
+end
+
+local function has_fetch(n)
+	local fetch = STAGES[n].fetch
+	return count_items(fetch[1]) >= fetch[2]
+end
+
+local function tr(id) return game.translate_string(id) end
+
+local function level_of(gvid)
+	return game_graph():vertex(gvid):level_id()
+end
+
+local function actor_level()
+	return level_of(db.actor:game_vertex_id())
+end
+
+-- Spawn a weapon in the actor's inventory with all parts in perfect condition
+local function give_pristine_weapon(section)
+	local cond = pristine_wpn_cond()
+	local se_obj = alife_create_item(section, db.actor, { cond = cond })
+	if not se_obj then
+		printf("[SZM] failed to create pristine %s", section)
+		return
+	end
+	local base = ini_sys:r_string_ex(section, "parent_section") or section
+	local parts = itms_manager.ini_parts:r_string_ex("con_parts_list", base)
+	if parts then
+		-- same layout item_parts.evaluate_parts saves: [weapon] = condition, [part] = part condition
+		local data = { [base] = math.ceil(cond * 100) }
+		for _, part in ipairs(str_explode(parts, ",")) do
+			data[part] = PRISTINE_PART_CON
+		end
+		item_parts.set_parts_con(se_obj.id, data)
+	end
+	news_manager.relocate_item(db.actor, "in", section, 1)
+end
+
+-- Full boxes of the first ammo type of each firearm in the weapon slots (like dialogs.give_suitable_ammo)
+local function give_weapon_ammo(boxes)
+	local ammo_secs, seen = {}, {}
+	for _, slot in ipairs({2, 3}) do
+		local wpn = db.actor:item_in_slot(slot)
+		if wpn and IsWeapon(wpn) and not IsMelee(wpn) then
+			local ammo = parse_list(ini_sys, wpn:section(), "ammo_class")
+			local sec = ammo and ammo[1]
+			if sec and not seen[sec] then
+				seen[sec] = true
+				ammo_secs[#ammo_secs + 1] = sec
+			end
+		end
+	end
+	if #ammo_secs == 0 then
+		ammo_secs[1] = FALLBACK_AMMO
+	end
+	for _, sec in ipairs(ammo_secs) do
+		local box_size = ini_sys:r_u32(sec, "box_size")
+		for i = 1, boxes do
+			alife_create_item(sec, db.actor, { ammo = box_size })
+		end
+		news_manager.relocate_item(db.actor, "in", sec, box_size * boxes)
+	end
+end
+
+local function give_items(list)
+	for _, it in ipairs(list or {}) do
+		if it[1] == "@ammo" then
+			give_weapon_ammo(it[2])
+		elseif it.pristine then
+			for i = 1, it[2] do
+				give_pristine_weapon(it[1])
+			end
+		else
+			itms_manager.relocate_item_to_actor(db.actor, nil, it[1], it[2])
+		end
+	end
+end
+
+local function has_detector()
+	for _, sec in ipairs(DETECTORS) do
+		if db.actor:object(sec) then return true end
+	end
+	return false
+end
+
+local function get_squad(n)
+	local id = load_var(db.actor, var_squad(n))
+	return id and alife_object(id)
+end
+
+-- Sid is a script_trader object without alive(); like axr_task_manager.is_task_giver_valid, treat it as alive
+local function story_npc_alive(story_id)
+	local se_npc = get_story_se_object(story_id)
+	if not se_npc then return false end
+	if se_npc:clsid() == clsid.script_trader then return true end
+	return se_npc.alive == nil or se_npc:alive()
+end
+
+---------------------------< The Hum >---------------------------
+local snd_hum = sound_object("radio\\white_noise\\white_noise_heavy")
+
+-- Story messages go to the PDA/radio only (no mid-screen lines)
+function story_msg(msg_id)
+	news_manager.send_tip(db.actor, tr(msg_id), nil, nil, 20000)
+end
+
+-- msg_id: string id of the PDA message sent with it (optional)
+-- Strength of the screen effect (psi.ppe at full strength is a strong blue tint)
+HUM_PP_FACTOR = 0.2
+
+function play_hum(msg_id)
+	snd_hum:play(db.actor, 0, sound_object.s2d)
+	level.add_pp_effector("psi.ppe", 8614, false)
+	level.set_pp_effector_factor(8614, HUM_PP_FACTOR)
+	level.add_cam_effector("camera_effects\\earthquake_20.anm", 8615, false, "", 0, false)
+	if msg_id then
+		story_msg(msg_id)
+	end
+	printf("[SZM] the Hum (%s)", tostring(msg_id))
+end
+
+---------------------------< Next-offer map spot >---------------------------
+local function remove_spot(id, spot)
+	if id and level.map_has_object_spot(id, spot) ~= 0 then
+		level.map_remove_object_spot(id, spot)
+	end
+end
+
+local function clear_offer_spot()
+	local id = load_var(db.actor, VAR_SPOT)
+	remove_spot(id, OFFER_SPOT)
+	remove_spot(id, OLD_OFFER_SPOT)
+	save_var(db.actor, VAR_SPOT, nil)
+end
+
+-- Act IV: the task has three possible recipients, so instead of one task target
+-- each of them gets a map spot with its own hint
+local CHOICE_SPOTS = {
+	{ story_id = COLD, hint = "szm_choice_hint_cold" },
+	{ story_id = SID,  hint = "szm_choice_hint_sid" },
+	{ story_id = WOLF, hint = "szm_choice_hint_wolf" },
+}
+
+local function mark_choice_spots()
+	for _, c in ipairs(CHOICE_SPOTS) do
+		local id = get_story_object_id(c.story_id)
+		remove_spot(id, OLD_OFFER_SPOT)
+		if id and level.map_has_object_spot(id, OFFER_SPOT) == 0 then
+			level.map_add_object_spot_ser(id, OFFER_SPOT, tr(c.hint))
+		end
+	end
+end
+
+-- Act IV: each interested party calls the player on the radio, so it is clear
+-- the Kamerton can go to any of them. Staggered by the news timeout (seconds).
+local CHOICE_MSGS = {
+	{ name = "szm_name_cold", icon = "ui_inGame2_cold", text = "szm_choice_msg_cold", delay = 3 },
+	{ name = "szm_name_sid",  icon = "ui_inGame2_sid",  text = "szm_choice_msg_sid",  delay = 14 },
+	{ name = "szm_name_wolf", icon = "ui_inGame2_wolf", text = "szm_choice_msg_wolf", delay = 25 },
+}
+
+local function send_choice_messages()
+	for _, m in ipairs(CHOICE_MSGS) do
+		db.actor:give_game_news(tr(m.name), tr(m.text), m.icon, m.delay * 1000, 15000, 0)
+	end
+	CreateTimeEvent("szm_choice_msgs", "snd", 0, function()
+		xr_sound.set_sound_play(AC_ID, "pda_tips")
+		return true
+	end)
+	printf("[SZM] Act IV radio messages sent")
+end
+
+local function clear_choice_spots()
+	for _, c in ipairs(CHOICE_SPOTS) do
+		local id = get_story_object_id(c.story_id)
+		remove_spot(id, OFFER_SPOT)
+		remove_spot(id, OLD_OFFER_SPOT)
+	end
+end
+
+-- After stage n is turned in: mark whoever offers stage n + 1
+local function mark_next_offer(n)
+	clear_offer_spot()
+	local story_id = OFFER_AT[n + 1]
+	local id = story_id and get_story_object_id(story_id)
+	if not id then return end
+	level.map_add_object_spot_ser(id, OFFER_SPOT, tr("szm_offer_hint"))
+	save_var(db.actor, VAR_SPOT, id)
+end
+
+---------------------------< Spawn points >---------------------------
+local function is_recent(name)
+	for _, used in ipairs(load_var(db.actor, VAR_USED) or {}) do
+		if used == name then return true end
+	end
+	return false
+end
+
+local function remember_smart(name)
+	local list = load_var(db.actor, VAR_USED) or {}
+	table.insert(list, 1, name)
+	while #list > RECENT_SMARTS do table.remove(list) end
+	save_var(db.actor, VAR_USED, list)
+end
+
+-- A smart in the [min_dist, max_dist] ring around origin; if none, the nearest one not closer than min_dist.
+-- Recently used smarts are skipped unless nothing else qualifies.
+local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
+	local smarts, min_dist, max_dist = unpack(area or STAGES[n].area)
+	local ring, fallback, fallback_dist = {}, nil, math.huge
+	for _, name in ipairs(smarts) do
+		local smart = name ~= exclude and (allow_recent or not is_recent(name)) and SIMBOARD.smarts_by_names[name]
+		if smart then
+			local dist = smart.position:distance_to(origin)
+			if dist >= min_dist and dist <= max_dist then
+				ring[#ring + 1] = smart
+			end
+			if dist >= min_dist and dist < fallback_dist then
+				fallback, fallback_dist = smart, dist
+			end
+		end
+	end
+	local smart = #ring > 0 and ring[math.random(#ring)] or fallback
+	if not smart and not allow_recent then
+		return pick_spawn_smart(n, origin, area, exclude, true)
+	end
+	if not smart then
+		printf("[SZM] stage %s: no spawn smart found", n)
+	end
+	return smart
+end
+
+local INVALID_LVID = 4294967295
+
+-- Positions of every anomaly on the given level, with a safe distance for each
+local function collect_anomalies(level_id)
+	local list = {}
+	local sim, gg = alife(), game_graph()
+	for id = 1, 65534 do
+		local se_obj = sim:object(id)
+		if se_obj then
+			local cls = se_obj:clsid()
+			if IsAnomaly(nil, cls) and cls ~= clsid.zone_campfire and gg:vertex(se_obj.m_game_vertex_id):level_id() == level_id then
+				local rad = (cls == clsid.zone_radioactive or cls == clsid.zone_radio_s)
+				list[#list + 1] = { pos = se_obj.position, dist = rad and ANOMALY_SAFE_DIST_RAD or ANOMALY_SAFE_DIST }
+			end
+		end
+	end
+	return list
+end
+
+local function is_point_safe(pos, anomalies, used, min_spacing)
+	for _, a in ipairs(anomalies) do
+		if pos:distance_to(a.pos) < a.dist then return false end
+	end
+	for _, u in ipairs(used or {}) do
+		if pos:distance_to(u) < min_spacing then return false end
+	end
+	return true
+end
+
+-- First navigable, anomaly-free point on rings around center (actor's level only)
+local function find_safe_point(center, radii, anomalies, used, min_spacing)
+	for _, r in ipairs(radii) do
+		local steps = r == 0 and 1 or 8
+		for i = 0, steps - 1 do
+			local a = i * (2 * math.pi / steps)
+			local p = vector():set(center.x + r * math.cos(a), center.y, center.z + r * math.sin(a))
+			local lvid = level.vertex_id(p)
+			if lvid and lvid < INVALID_LVID then
+				local vp = level.vertex_position(lvid)
+				if vp:distance_to(p) < 3 and is_point_safe(vp, anomalies, used, min_spacing) then
+					return vp, lvid
+				end
+			end
+		end
+	end
+end
+
+-- { pos, lvid, gvid, name }: an anomaly-free point near a smart of the ring. Smarts on other levels
+-- fall back to the smart centre (their AI grid can't be queried).
+local SMART_RADII = { 0, 4, 8, 12, 16, 20, 25, 30 }
+-- forced = smart name chosen earlier (e.g. the convoy's meeting point); other smarts are a fallback only
+local function pick_safe_spawn(n, origin, area, exclude, forced)
+	local first = forced and SIMBOARD.smarts_by_names[forced] or pick_spawn_smart(n, origin, area, exclude)
+	if not first then return end
+	local lvl = actor_level()
+	local center = { pos = first.position, lvid = first.m_level_vertex_id, gvid = first.m_game_vertex_id, name = first:name() }
+	if level_of(first.m_game_vertex_id) ~= lvl then
+		return center
+	end
+
+	local anomalies = collect_anomalies(lvl)
+	local candidates = { first }
+	local smarts, min_dist, max_dist = unpack(area or STAGES[n].area)
+	for _, name in ipairs(smarts) do
+		local smart = name ~= exclude and name ~= first:name() and not is_recent(name) and SIMBOARD.smarts_by_names[name]
+		if smart and level_of(smart.m_game_vertex_id) == lvl then
+			local dist = smart.position:distance_to(origin)
+			if dist >= min_dist and dist <= max_dist then
+				candidates[#candidates + 1] = smart
+			end
+		end
+	end
+	for _, smart in ipairs(candidates) do
+		local pos, lvid = find_safe_point(smart.position, SMART_RADII, anomalies)
+		if pos then
+			printf("[SZM] stage %s: anomaly-free point near %s (%s anomalies)", n, smart:name(), #anomalies)
+			return { pos = pos, lvid = lvid, gvid = smart.m_game_vertex_id, name = smart:name() }
+		end
+	end
+	printf("[SZM] stage %s: no anomaly-free point, using %s centre", n, first:name())
+	return center
+end
+
+---------------------------< Spawning >---------------------------
+-- section/area default to STAGES[n].squad / .area; carry = item put on the commander
+local function spawn_squad(n, origin, section, area, exclude, carry)
+	section = section or STAGES[n].squad
+	local smart = pick_spawn_smart(n, origin, area, exclude)
+	if not smart then return end
+
+	local squad = SIMBOARD:create_squad(smart, section)
+	if not squad then
+		printf("[SZM] stage %s: failed to create squad %s", n, section)
+		return
+	end
+	-- keep it at its smart, out of offline combat, and online at any hour (night predators otherwise
+	-- stay offline 6:00-18:00); force_online is not saved, the status functor sets it again
+	squad.scripted_target = smart:name()
+	squad.force_online = true
+	sim_offline_combat.task_squads[squad.id] = true
+	save_var(db.actor, var_squad(n), squad.id)
+	remember_smart(smart:name())
+
+	if carry then
+		local commander = alife_object(squad:commander_id())
+		if commander then
+			alife_create_item(carry, commander)
+			save_var(db.actor, var_carrier(n), commander.id)
+		end
+	end
+	printf("[SZM] stage %s: spawned %s (id %s) at %s%s", n, section, squad.id, smart:name(), carry and (" carrying " .. carry) or "")
+	return squad
+end
+
+local function remove_squad(n)
+	local squad = get_squad(n)
+	if squad then
+		squad:remove_squad()
+	end
+	save_var(db.actor, var_squad(n), nil)
+end
+
+-- Same approach as xr_effects.spawn_corpse: create the NPC, then kill it on the server side.
+-- Quest items keep the body from release_body_manager and from NPC looters.
+local function spawn_corpse(n, origin)
+	local spot = pick_safe_spawn(n, origin)
+	if not spot then return end
+	local se_npc = alife_create(STAGES[n].corpse, spot.pos, spot.lvid, spot.gvid)
+	if not se_npc then return end
+	alife_create_item(STAGES[n].fetch[1], se_npc)
+	se_npc:kill()
+	save_var(db.actor, var_corpse(n), se_npc.id)
+	remember_smart(spot.name)
+	printf("[SZM] stage %s: corpse %s (id %s) near %s", n, STAGES[n].corpse, se_npc.id, spot.name)
+	return se_npc
+end
+
+local function spawn_medusa()
+	local p = MEDUSA_SPAWN
+	local se_obj = alife_create("af_medusa", vector():set(p.pos[1], p.pos[2], p.pos[3]), p.lvid, p.gvid)
+	if se_obj then
+		save_var(db.actor, VAR_MEDUSA, se_obj.id)
+	end
+end
+
+---------------------------< Multi-phase "strike" stages >---------------------------
+-- phase "pending": the meeting point is on another level; bodies spawn when the actor gets there
+-- phase "goto"   : bodies at the meeting point; marker on the body with the reveal item
+-- phase "fight"  : the reveal item was picked up; the squad spawned near the meeting point
+-- then           : objective done when the squad is dead and the fetch item is carried
+
+local function get_strike(n) return load_var(db.actor, var_strike(n)) end
+
+local function strike_reveal(n)
+	return STAGES[n].strike.reveal or STAGES[n].fetch[1]
+end
+
+local function strike_area_level(n)
+	local smarts = STAGES[n].strike.corpse_area[1]
+	local smart = SIMBOARD.smarts_by_names[smarts[1]]
+	return smart and level_of(smart.m_game_vertex_id)
+end
+
+local function spawn_strike_bodies(n, origin, forced)
+	local cfg = STAGES[n].strike
+	local spot = pick_safe_spawn(n, origin, cfg.corpse_area, nil, forced)
+	if not spot then return end
+
+	local anomalies = level_of(spot.gvid) == actor_level() and collect_anomalies(level_of(spot.gvid)) or nil
+	local used = { spot.pos }
+	local reveal_corpse
+	for i, section in ipairs(cfg.corpses) do
+		local pos, lvid = spot.pos, spot.lvid
+		if i > 1 and anomalies then
+			local p, l = find_safe_point(spot.pos, { 2, 3, 4, 5, 6 }, anomalies, used, 1.8)
+			if p then
+				pos, lvid = p, l
+				used[#used + 1] = p
+			end
+		end
+		local se_npc = alife_create(section, pos, lvid, spot.gvid)
+		if se_npc then
+			if i == 1 then
+				alife_create_item(strike_reveal(n), se_npc)
+				reveal_corpse = se_npc.id
+			end
+			se_npc:kill()
+		end
+	end
+	if not reveal_corpse then return end
+
+	-- an optional prop (the helicopter wreck) a bit away from the bodies, so they don't end up inside it
+	local prop_id
+	if cfg.prop then
+		local pos, lvid = spot.pos, spot.lvid
+		if anomalies then
+			local p, l = find_safe_point(spot.pos, { 14, 16, 18, 12, 20 }, anomalies, used, 10)
+			if p then pos, lvid = p, l end
+		end
+		local se_prop = alife_create(cfg.prop, pos, lvid, spot.gvid)
+		prop_id = se_prop and se_prop.id
+		printf("[SZM] stage %s: prop %s (id %s)", n, cfg.prop, tostring(prop_id))
+	end
+
+	save_var(db.actor, var_strike(n), { phase = "goto", meet = spot.name, reveal_corpse = reveal_corpse, prop = prop_id })
+	remember_smart(spot.name)
+	printf("[SZM] stage %s: bodies near %s, %s on %s", n, spot.name, strike_reveal(n), reveal_corpse)
+	return true
+end
+
+local function start_strike(n, origin)
+	if strike_area_level(n) ~= actor_level() then
+		-- pick the meeting point now (it carries the task marker), spawn the bodies there on arrival
+		local smart = pick_spawn_smart(n, origin, STAGES[n].strike.corpse_area)
+		if not smart then return end
+		save_var(db.actor, var_strike(n), { phase = "pending", meet = smart:name() })
+		remember_smart(smart:name())
+		printf("[SZM] stage %s: meeting point %s, bodies spawn when the actor reaches the level", n, smart:name())
+		return true
+	end
+	return spawn_strike_bodies(n, origin)
+end
+
+-- Called from the status functor
+local function update_strike(n)
+	local state = get_strike(n)
+	if not state then return end
+
+	if state.phase == "pending" and strike_area_level(n) == actor_level() then
+		local meet = state.meet and SIMBOARD.smarts_by_names[state.meet]
+		spawn_strike_bodies(n, meet and meet.position or db.actor:position(), state.meet)
+		return
+	end
+
+	if state.phase == "goto" and count_items(strike_reveal(n)) > 0 then
+		local cfg = STAGES[n].strike
+		local meet = SIMBOARD.smarts_by_names[state.meet]
+		local origin = meet and meet.position or db.actor:position()
+		if spawn_squad(n, origin, cfg.squad, cfg.squad_area, state.meet, cfg.squad_carry) then
+			state.phase = "fight"
+			save_var(db.actor, var_strike(n), state)
+			story_msg("szm_task_" .. n .. "_reveal_news")
+		end
+	end
+end
+
+---------------------------< Stage start / finish >---------------------------
+local function give_stage_task(n, giver_id)
+	task_manager.get_task_manager():give_task(STAGES[n].task, giver_id)
+end
+
+local function start_stage(n, first_speaker, second_speaker)
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	local st = STAGES[n]
+
+	if st.squad then
+		local squad = spawn_squad(n, npc:position(), nil, nil, nil, st.carry)
+		if not squad then return end
+		if n == BOAR_STAGE then
+			local ids = {}
+			for k in squad:squad_members() do
+				ids[#ids + 1] = k.id
+			end
+			save_var(db.actor, VAR_BOARS, ids)
+		end
+	end
+	if st.corpse and not spawn_corpse(n, npc:position()) then return end
+	if st.strike and not start_strike(n, npc:position()) then return end
+	if st.medusa then
+		spawn_medusa()
+		if not has_detector() then
+			give_items({ {"detector_simple", 1} })
+		end
+	end
+
+	give_items(st.start_items)
+	give_stage_task(n, npc:id())
+	clear_offer_spot()
+end
+
+-- The task manager completes a task on its next update, not at once: remember the turn-in
+-- so the report dialog doesn't come back in the meantime (the next offer follows in the same dialog)
+local turned_in = {}
+
+local function turn_in_stage(n, first_speaker, second_speaker)
+	local st = STAGES[n]
+	turned_in[n] = true
+	if st.fetch and not st.keep_fetch then
+		local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+		itms_manager.relocate_item_from_actor(db.actor, npc, st.fetch[1], st.fetch[2])
+	end
+	give_items(st.rewards)
+	task_manager.get_task_manager():set_task_completed(st.task)
+	mark_next_offer(n)
+end
+
+local function can_offer(n)
+	if has_alife_info(done_info(n)) then return false end
+	if n > 1 and not has_alife_info(done_info(n - 1)) then return false end
+	for i = 1, #STAGES do
+		if get_task(i) then return false end   -- one story task at a time
+	end
+	return true
+end
+
+-- Objective done: squad dead, items carried; talk_to stages are completed only by their dialog
+local function objective_done(n)
+	local st = STAGES[n]
+	if st.talk_to then return false end
+	if st.strike then
+		local state = get_strike(n)
+		return state ~= nil and state.phase == "fight" and get_squad(n) == nil and has_fetch(n)
+	end
+	local killed  = st.squad == nil or get_squad(n) == nil
+	local fetched = st.fetch == nil or has_fetch(n)
+	return killed and fetched
+end
+
+local function can_turn_in(n)
+	local st = STAGES[n]
+	local tsk = get_task(n)
+	if tsk == nil or turned_in[n] then return false end
+	if st.talk_to or st.choice then
+		return st.fetch == nil or has_fetch(n)
+	end
+	return tsk.stage == 1 and objective_done(n)
+end
+
+---------------------------< Dialog functions >---------------------------
+-- dialogs_szm.xml calls these; one set per stage (offers for stages 1, 16 are never used)
+function can_offer_1()   return can_offer(1) end
+function can_offer_2()   return can_offer(2) end
+function can_offer_3()   return can_offer(3) end
+function can_offer_4()   return can_offer(4) end
+function can_offer_5()   return can_offer(5) end
+function can_offer_6()   return can_offer(6) end
+function can_offer_7()   return can_offer(7) end
+function can_offer_8()   return can_offer(8) end
+function can_offer_9()   return can_offer(9) end
+function can_offer_10()   return can_offer(10) end
+function can_offer_11()   return can_offer(11) end
+function can_offer_12()   return can_offer(12) end
+function can_offer_13()   return can_offer(13) end
+function can_offer_14()   return can_offer(14) end
+function can_offer_15()   return can_offer(15) end
+function can_offer_16()   return can_offer(16) end
+function give_1(a, b)    start_stage(1, a, b) end
+function give_2(a, b)    start_stage(2, a, b) end
+function give_3(a, b)    start_stage(3, a, b) end
+function give_4(a, b)    start_stage(4, a, b) end
+function give_5(a, b)    start_stage(5, a, b) end
+function give_6(a, b)    start_stage(6, a, b) end
+function give_7(a, b)    start_stage(7, a, b) end
+function give_8(a, b)    start_stage(8, a, b) end
+function give_9(a, b)    start_stage(9, a, b) end
+function give_10(a, b)    start_stage(10, a, b) end
+function give_11(a, b)    start_stage(11, a, b) end
+function give_12(a, b)    start_stage(12, a, b) end
+function give_13(a, b)    start_stage(13, a, b) end
+function give_14(a, b)    start_stage(14, a, b) end
+function give_15(a, b)    start_stage(15, a, b) end
+function give_16(a, b)    start_stage(16, a, b) end
+function can_turn_in_1() return can_turn_in(1) end
+function can_turn_in_2() return can_turn_in(2) end
+function can_turn_in_3() return can_turn_in(3) end
+function can_turn_in_4() return can_turn_in(4) end
+function can_turn_in_5() return can_turn_in(5) end
+function can_turn_in_6() return can_turn_in(6) end
+function can_turn_in_7() return can_turn_in(7) end
+function can_turn_in_8() return can_turn_in(8) end
+function can_turn_in_9() return can_turn_in(9) end
+function can_turn_in_10() return can_turn_in(10) end
+function can_turn_in_11() return can_turn_in(11) end
+function can_turn_in_12() return can_turn_in(12) end
+function can_turn_in_13() return can_turn_in(13) end
+function can_turn_in_14() return can_turn_in(14) end
+function can_turn_in_15() return can_turn_in(15) end
+function can_turn_in_16() return can_turn_in(16) end
+function turn_in_1(a, b) turn_in_stage(1, a, b) end
+function turn_in_2(a, b) turn_in_stage(2, a, b) end
+function turn_in_3(a, b) turn_in_stage(3, a, b) end
+function turn_in_4(a, b) turn_in_stage(4, a, b) end
+function turn_in_5(a, b) turn_in_stage(5, a, b) end
+function turn_in_6(a, b) turn_in_stage(6, a, b) end
+function turn_in_7(a, b) turn_in_stage(7, a, b) end
+function turn_in_8(a, b) turn_in_stage(8, a, b) end
+function turn_in_9(a, b) turn_in_stage(9, a, b) end
+function turn_in_10(a, b) turn_in_stage(10, a, b) end
+function turn_in_11(a, b) turn_in_stage(11, a, b) end
+function turn_in_12(a, b) turn_in_stage(12, a, b) end
+function turn_in_13(a, b) turn_in_stage(13, a, b) end
+function turn_in_14(a, b) turn_in_stage(14, a, b) end
+function turn_in_15(a, b) turn_in_stage(15, a, b) end
+function turn_in_16(a, b) turn_in_stage(16, a, b) end
+
+-- Act IV: Kamerton to Cold / Sid / Wolf
+local END_ICONS = { cold = "ui_inGame2_cold", sid = "ui_inGame2_sid", wolf = "ui_inGame2_wolf" }
+local function choose(key, first_speaker, second_speaker)
+	local c = CHOICES[key]
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	itms_manager.relocate_item_from_actor(db.actor, npc, "szm_kamerton", 1)
+	give_items(c.rewards)
+	if c.money then
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, c.money)
+	end
+	for _, g in ipairs(c.goodwill or {}) do
+		xr_effects.inc_faction_goodwill_to_actor(db.actor, nil, { g[1], g[2] })
+	end
+	give_info(c.info)
+	clear_choice_spots()
+	save_var(db.actor, VAR_END_TIME, utils_data.CTime_to_table(game.get_game_time()))
+	task_manager.get_task_manager():set_task_completed(STAGES[16].task)
+	-- after the dialog window closes, so it isn't hidden behind it
+	CreateTimeEvent("szm_ending", key, 3, function()
+		db.actor:give_game_news(tr("szm_story_end_title"), tr("szm_story_end_" .. key), END_ICONS[key], 0, 25000, 0)
+		xr_sound.set_sound_play(AC_ID, "pda_tips")
+		return true
+	end)
+	printf("[SZM] ending: %s", key)
+end
+function turn_in_16_cold(a, b) choose("cold", a, b) end
+function turn_in_16_sid(a, b)  choose("sid",  a, b) end
+function turn_in_16_wolf(a, b) choose("wolf", a, b) end
+
+---------------------------< Task functors >---------------------------
+-- Marker for a squad stage: the body holding the item once its carrier is dead and the item
+-- hasn't been picked up yet (also the boars, until the legs are cut); otherwise the squad
+local function squad_target(n)
+	if STAGES[n].fetch and not has_fetch(n) then
+		local cid = load_var(db.actor, var_carrier(n))
+		local se_c = cid and alife_object(cid)
+		if se_c and se_c.alive and not se_c:alive() then
+			return cid
+		end
+		if n == BOAR_STAGE and not get_squad(n) then
+			for _, id in ipairs(load_var(db.actor, VAR_BOARS) or {}) do
+				if alife_object(id) then return id end
+			end
+		end
+	end
+	local squad = get_squad(n)
+	return squad and squad:commander_id()
+end
+
+-- Stage 0 marker; stage 1 points at turn_in_to or the task giver
+local function objective_target(n)
+	local st = STAGES[n]
+	if st.strike then
+		local state = get_strike(n)
+		if not state then return end
+		if state.phase == "pending" then
+			-- the meeting point is chosen up front, so the marker shows on the global map
+			local smart = state.meet and SIMBOARD.smarts_by_names[state.meet]
+			return smart and smart.id
+		end
+		if state.phase == "goto" then return state.reveal_corpse end
+		return squad_target(n)
+	elseif st.squad then
+		return squad_target(n)
+	elseif st.corpse then
+		return load_var(db.actor, var_corpse(n))
+	elseif st.medusa then
+		local id = load_var(db.actor, VAR_MEDUSA)
+		local se_obj = id and alife_object(id)
+		return se_obj and se_obj.parent_id == 65535 and id or nil
+	elseif st.talk_to then
+		return get_story_object_id(st.talk_to)
+	elseif st.turn_in_to and has_fetch(n) then
+		return get_story_object_id(st.turn_in_to)
+	end
+end
+
+for n = 1, #STAGES do
+	task_functor["szm_target_" .. n] = function(task_id, field, p, tsk)
+		if field ~= "target" or not tsk then return end
+		if tsk.stage == 0 then
+			return objective_target(n)
+		end
+		local to = STAGES[n].turn_in_to
+		return to and get_story_object_id(to) or tsk.task_giver_id
+	end
+
+	-- PDA description per phase (string ids from st_szm.xml)
+	task_functor["szm_descr_" .. n] = function(task_id, field, p, tsk)
+		if tsk and tsk.stage == 1 then
+			return "szm_task_" .. n .. "_descr_return"
+		end
+		local state = STAGES[n].strike and get_strike(n)
+		if state and state.phase == "fight" then
+			return "szm_task_" .. n .. "_descr_fight"
+		end
+		return "szm_task_" .. n .. "_descr"
+	end
+
+	-- Called every few seconds by the task manager
+	task_status_functor["szm_status_" .. n] = function(tsk, task_id)
+		local st = STAGES[n]
+		if st.talk_to then
+			if not story_npc_alive(st.talk_to) then return "fail" end
+		elseif not st.choice and not axr_task_manager.is_task_giver_valid(tsk) then
+			return "fail"
+		end
+
+		if st.strike then
+			update_strike(n)
+		end
+		if st.squad or st.strike then
+			local squad = get_squad(n)
+			if squad then
+				squad.force_online = true
+				sim_offline_combat.task_squads[squad.id] = true
+			end
+		end
+		if st.hum_on_fetch and not has_alife_info(INFO_HUM) and has_fetch(n) then
+			give_info(INFO_HUM)
+			play_hum("szm_hum_medusa")
+		end
+
+		if st.choice then
+			mark_choice_spots()   -- idempotent; also restores the spots in saves made before they existed
+			if not has_alife_info(INFO_CHOICE_MSGS) then   -- once; also covers saves already in stage 16
+				give_info(INFO_CHOICE_MSGS)
+				send_choice_messages()
+			end
+			return
+		end
+		if st.talk_to then return end
+		tsk.stage = objective_done(n) and 1 or 0
+
+		if st.auto_next and tsk.stage == 1 then
+			-- no turn-in dialog: complete now, the next stage starts right away
+			CreateTimeEvent("szm_auto_next", tostring(n), 1, function()
+				if not get_task(st.auto_next) then
+					give_stage_task(st.auto_next, tsk.task_giver_id)
+				end
+				return true
+			end)
+			return "complete"
+		end
+	end
+end
+
+---------------------------< Effects >---------------------------
+-- on_complete / on_fail of the task sections
+xr_effects.szm_cleanup = function(actor, npc, p)
+	local n = tonumber(p and p[1])
+	local st = n and STAGES[n]
+	if not st then return end
+	if st.squad or st.strike then
+		remove_squad(n)
+		save_var(db.actor, var_carrier(n), nil)
+	end
+	if st.strike then
+		local state = get_strike(n)
+		if state and state.prop and alife_object(state.prop) then
+			alife_release_id(state.prop)   -- the helicopter wreck disappears when the stage is turned in
+		end
+		save_var(db.actor, var_strike(n), nil)
+		-- a separate reveal item (the officer's PDA) is a quest item: take it away when done
+		if st.strike.reveal and count_items(st.strike.reveal) > 0 then
+			itms_manager.relocate_item_from_actor(db.actor, nil, st.strike.reveal, 1)
+		end
+	end
+	if st.corpse then save_var(db.actor, var_corpse(n), nil) end
+	if n == BOAR_STAGE then save_var(db.actor, VAR_BOARS, nil) end
+	if st.medusa then save_var(db.actor, VAR_MEDUSA, nil) end
+end
+
+---------------------------< Prologue / epilogue >---------------------------
+-- Checked every few seconds (not only on load), so the prologue also starts after arriving in Cordon.
+-- The info is given when the task actually starts, so a save during the delay doesn't lose it.
+local prologue_scheduled = false
+local prologue_last_reason
+local function prologue_wait(reason)
+	if reason ~= prologue_last_reason then
+		prologue_last_reason = reason
+		printf("[SZM] prologue waiting: %s", reason)
+	end
+end
+
+local function try_prologue()
+	if prologue_scheduled or has_alife_info(INFO_STARTED) then return end
+	local comm = character_community(db.actor)
+	if comm ~= "actor_stalker" then return prologue_wait("actor community is " .. tostring(comm) .. ", needs actor_stalker") end
+	if level.name() ~= "l01_escape" then return prologue_wait("actor is on " .. level.name() .. ", needs l01_escape") end
+	local sid = get_story_se_object(SID)
+	if not sid then return prologue_wait("Sidorovich not found") end
+
+	prologue_scheduled = true
+	CreateTimeEvent("szm_prologue", "start", PROLOGUE_DELAY, function()
+		if not has_alife_info(INFO_STARTED) then
+			give_info(INFO_STARTED)
+			play_hum("szm_hum_prologue")
+			give_stage_task(1, sid.id)
+		end
+		return true
+	end)
+	printf("[SZM] prologue scheduled")
+end
+
+local function check_epilogue()
+	if has_alife_info(INFO_EPILOGUE) then return end
+	local t = load_var(db.actor, VAR_END_TIME)
+	if not t then return end
+	local since = game.get_game_time():diffSec(utils_data.CTime_from_table(t))
+	if since < EPILOGUE_DELAY_H * 3600 then return end
+
+	give_info(INFO_EPILOGUE)
+	local ending = has_alife_info("szm_end_cold") and "cold" or has_alife_info("szm_end_sid") and "sid" or "wolf"
+	play_hum("szm_epilogue_" .. ending)
+end
+
+---------------------------< Callbacks >---------------------------
+-- Guarantee boar legs from the stage 3 boars (base GAMMA drop: 4 rolls at 18%)
+local function monster_on_loot_init(victim, loot_table)
+	if not (victim and loot_table) then return end
+	local ids = load_var(db.actor, VAR_BOARS)
+	if not ids then return end
+	local victim_id = victim:id()
+	for _, id in ipairs(ids) do
+		if id == victim_id then
+			local sec = "mutant_part_boar_leg"
+			loot_table[sec] = loot_table[sec] or {}
+			loot_table[sec].count = math.max(loot_table[sec].count or 0, BOAR_LEGS_PER_BOAR)
+			return
+		end
+	end
+end
+
+local tg_epilogue = 0
+local function actor_on_update()
+	local tg = time_global()
+	if tg < tg_epilogue then return end
+	tg_epilogue = tg + 5000
+	try_prologue()
+	check_epilogue()
+end
+
+local function actor_on_first_update()
+	-- replace Fanatic's "Training Day": its start dialog is hidden once this info is set
+	if not has_alife_info("fanat_training_start_done") then
+		give_info("fanat_training_start_done")
+	end
+	try_prologue()
+	-- saves from before the gold offer spot: swap the old silver one
+	local id = load_var(db.actor, VAR_SPOT)
+	if id and level.map_has_object_spot(id, OLD_OFFER_SPOT) ~= 0 then
+		level.map_remove_object_spot(id, OLD_OFFER_SPOT)
+		level.map_add_object_spot_ser(id, OFFER_SPOT, tr("szm_offer_hint"))
+	end
+end
+
+function on_game_start()
+	RegisterScriptCallback("monster_on_loot_init", monster_on_loot_init)
+	RegisterScriptCallback("actor_on_first_update", actor_on_first_update)
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+end

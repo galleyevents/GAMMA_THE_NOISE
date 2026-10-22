@@ -1,0 +1,45 @@
+; Szum - main storyline
+; Auto-included by squad_descr.ltx (#include "squad_descr_*.ltx").
+; No "common = true", so the simulation never spawns these squads on its own.
+
+; Stage 2: the bandit who robbed Sid's courier (carries the cylinder)
+[szm_bandit_squad]:online_offline_group
+faction             = bandit
+npc_random          = sim_default_bandit_0, sim_default_bandit_1, sim_default_bandit_2
+npc_in_squad        = 1, 1
+
+; Stage 3: two weak boars (each guaranteed BOAR_LEGS_PER_BOAR legs)
+[szm_boar_squad]:online_offline_group
+faction             = monster_vegetarian
+npc_random          = boar_01a_weak, boar_02a_weak
+npc_in_squad        = 2, 2
+
+; Stage 7 and 12: renegades
+[szm_renegade_squad]:online_offline_group
+faction             = renegade
+npc_random          = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_1, sim_default_renegade_2
+npc_in_squad        = 2, 3
+
+; Stage 9: one weak bloodsucker
+[szm_bloodsucker_squad]:online_offline_group
+faction             = monster_predatory_night
+npc_random          = bloodsucker_green_weak, bloodsucker_red_weak
+npc_in_squad        = 1, 1
+
+; Stage 10: the army patrol that killed Kostia's team
+[szm_army_squad]:online_offline_group
+faction             = army
+npc_random          = sim_default_military_0, sim_default_military_1, sim_default_military_1, sim_default_military_2
+npc_in_squad        = 3, 3
+
+; Stage 14: bandits in the Garbage with Sid's package
+[szm_garbage_bandit_squad]:online_offline_group
+faction             = bandit
+npc_random          = sim_default_bandit_1, sim_default_bandit_2, sim_default_bandit_2, sim_default_bandit_3
+npc_in_squad        = 3, 4
+
+; Stage 15: mercenaries who took the Kamerton
+[szm_merc_squad]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
+npc_in_squad        = 4, 5
