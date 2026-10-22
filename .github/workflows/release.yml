@@ -1,9 +1,15 @@
-# Push a tag like v1.0 -> builds an MO2-ready zip (gamedata/ at the archive root) and attaches it to the release
+# Push a tag like v1.0 or 1.0 -> builds an MO2-ready zip (gamedata/ at the archive root) and attaches it to the release.
+# For a release that already exists, run it by hand (Actions -> Release -> Run workflow) with its tag.
 name: Release
 
 on:
   push:
-    tags: ["v*"]
+    tags: ["v*", "[0-9]*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to build the zip for (e.g. 1.0.2)"
+        required: true
 
 permissions:
   contents: write
@@ -11,12 +17,16 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Build zip
         run: |
-          ZIP="The_Noise_Main_Storyline_${GITHUB_REF_NAME}.zip"
+          ZIP="The_Noise_Main_Storyline_${TAG}.zip"
           cd "The Noise - Main Storyline"
           zip -r -X "../$ZIP" gamedata
           cd ..
@@ -27,5 +37,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "The Noise $GITHUB_REF_NAME" --generate-notes \
-            || gh release upload "$GITHUB_REF_NAME" "$ZIP" --clobber
+          gh release create "$TAG" "$ZIP" --title "The Noise $TAG" --generate-notes \
+            || gh release upload "$TAG" "$ZIP" --clobber
