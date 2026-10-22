@@ -1,7 +1,7 @@
 # The Noise - Storyline Tutorial
 
 A story questline for **S.T.A.L.K.E.R. Anomaly / G.A.M.M.A.** It replaces Fanatic's "Training Day" tutorial
-with a 16-stage main story that starts in the Cordon village and ends with a three-way choice.
+with a main story of 21 stages per playthrough (27 in all, across three Act V branches) that starts in the Cordon village and ends with a three-way choice.
 
 Sidorovich calls the new stalker on the radio: he's looking for workers. Odd jobs around the village
 turn into the search for his missing courier - and the first time you hear the Noise, a pulsing hiss
@@ -25,8 +25,28 @@ prototype behind it.
 | 15 | The Dead Convoy - Agroprom | Sidorovich | money |
 | 16 | Kamerton - give it to Cold, sell it to Sid, or destroy it with Wolf | - | CS-2a armor / SKS + money / Soul |
 
-An epilogue message arrives a day after the choice. Reward cap by design: no armor above light,
-no weapon above an SKS.
+### Act V - the Noise returns
+
+A day after the choice - and the "storyline complete" banner - the Noise is back: the side you chose calls
+you on the radio and asks you to come over. From there the story flows as before: each report leads straight
+into the next job, and in the tunnels under Agroprom the last stages follow over the radio.
+
+| # | Stage | Side | Reward |
+|---|---|---|---|
+| 17 | Reprisal - an army patrol in the Swamps | Cold | money, medkits, ammo |
+| 18 | Frequency Logs - an army signal team in Agroprom | Cold | money, medkits, ammo |
+| 19 | The Buyer - his men in the Garbage, his PDA | Sid | money, ammo |
+| 20 | Clear Sky's Debt - a Clear Sky hit squad in Cordon | Sid | money, medkits, ammo |
+| 21 | Echo - an artifact where the Kamerton vanished | Wolf | money, medkits |
+| 22 | Strangers in Cordon - mercenary scouts and their orders | Wolf | money, medkits, ammo |
+| 23 | Under Agroprom - the missing scientists, their journal, mercenaries | all | money |
+| 24 | The Transmitter - its guards and the resonator | all | money |
+| 25-27 | Silence - the resonator to Cold / Sid / Wolf | the chosen side | money + medkits, ammo / money / Night Star |
+
+Reward cap by design: no armor above light, no weapon above an SKS.
+
+Timing is set at the top of `szm_main.script`: `ACT5_FIRST_DELAY_H` (24 in-game hours from the choice to the
+radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set it to `nil` before a release**).
 
 ## Features
 

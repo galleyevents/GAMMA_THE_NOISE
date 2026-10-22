@@ -6,10 +6,18 @@ ids = set(re.findall(r'string id="([^"]+)"', st))
 
 OFFERED_BY = {2: "sid", 3: "sid", 4: "sid", 5: "sid", 6: "sid",
               7: "spore", 8: "spore", 9: "spore", 10: "spore", 11: "spore",
-              12: "cold", 13: "cold", 14: "sid", 15: "sid"}
+              12: "cold", 13: "cold", 14: "sid", 15: "sid",
+              # Act V: 17/19/21 after the giver's radio call, the rest straight from the report dialogs;
+              # 23 by whoever was chosen in Act IV ("act5": the dialog is on all three, the script picks)
+              17: "cold", 18: "cold", 19: "sid", 20: "sid", 21: "wolf", 22: "wolf", 23: "act5"}
+# the stage offered right after a report, when it isn't n + 1
+NEXT_OFFER = {18: 23, 20: 23, 22: 23}
 TURNED_IN_TO = {1: "sid", 2: "sid", 3: "wolf", 4: "sid", 5: "sid",
                 6: "spore", 7: "spore", 8: "spore", 9: "spore", 10: "spore",
-                11: "cold", 12: "cold", 13: "sid", 14: "sid"}
+                11: "cold", 12: "cold", 13: "sid", 14: "sid",
+                # Act V: report dialogs only, the stages come over the radio (23-24 complete themselves)
+                17: "cold", 18: "cold", 19: "sid", 20: "sid", 21: "wolf", 22: "wolf",
+                25: "cold", 26: "sid", 27: "wolf"}
 
 def ph(i, text, nexts=(), action=None):
     s = '<phrase id="%d"><text>%s</text>' % (i, text)
@@ -38,7 +46,7 @@ def dialog(did, precond, phrases):
     return "\n".join(out)
 
 blocks = []
-for n in range(1, 16):
+for n in range(1, 28):
     if n in OFFERED_BY:
         blocks.append(dialog("szm_%d_offer" % n, "szm_main.can_offer_%d" % n, offer_phrases(n, OFFERED_BY[n], 0)))
     if n in TURNED_IN_TO:
@@ -46,8 +54,8 @@ for n in range(1, 16):
         assert lines == list(range(len(lines))) and len(lines) % 2 == 0, (n, lines)
         k = len(lines) - 1          # the NPC's last line: rewards
         phr = [ph(i, "szm_%d_done_%d" % (n, i), [i + 1]) for i in range(k)]
-        m = n + 1
-        chain = OFFERED_BY.get(m) == TURNED_IN_TO[n]
+        m = NEXT_OFFER.get(n, n + 1)
+        chain = OFFERED_BY.get(m) in (TURNED_IN_TO[n], "act5")
         if chain:
             # straight into the next offer, or "later" (the offer dialog stays available)
             who = TURNED_IN_TO[n]

@@ -11,6 +11,9 @@
 	<string id="szm_later_sid"><text>Fine, but don't keep me waiting. Time is money.</text></string>
 	<string id="szm_later_spore"><text>Take your time. I'll be here.</text></string>
 	<string id="szm_later_cold"><text>Don't take too long.</text></string>
+	<string id="szm_later_wolf"><text>Don't take long, kid.</text></string>
+	<string id="szm_declined_wolf"><text>Don't wait too long, kid.</text></string>
+	<string id="szm_declined_act5"><text>Don't take too long. This can't wait.</text></string>
 	<string id="szm_16_think"><text>I need to think about it.</text></string>
 
 	<!-- ===================== map spot hints ===================== -->
@@ -20,9 +23,9 @@
 	<string id="szm_choice_hint_wolf"><text>The Noise: destroy the Kamerton. Talk to Wolf.</text></string>
 
 	<!-- ===================== radio / PDA messages ===================== -->
-	<string id="szm_epilogue_cold"><text>Message from Cold: "Our techs took the Kamerton apart. The Noise stopped... almost. Last night we heard it again, quieter, from the north. The Kamerton wasn't the only one."</text></string>
-	<string id="szm_epilogue_sid"><text>Message from Sidorovich: "The buyers are happy, deal's done. But listen... last night the radio caught that noise again. Maybe someone built another one..."</text></string>
-	<string id="szm_epilogue_wolf"><text>Message from Wolf: "The Kamerton vanished into an anomaly, I saw it with my own eyes. But last night I heard the noise again. Quieter, far off, from the north. The Zone doesn't forget, kid."</text></string>
+	<string id="szm_epilogue_cold"><text>The PDA hisses: the Noise again - quieter than before, from somewhere to the north. A moment later Cold's frequency lights up.</text></string>
+	<string id="szm_epilogue_sid"><text>The Noise again - faint, from somewhere to the north. Right after it, Sidorovich's frequency.</text></string>
+	<string id="szm_epilogue_wolf"><text>The Noise again - faint and far off, from somewhere to the north. Then Wolf's voice on the radio.</text></string>
 
 	<!-- ===================== quest items ===================== -->
 	<string id="szm_cylinder_name"><text>Metal Cylinder</text></string>
@@ -256,5 +259,142 @@
 	<string id="szm_story_end_cold"><text>The Kamerton went to Clear Sky. Cold and his techs will study the Noise, and you have allies in the Swamps. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 	<string id="szm_story_end_sid"><text>The Kamerton went to Sidorovich, and your pockets are full of rubles. Clear Sky won't forget this betrayal. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 	<string id="szm_story_end_wolf"><text>You and Wolf destroyed the Kamerton. Nobody profits from it, and nobody else dies because of it. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
+
+	<!-- ===================== Act V: the Noise returns ===================== -->
+	<string id="szm_hum_echo"><text>As soon as you touch the artifact, the earpiece fills with the Noise - then it fades into a steady, quiet tone, like a tuning fork that won't stop ringing.</text></string>
+
+	<!-- items -->
+	<string id="szm_signal_log_name"><text>Army Frequency Log</text></string>
+	<string id="szm_signal_log_descr"><text>A ruggedized army data logger. Days of recorded frequencies - and one of them pulses exactly like the Noise.</text></string>
+	<string id="szm_buyer_pda_name"><text>Buyer's PDA</text></string>
+	<string id="szm_buyer_pda_descr"><text>The PDA of the man who bought the Kamerton from Sidorovich. Encrypted messages to someone called "the Colonel".</text></string>
+	<string id="szm_echo_name"><text>Echo</text></string>
+	<string id="szm_echo_descr"><text>An artifact formed where the Kamerton vanished into the anomaly. It is warm and rings quietly, like a tuning fork.</text></string>
+	<string id="szm_merc_orders_name"><text>Mercenary Orders</text></string>
+	<string id="szm_merc_orders_descr"><text>Orders found on the leader of the mercenary scouts. They mention an "amplifier" and a transmitter under Agroprom.</text></string>
+	<string id="szm_lab_journal_name"><text>Scientists' Journal</text></string>
+	<string id="szm_lab_journal_descr"><text>The journal of the scientists who went into the tunnels under Agroprom. The last entries describe a transmitter and armed guards.</text></string>
+	<string id="szm_resonator_name"><text>Resonator R-7B</text></string>
+	<string id="szm_resonator_descr"><text>The heart of the transmitter under Agroprom: a twin of the Kamerton's core. Without it, the Noise falls silent.</text></string>
+
+	<!-- ===================== 17: Cold - Reprisal ===================== -->
+	<string id="szm_task_17_name"><text>The Noise: Reprisal</text></string>
+	<string id="szm_task_17_call"><text>Stalker, Cold here. Something has happened - not something for the radio. Come to the base in the Swamps as soon as you can.</text></string>
+	<string id="szm_17_offer_0"><text>You called, Cold. What happened?</text></string>
+	<string id="szm_17_offer_1"><text>The Noise is back - you must have heard it too. And the army came with it: last night a patrol looking for the Kamerton shot up one of our outposts. Two of ours are dead. They're still in the Swamps, and they won't stop at one outpost. Deal with them. Then we'll talk about where the Noise is coming from - I have a theory.</text></string>
+	<string id="szm_17_offer_2"><text>I'll deal with the patrol.</text></string>
+	<string id="szm_17_offer_4"><text>They're marked on your PDA. Good hunting.</text></string>
+	<string id="szm_task_17_descr"><text>The Noise is back, and so is the army: a patrol looking for the Kamerton attacked a Clear Sky outpost. Cold wants them dealt with. They're marked on my PDA.</text></string>
+	<string id="szm_task_17_descr_return"><text>The patrol is dead. Report to Cold.</text></string>
+	<string id="szm_17_done_0"><text>The patrol is dead.</text></string>
+	<string id="szm_17_done_1"><text>Good. Listen - our techs took the Kamerton apart. It isn't a source, it's a receiver: an amplifier tuned to a transmitter somewhere else. And the army knows where. Their signal teams log every frequency they track, and I need one of those logs.</text></string>
+
+	<!-- ===================== 18: Cold - Frequency Logs ===================== -->
+	<string id="szm_task_18_name"><text>The Noise: Frequency Logs</text></string>
+	<string id="szm_18_offer_0"><text>Where do we get an army log?</text></string>
+	<string id="szm_18_offer_1"><text>There's an army signal team in Agroprom. They've been following the Noise for days and logging every frequency they pick up. If anyone knows where the signal comes from, it's in their log. They won't hand it over, so take it.</text></string>
+	<string id="szm_18_offer_2"><text>I'll get the log.</text></string>
+	<string id="szm_18_offer_4"><text>They're marked on your PDA. Agroprom is crawling with soldiers - pick your moment.</text></string>
+	<string id="szm_task_18_descr"><text>An army signal team in Agroprom is logging the Noise. Cold needs their frequency log. The team is marked on my PDA.</text></string>
+	<string id="szm_task_18_descr_return"><text>I have the army's frequency log. Take it to Cold.</text></string>
+	<string id="szm_18_done_0"><text>Here's the army's frequency log.</text></string>
+	<string id="szm_18_done_1"><text>Our techs will need an hour, but I can already see it. The strongest signal comes from under Agroprom - the old tunnels. Whoever hired those mercenaries built their transmitter down there.</text></string>
+
+	<!-- ===================== 19: Sid - The Buyer ===================== -->
+	<string id="szm_task_19_name"><text>The Noise: The Buyer</text></string>
+	<string id="szm_task_19_call"><text>Rookie, Sidorovich here. Drop by the bunker - we have a problem, and not one for the radio.</text></string>
+	<string id="szm_19_offer_0"><text>You said we have a problem?</text></string>
+	<string id="szm_19_offer_1"><text>Two problems, rookie. One: the man who bought the Kamerton never paid the second half. Two: that noise is back on my radio, so whatever he bought, he's using it. His men are hanging around the Garbage. Bring me his PDA - I want to know who I really sold it to, before that someone decides I know too much.</text></string>
+	<string id="szm_19_offer_2"><text>I'll get his PDA.</text></string>
+	<string id="szm_19_offer_4"><text>They're marked on your PDA. And be careful - people who don't pay their debts usually don't mind shooting either.</text></string>
+	<string id="szm_task_19_descr"><text>Sid's buyer never paid for the Kamerton, and the Noise is back. The buyer's men are in the Garbage. Sid wants the buyer's PDA. Their position is marked on my PDA.</text></string>
+	<string id="szm_task_19_descr_return"><text>I have the buyer's PDA. Return to Sidorovich.</text></string>
+	<string id="szm_19_done_0"><text>The buyer won't be paying anyone now. Here's his PDA.</text></string>
+	<string id="szm_19_done_1"><text>Let's see... Ha. "Buyer." He was never from the Big Land, rookie - he worked for some colonel. The Kamerton went straight back to the people who built it. Damn. And there's worse: Clear Sky found out who sold it.</text></string>
+
+	<!-- ===================== 20: Sid - Clear Sky's Debt ===================== -->
+	<string id="szm_task_20_name"><text>The Noise: Clear Sky's Debt</text></string>
+	<string id="szm_20_offer_0"><text>Clear Sky? What do they want?</text></string>
+	<string id="szm_20_offer_1"><text>To settle accounts - with you, with me, they don't care which. They sent a squad, and it's in Cordon now. Deal with them before they deal with us. Then we'll talk about what that PDA says.</text></string>
+	<string id="szm_20_offer_2"><text>I'll deal with them.</text></string>
+	<string id="szm_20_offer_4"><text>They're marked on your PDA. Don't let them get anywhere near the bunker.</text></string>
+	<string id="szm_task_20_descr"><text>Clear Sky hasn't forgotten who sold the Kamerton. A Clear Sky squad is in Cordon looking for me. I need to deal with them. They're marked on my PDA.</text></string>
+	<string id="szm_task_20_descr_return"><text>The Clear Sky squad is dead. Return to Sidorovich.</text></string>
+	<string id="szm_20_done_0"><text>Clear Sky's squad won't bother us anymore.</text></string>
+	<string id="szm_20_done_1"><text>Good. Now, about that PDA: the colonel's people took the Kamerton into the old tunnels under Agroprom. That's where the noise comes from. I sold the thing, so I suppose it's my mess. Yours too, rookie.</text></string>
+
+	<!-- ===================== 21: Wolf - Echo ===================== -->
+	<string id="szm_task_21_name"><text>The Noise: Echo</text></string>
+	<string id="szm_task_21_call"><text>Kid, it's Wolf. Come to the village. Something is going on at the anomaly field - you'll want to hear this.</text></string>
+	<string id="szm_21_offer_0"><text>What's going on at the anomaly field?</text></string>
+	<string id="szm_21_offer_1"><text>Remember where we threw the Kamerton in? Since last night something has been humming there. I went to look: there's an artifact where the anomaly swallowed it. The same noise, only quieter. If the Zone kept an echo of that thing, I want it in our hands, not in the hands of whoever comes looking for it. Go and get it.</text></string>
+	<string id="szm_21_offer_2"><text>I'll get it.</text></string>
+	<string id="szm_21_offer_4"><text>The spot is marked on your PDA. Throw bolts - the field is restless.</text></string>
+	<string id="szm_task_21_descr"><text>Something has formed in the anomaly field where Wolf and I threw the Kamerton in, and the Noise is back. Wolf wants me to get it. Better throw bolts ahead of me.</text></string>
+	<string id="szm_task_21_descr_return"><text>I have the strange artifact. It hums. Take it to Wolf.</text></string>
+	<string id="szm_21_done_0"><text>I've got it. It hums, Wolf - the same Noise, only quieter.</text></string>
+	<string id="szm_21_done_1"><text>So the Zone kept an echo of it. Hold on to that thing for now, kid. And watch out: if the Kamerton left an echo here, someone will come looking for it. Strangers have already been asking about it in the village.</text></string>
+
+	<!-- ===================== 22: Wolf - Strangers in Cordon ===================== -->
+	<string id="szm_task_22_name"><text>The Noise: Strangers in Cordon</text></string>
+	<string id="szm_22_offer_0"><text>What strangers?</text></string>
+	<string id="szm_22_offer_1"><text>Mercenaries. Two or three of them, snooping around Cordon and asking about the Kamerton - where it went, who saw it last. Somebody sent them, and I want to know who. Deal with them and search their leader.</text></string>
+	<string id="szm_22_offer_2"><text>I'll find out who sent them.</text></string>
+	<string id="szm_22_offer_4"><text>They're marked on your PDA. Careful, they're no rookies.</text></string>
+	<string id="szm_task_22_descr"><text>Mercenary scouts are snooping around Cordon, asking about the Kamerton. Wolf wants to know who sent them. I need to deal with them and search their leader. They're marked on my PDA.</text></string>
+	<string id="szm_task_22_descr_return"><text>I have the mercenaries' orders. Take them to Wolf.</text></string>
+	<string id="szm_22_done_0"><text>Their leader had orders on him.</text></string>
+	<string id="szm_22_done_1"><text>Let me read... "Recover the amplifier or a replacement. The transmitter under Agroprom is useless without it." So that's it: there's a transmitter in the tunnels under Agroprom, and without the Kamerton it can't work properly - that's why the Noise is so faint. They'll keep trying, unless someone shuts it down.</text></string>
+
+	<!-- ===================== 23: Under Agroprom ===================== -->
+	<string id="szm_task_23_name"><text>The Noise: Under Agroprom</text></string>
+	<string id="szm_23_offer_0"><text>So it all leads to the tunnels under Agroprom?</text></string>
+	<string id="szm_23_offer_1"><text>Everything points there. And there's more: a group of scientists went down two days ago to measure the signal, and nobody has heard from them since. Go down there, find them, and find out what's in those tunnels.</text></string>
+	<string id="szm_23_offer_2"><text>I'm going under Agroprom.</text></string>
+	<string id="szm_23_offer_4"><text>Their last position is marked on your PDA. Take plenty of ammo - and a good flashlight.</text></string>
+	<string id="szm_task_23_descr"><text>The trail of the Noise leads to the tunnels under Agroprom. A group of scientists went down there and never came back. I need to find them. Their last position is marked on my PDA.</text></string>
+	<string id="szm_task_23_descr_fight"><text>The scientists are dead. Their journal mentions a transmitter deeper in the tunnels and the mercenaries guarding it - and the mercenaries are coming. I need to deal with them.</text></string>
+	<string id="szm_task_23_descr_return"><text>The mercenaries are dead.</text></string>
+	<string id="szm_task_23_reveal_news"><text>The scientists' journal, last entry: "The signal comes from the old pump room. They have a transmitter there, and armed guards. They saw us..." Footsteps in the tunnel. Mercenaries.</text></string>
+
+	<!-- ===================== 24: The Transmitter ===================== -->
+	<string id="szm_task_24_name"><text>The Noise: The Transmitter</text></string>
+	<string id="szm_task_24_radio"><text>The journal says the transmitter is deeper in the tunnels, in the old pump room. Find its guards, take the resonator out of it and bring it to me. Without it, the Noise stops.</text></string>
+	<string id="szm_task_24_descr"><text>The transmitter is hidden deeper in the tunnels under Agroprom, guarded by mercenaries. I need to kill the guards and take the transmitter's resonator. They're marked on my PDA.</text></string>
+	<string id="szm_task_24_descr_return"><text>I have the resonator.</text></string>
+
+	<!-- ===================== 25 / 26 / 27: Silence ===================== -->
+	<string id="szm_task_25_name"><text>The Noise: Silence</text></string>
+	<string id="szm_task_25_radio"><text>The Noise went quiet a minute ago. Was that you? Bring the resonator to the Swamps.</text></string>
+	<string id="szm_task_25_descr"><text>The transmitter under Agroprom is silent. Cold wants the resonator brought to the Clear Sky base.</text></string>
+	<string id="szm_task_25_descr_return"><text>Take the resonator to Cold.</text></string>
+	<string id="szm_25_done_0"><text>Cold, the transmitter is silent. Here's its resonator.</text></string>
+	<string id="szm_25_done_1"><text>...Without this, nobody will be playing with emissions again. Not the army, not the colonel. Kostya, Viktor, all of them - this is what they died for.</text></string>
+	<string id="szm_25_done_2"><text>Is it over?</text></string>
+	<string id="szm_25_done_3"><text>The Noise is over. The Zone never is. But today Clear Sky owes you, stalker, and we pay our debts.</text></string>
+
+	<string id="szm_task_26_name"><text>The Noise: Silence</text></string>
+	<string id="szm_task_26_radio"><text>Rookie, my radio has gone quiet - I take it that was you. Bring that thing here, we'll talk.</text></string>
+	<string id="szm_task_26_descr"><text>The transmitter under Agroprom is silent. Sidorovich wants the resonator brought to his bunker.</text></string>
+	<string id="szm_task_26_descr_return"><text>Take the resonator to Sidorovich.</text></string>
+	<string id="szm_26_done_0"><text>Sid, the transmitter is silent. Here's the resonator.</text></string>
+	<string id="szm_26_done_1"><text>Well, well. And to think I sold the first one... Don't look at me like that, rookie. This one I'm not selling. It's going so deep into my bunker even I won't find it.</text></string>
+	<string id="szm_26_done_2"><text>And my pay?</text></string>
+	<string id="szm_26_done_3"><text>Your pay is that the colonel's toy won't work anymore. ...Fine, fine. Here. And don't let anyone say Sidorovich doesn't pay his debts.</text></string>
+
+	<string id="szm_task_27_name"><text>The Noise: Silence</text></string>
+	<string id="szm_task_27_radio"><text>Kid, the echo has stopped ringing. You did it. Come back to the village - and bring whatever you took out of there.</text></string>
+	<string id="szm_task_27_descr"><text>The transmitter under Agroprom is silent. Wolf wants me back in the village with the resonator.</text></string>
+	<string id="szm_task_27_descr_return"><text>Take the resonator to Wolf.</text></string>
+	<string id="szm_27_done_0"><text>Wolf, the transmitter is silent. Here's its resonator.</text></string>
+	<string id="szm_27_done_1"><text>Give it here... We'll do with it what we did with the Kamerton. The Zone will eat it, and this time there won't be an echo.</text></string>
+	<string id="szm_27_done_2"><text>And the artifact? It has stopped humming.</text></string>
+	<string id="szm_27_done_3"><text>Then it goes in with the resonator. Take this instead - you've earned it, kid. The Noise is over.</text></string>
+
+	<!-- ===================== the end ===================== -->
+	<string id="szm_final_end_title"><text>The Noise: Aftermath - complete</text></string>
+	<string id="szm_final_end_cold"><text>The resonator went to Clear Sky and the transmitter under Agroprom is silent. The Noise is over - this time for good.</text></string>
+	<string id="szm_final_end_sid"><text>Sidorovich buried the resonator deep in his bunker, and the transmitter under Agroprom is silent. The Noise is over - this time for good.</text></string>
+	<string id="szm_final_end_wolf"><text>You and Wolf gave the resonator to the Zone, and this time it left no echo. The Noise is over - this time for good.</text></string>
 
 </string_table>

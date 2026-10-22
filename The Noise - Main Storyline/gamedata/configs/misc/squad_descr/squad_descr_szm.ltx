@@ -51,3 +51,41 @@ npc_in_squad        = 3, 4
 faction             = killer
 npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
 npc_in_squad        = 4, 5
+
+; ===== Act V =====
+; Stage 18: an army signal team in Agroprom (carries the frequency log)
+[szm_army_signal_squad]:online_offline_group
+faction             = army
+npc_random          = sim_default_military_1, sim_default_military_2
+npc_in_squad        = 3, 3
+
+; Stage 19: the buyer's men in the Garbage (the buyer carries his PDA)
+[szm_buyer_squad]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_1, sim_default_killer_2
+npc_in_squad        = 3, 3
+
+; Stage 20: Clear Sky hit squad sent after the actor (always hostile)
+[szm_csky_hit_squad]:online_offline_group
+faction             = csky
+npc_random          = sim_default_csky_1, sim_default_csky_2
+npc_in_squad        = 3, 3
+relationship        = enemy
+
+; Stage 22: mercenary scouts looking for the Kamerton in Cordon
+[szm_merc_scout_squad]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_1, sim_default_killer_2
+npc_in_squad        = 2, 3
+
+; Stage 23: mercenaries in Agroprom's underground
+[szm_agr_u_merc_squad]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
+npc_in_squad        = 3, 4
+
+; Stage 24: the transmitter's guards (the commander carries the resonator)
+[szm_agr_u_guard_squad]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_2, sim_default_killer_3, sim_default_killer_3
+npc_in_squad        = 4, 4

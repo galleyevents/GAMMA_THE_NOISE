@@ -5,7 +5,11 @@
 -- Act I     2-6    : Cordon, Sid's lessons (bandit, boars, Jellyfish + first Hum, campfire with Wolf), go to Spore
 -- Act II    7-12   : Great Swamp, Spore's jobs, Cold, the helicopter wreck
 -- Act III   13-15  : Sid decrypts the flight recorder, Garbage, the dead convoy in Agroprom
--- Act IV    16     : who gets the Kamerton: Cold, Sid or Wolf (destroy it); epilogue a day later
+-- Act IV    16     : who gets the Kamerton: Cold, Sid or Wolf (destroy it)
+-- Act V     17-27  : a day later the Noise is back; two stages for the chosen side (Cold 17-18, Sid 19-20,
+--                    Wolf 21-22), then Agroprom's underground (23-24) and back to that side (25 / 26 / 27).
+--                    Only the first Act V stage waits (ACT5_FIRST_DELAY_H): the radio call is a surprise after
+--                    the "storyline complete" banner. The rest follows right away, offered in the report dialogs.
 --
 -- Every stage: offer dialog -> task stage 0 (objective) -> task stage 1 (report) -> turn-in dialog -> rewards
 -- The next stage is offered only after the previous one has been turned in.
@@ -39,6 +43,8 @@ AGROPROM_SMARTS = {
 	"agr_smart_terrain_5_2", "agr_smart_terrain_5_3", "agr_smart_terrain_5_7",
 	"agr_smart_terrain_6_4", "agr_smart_terrain_7_5",
 }
+-- Agroprom underground (l03u_agr_underground); agr_u_bandits has residents and is left out
+AGR_U_SMARTS = { "agr_u_soldiers", "agr_u_monsters", "agr_u_bloodsucker_1" }
 ANYWHERE = 1000000   -- max distance meaning "any smart of the list" (giver on another level)
 
 ---------------------------< NPCs >---------------------------
@@ -62,6 +68,14 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 --   { section, amount, pristine = true } : weapon with every part at PRISTINE_PART_CON
 --   { "@ammo", boxes }                   : boxes of ammo for the weapons in the actor's slots
 -- auto_next    = the task completes on its own when the objective is done and gives this stage
+-- medusa       = true (Jellyfish) or an item section spawned at MEDUSA_SPAWN, the anomaly field
+-- Act V (radio stages, no offer dialog):
+--   giver      = story_id of who calls the actor and takes the report ("@end": the side chosen in Act IV)
+--   offer      = handed out by the giver in a dialog (the first stage after a radio call asking the actor over)
+--   next       = the stage that follows (offered at once, or started at once over the radio), or { cold = n, ... }
+--   auto_complete = no report dialog: the task completes when the objective is done
+--   intro_hum  = the Noise (with this PDA message) when the stage starts
+--   final      = the end of the storyline
 -- Money and goodwill come from on_complete in tm_szm.ltx.
 STAGES = {
 	-- ===== Prologue =====
@@ -187,6 +201,120 @@ STAGES = {
 		fetch   = { "szm_kamerton", 1 },
 		choice  = true,
 	},
+	-- ===== Act V, Cold: the Swamps, then the army's frequency logs in Agroprom =====
+	[17] = { -- the army's reprisal against Clear Sky
+		task    = "szm_task_17",
+		offer   = true,
+		giver   = COLD,
+		intro_hum = "szm_epilogue_cold",
+		squad   = "szm_army_squad",
+		area    = { MARSH_SMARTS, 150, 500 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		next    = 18,
+	},
+	[18] = { -- a signal team in Agroprom carrying the frequency log
+		task    = "szm_task_18",
+		offer   = true,
+		giver   = COLD,
+		squad   = "szm_army_signal_squad",
+		carry   = "szm_signal_log",
+		area    = { AGROPROM_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_signal_log", 1 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, Sid: the buyer, then Clear Sky's revenge =====
+	[19] = { -- the buyer never paid: his men in the Garbage, his PDA
+		task    = "szm_task_19",
+		offer   = true,
+		giver   = SID,
+		intro_hum = "szm_epilogue_sid",
+		squad   = "szm_buyer_squad",
+		carry   = "szm_buyer_pda",
+		area    = { GARBAGE_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_buyer_pda", 1 },
+		rewards = { {"@ammo", 2} },
+		next    = 20,
+	},
+	[20] = { -- a Clear Sky hit squad in Cordon
+		task    = "szm_task_20",
+		offer   = true,
+		giver   = SID,
+		squad   = "szm_csky_hit_squad",
+		area    = { CORDON_SMARTS, 150, 500 },
+		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, Wolf: the echo in the anomaly field, then mercenary scouts =====
+	[21] = { -- an artifact where the Kamerton vanished
+		task    = "szm_task_21",
+		offer   = true,
+		giver   = WOLF,
+		intro_hum = "szm_epilogue_wolf",
+		medusa  = "szm_echo",
+		fetch   = { "szm_echo", 1 },
+		keep_fetch = true,      -- Wolf lets the actor keep it
+		hum_on_fetch = "szm_hum_echo",
+		rewards = { {"medkit", 2} },
+		next    = 22,
+	},
+	[22] = { -- mercenary scouts looking for the Kamerton in Cordon
+		task    = "szm_task_22",
+		offer   = true,
+		giver   = WOLF,
+		squad   = "szm_merc_scout_squad",
+		carry   = "szm_merc_orders",
+		area    = { CORDON_SMARTS, 100, 400 },
+		fetch   = { "szm_merc_orders", 1 },
+		rewards = { {"medkit", 1}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, together again: Agroprom's underground =====
+	[23] = { -- dead scientists, their journal, the mercenaries guarding the tunnels
+		task    = "szm_task_23",
+		offer   = true,
+		giver   = "@end",
+		fetch   = { "szm_lab_journal", 1 },
+		strike  = {
+			corpses     = { "sim_default_ecolog_1", "sim_default_ecolog_2", "sim_default_killer_1" },
+			corpse_area = { AGR_U_SMARTS, 0, ANYWHERE },
+			reveal      = "szm_lab_journal",
+			squad       = "szm_agr_u_merc_squad",
+			squad_area  = { AGR_U_SMARTS, 0, ANYWHERE },
+		},
+		auto_complete = true,
+		next    = 24,
+	},
+	[24] = { -- the transmitter's guards and its resonator
+		task    = "szm_task_24",
+		giver   = "@end",
+		squad   = "szm_agr_u_guard_squad",
+		carry   = "szm_resonator",
+		area    = { AGR_U_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_resonator", 1 },
+		keep_fetch = true,
+		auto_complete = true,
+		next    = { cold = 25, sid = 26, wolf = 27 },
+	},
+	[25] = { task = "szm_task_25", giver = COLD, talk_to = COLD, fetch = { "szm_resonator", 1 }, final = "cold",
+	         rewards = { {"medkit", 3}, {"@ammo", 3} } },
+	[26] = { task = "szm_task_26", giver = SID,  talk_to = SID,  fetch = { "szm_resonator", 1 }, final = "sid",
+	         rewards = { {"@ammo", 3} } },
+	[27] = { task = "szm_task_27", giver = WOLF, talk_to = WOLF, fetch = { "szm_resonator", 1 }, final = "wolf",
+	         rewards = { {"af_night_star", 1}, {"medkit", 2} } },
+}
+
+-- Act V timing: only the first stage waits. ACT5_TEST_DELAY (real seconds) overrides it for testing;
+-- nil for a release. A stage that fails to start (no spawn smart, giver away) is retried a minute later.
+ACT5_FIRST_DELAY_H = 24   -- in-game hours from the Act IV choice to the first Act V stage
+ACT5_TEST_DELAY    = 60
+ACT5_FIRST = { cold = 17, sid = 19, wolf = 21 }
+
+-- Who calls on the radio
+GIVER_RADIO = {
+	[COLD] = { name = "szm_name_cold", icon = "ui_inGame2_cold" },
+	[SID]  = { name = "szm_name_sid",  icon = "ui_inGame2_sid" },
+	[WOLF] = { name = "szm_name_wolf", icon = "ui_inGame2_wolf" },
 }
 
 -- Who offers each stage: after a stage is turned in, this NPC gets a map spot until the next offer is accepted
@@ -220,7 +348,6 @@ CHOICES = {
 	wolf = { info = "szm_end_wolf", rewards = { {"af_soul", 1}, {"medkit", 2} },
 	         goodwill = { {"stalker", 150}, {"csky", 50} } },
 }
-EPILOGUE_DELAY_H = 24   -- in-game hours after the choice
 
 -- Each boar of the stage 2 squad is guaranteed at least this many legs when butchered
 BOAR_LEGS_PER_BOAR = 2
@@ -262,14 +389,16 @@ local function var_escort(n) return "szm_escort_" .. n end   -- id of the compan
 local function escort_info(n) return "szm_escort_given_" .. n end   -- given once, dead companions don't come back
 local VAR_BOARS    = "szm_boar_ids"
 local VAR_MEDUSA   = "szm_medusa_id"
-local VAR_END_TIME = "szm_end_time"     -- game time of the choice, for the epilogue
+local VAR_END_TIME = "szm_end_time"     -- game time of the choice
+local VAR_NEXT     = "szm_next_stage"   -- Act V: { n, t = game time it was scheduled, delay = seconds }
 local VAR_USED     = "szm_used_smarts"  -- names of recently used spawn smarts
 local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offer" map spot
 
 local function done_info(n)  return "szm_stage_" .. n .. "_done" end
 local INFO_STARTED  = "szm_started"
 local INFO_CHOICE_MSGS = "szm_choice_msgs_sent"
-local INFO_EPILOGUE = "szm_epilogue_done"
+local INFO_EPILOGUE = "szm_epilogue_done"   -- old saves: the epilogue message was already sent
+local INFO_ACT5     = "szm_act5_started"
 
 ---------------------------< Helpers >---------------------------
 local function get_task(n)
@@ -295,6 +424,20 @@ local function has_fetch(n)
 end
 
 local function tr(id) return game.translate_string(id) end
+
+-- The side chosen in Act IV: "cold", "sid", "wolf" or nil
+local function ending()
+	return has_alife_info("szm_end_cold") and "cold" or has_alife_info("szm_end_sid") and "sid"
+		or has_alife_info("szm_end_wolf") and "wolf" or nil
+end
+
+local function stage_giver(st)
+	if st.giver == "@end" then
+		local e = ending()
+		return e == "cold" and COLD or e == "sid" and SID or e == "wolf" and WOLF or nil
+	end
+	return st.giver
+end
 
 local function level_of(gvid)
 	return game_graph():vertex(gvid):level_id()
@@ -693,9 +836,9 @@ local function spawn_corpse(n, origin)
 	return se_npc
 end
 
-local function spawn_medusa()
+local function spawn_medusa(section)
 	local p = MEDUSA_SPAWN
-	local se_obj = alife_create("af_medusa", vector():set(p.pos[1], p.pos[2], p.pos[3]), p.lvid, p.gvid)
+	local se_obj = alife_create(section or "af_medusa", vector():set(p.pos[1], p.pos[2], p.pos[3]), p.lvid, p.gvid)
 	if se_obj then
 		save_var(db.actor, VAR_MEDUSA, se_obj.id)
 	end
@@ -880,12 +1023,12 @@ local function give_stage_task(n, giver_id)
 	task_manager.get_task_manager():give_task(STAGES[n].task, giver_id)
 end
 
-local function start_stage(n, first_speaker, second_speaker)
-	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+-- origin: where distances of the spawn areas are measured from (the task giver)
+local function start_stage_at(n, origin, giver_id)
 	local st = STAGES[n]
 
 	if st.squad then
-		local squad = spawn_squad(n, npc:position(), nil, nil, nil, st.carry)
+		local squad = spawn_squad(n, origin, nil, nil, nil, st.carry)
 		if not squad then return end
 		if n == BOAR_STAGE then
 			local ids = {}
@@ -895,19 +1038,167 @@ local function start_stage(n, first_speaker, second_speaker)
 			save_var(db.actor, VAR_BOARS, ids)
 		end
 	end
-	if st.corpse and not spawn_corpse(n, npc:position()) then return end
-	if st.strike and not start_strike(n, npc:position()) then return end
+	if st.corpse and not spawn_corpse(n, origin) then return end
+	if st.strike and not start_strike(n, origin) then return end
 	if st.escort then spawn_escort(n) end
 	if st.medusa then
-		spawn_medusa()
+		spawn_medusa(type(st.medusa) == "string" and st.medusa or nil)
 		if not has_detector() then
 			give_items({ {"detector_simple", 1} })
 		end
 	end
 
 	give_items(st.start_items)
-	give_stage_task(n, npc:id())
+	give_stage_task(n, giver_id)
 	clear_offer_spot()
+	return true
+end
+
+local function start_stage(n, first_speaker, second_speaker)
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	return start_stage_at(n, npc:position(), npc:id())
+end
+
+---------------------------< Act V: radio stages >---------------------------
+local function schedule_stage(n, first)
+	local delay = not first and 60 * level.get_time_factor()
+		or ACT5_TEST_DELAY and ACT5_TEST_DELAY * level.get_time_factor()
+		or ACT5_FIRST_DELAY_H * 3600
+	save_var(db.actor, VAR_NEXT, { n = n, t = utils_data.CTime_to_table(game.get_game_time()), delay = delay })
+	printf("[SZM] stage %s scheduled in %s game seconds", n, math.floor(delay))
+end
+
+local function next_of(st)
+	if type(st.next) == "table" then
+		local e = ending()
+		return e and st.next[e]
+	end
+	return st.next
+end
+
+local function called_info(n) return "szm_called_" .. n end
+
+local function mark_offer_spot(story_id)
+	clear_offer_spot()
+	local id = story_id and get_story_object_id(story_id)
+	if not id then return end
+	level.map_add_object_spot_ser(id, OFFER_SPOT, tr("szm_offer_hint"))
+	save_var(db.actor, VAR_SPOT, id)
+end
+
+-- Offer stages: the giver calls and asks the actor to come over (gold map spot on the giver);
+-- the stage itself is handed out in the giver's offer dialog. false = try again later
+local function call_for_offer(n)
+	local st = STAGES[n]
+	local giver = stage_giver(st)
+	if not (giver and get_story_se_object(giver) and story_npc_alive(giver)) then
+		printf("[SZM] stage %s: giver %s not available", n, tostring(giver))
+		return false
+	end
+	if st.intro_hum then
+		play_hum(st.intro_hum)
+	end
+	local r = GIVER_RADIO[giver]
+	radio_msg(r.name, "szm_task_" .. n .. "_call", r.icon, st.intro_hum and 6 or 0)
+	xr_sound.set_sound_play(AC_ID, "pda_tips")
+	give_info(called_info(n))
+	give_info(INFO_ACT5)
+	mark_offer_spot(giver)
+	printf("[SZM] stage %s: %s called the actor", n, giver)
+	return true
+end
+
+-- The giver calls on the radio and the task starts; false = try again later
+local function start_radio_stage(n)
+	local st = STAGES[n]
+	local giver = stage_giver(st)
+	local se_giver = giver and get_story_se_object(giver)
+	if not (se_giver and story_npc_alive(giver)) then
+		printf("[SZM] stage %s: giver %s not available", n, tostring(giver))
+		return false
+	end
+	if not start_stage_at(n, se_giver.position, se_giver.id) then
+		printf("[SZM] stage %s: could not start, retrying", n)
+		return false
+	end
+	if st.intro_hum then
+		play_hum(st.intro_hum)
+	end
+	local r = GIVER_RADIO[giver]
+	radio_msg(r.name, "szm_task_" .. n .. "_radio", r.icon, st.intro_hum and 6 or 0)
+	xr_sound.set_sound_play(AC_ID, "pda_tips")
+	give_info(INFO_ACT5)
+	return true
+end
+
+local function any_story_task()
+	for i = 1, #STAGES do
+		if get_task(i) then return true end
+	end
+	return false
+end
+
+-- Checked every few seconds from actor_on_update
+local function check_next_stage()
+	local v = load_var(db.actor, VAR_NEXT)
+	if not v then
+		-- saves made after the Act IV choice, before Act V existed
+		local e = ending()
+		if e and not has_alife_info(INFO_ACT5) and not any_story_task() then
+			schedule_stage(ACT5_FIRST[e], true)
+		end
+		return
+	end
+	if game.get_game_time():diffSec(utils_data.CTime_from_table(v.t)) < v.delay then return end
+	if any_story_task() then return end
+	local ok
+	if STAGES[v.n].offer then
+		ok = call_for_offer(v.n)
+	else
+		ok = start_radio_stage(v.n)
+	end
+	if ok then
+		save_var(db.actor, VAR_NEXT, nil)
+	else
+		v.t = utils_data.CTime_to_table(game.get_game_time())   -- try again a bit later
+		v.delay = 60 * level.get_time_factor()
+		save_var(db.actor, VAR_NEXT, v)
+	end
+end
+
+local END_ICONS = { cold = "ui_inGame2_cold", sid = "ui_inGame2_sid", wolf = "ui_inGame2_wolf" }
+
+-- After a stage of Act V is done: schedule the next one, or the end of the storyline
+local function act5_after(n)
+	local st = STAGES[n]
+	local nxt = st.next and next_of(st)
+	if nxt and STAGES[nxt].offer then
+		-- offered right away: in the same report dialog, or later from the giver (gold map spot)
+		give_info(called_info(nxt))
+		mark_offer_spot(stage_giver(STAGES[nxt]))
+	elseif nxt then
+		-- no dialog (the actor is still in Agroprom's tunnels): over the radio, as soon as this task is closed
+		CreateTimeEvent("szm_act5_next", tostring(nxt), 2, function()
+			if not get_task(nxt) and not start_radio_stage(nxt) then
+				schedule_stage(nxt)   -- retried by check_next_stage
+			end
+			return true
+		end)
+	end
+	if st.final then
+		CreateTimeEvent("szm_final", tostring(n), 3, function()
+			db.actor:give_game_news(tr("szm_final_end_title"), tr("szm_final_end_" .. st.final), END_ICONS[st.final], 0, 25000, 0)
+			xr_sound.set_sound_play(AC_ID, "pda_tips")
+			return true
+		end)
+		-- quest items of Act V that stay with the actor
+		for _, sec in ipairs({ "szm_echo" }) do
+			if count_items(sec) > 0 then
+				itms_manager.relocate_item_from_actor(db.actor, nil, sec, 1)
+			end
+		end
+		printf("[SZM] storyline finished (%s)", st.final)
+	end
 end
 
 -- The task manager completes a task on its next update, not at once: remember the turn-in
@@ -924,6 +1215,7 @@ local function turn_in_stage(n, first_speaker, second_speaker)
 	give_items(st.rewards)
 	task_manager.get_task_manager():set_task_completed(st.task)
 	mark_next_offer(n)
+	act5_after(n)
 end
 
 local function can_offer(n)
@@ -1024,9 +1316,52 @@ function turn_in_13(a, b) turn_in_stage(13, a, b) end
 function turn_in_14(a, b) turn_in_stage(14, a, b) end
 function turn_in_15(a, b) turn_in_stage(15, a, b) end
 function turn_in_16(a, b) turn_in_stage(16, a, b) end
+-- Act V: offer dialogs (after the radio call) and report dialogs
+local function can_offer_act5(n, first_speaker, second_speaker)
+	if not has_alife_info(called_info(n)) or has_alife_info(done_info(n)) then return false end
+	for i = 1, #STAGES do
+		if get_task(i) then return false end
+	end
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	local giver = stage_giver(STAGES[n])
+	return npc ~= nil and giver ~= nil and get_object_story_id(npc:id()) == giver
+end
+function can_offer_17(a, b) return can_offer_act5(17, a, b) end
+function can_offer_18(a, b) return can_offer_act5(18, a, b) end
+function can_offer_19(a, b) return can_offer_act5(19, a, b) end
+function can_offer_20(a, b) return can_offer_act5(20, a, b) end
+function can_offer_21(a, b) return can_offer_act5(21, a, b) end
+function can_offer_22(a, b) return can_offer_act5(22, a, b) end
+function can_offer_23(a, b) return can_offer_act5(23, a, b) end
+function can_offer_24(a, b) return can_offer_act5(24, a, b) end
+function give_17(a, b) start_stage(17, a, b) end
+function give_18(a, b) start_stage(18, a, b) end
+function give_19(a, b) start_stage(19, a, b) end
+function give_20(a, b) start_stage(20, a, b) end
+function give_21(a, b) start_stage(21, a, b) end
+function give_22(a, b) start_stage(22, a, b) end
+function give_23(a, b) start_stage(23, a, b) end
+function give_24(a, b) start_stage(24, a, b) end
+function can_turn_in_17() return can_turn_in(17) end
+function can_turn_in_18() return can_turn_in(18) end
+function can_turn_in_19() return can_turn_in(19) end
+function can_turn_in_20() return can_turn_in(20) end
+function can_turn_in_21() return can_turn_in(21) end
+function can_turn_in_22() return can_turn_in(22) end
+function can_turn_in_25() return can_turn_in(25) end
+function can_turn_in_26() return can_turn_in(26) end
+function can_turn_in_27() return can_turn_in(27) end
+function turn_in_17(a, b) turn_in_stage(17, a, b) end
+function turn_in_18(a, b) turn_in_stage(18, a, b) end
+function turn_in_19(a, b) turn_in_stage(19, a, b) end
+function turn_in_20(a, b) turn_in_stage(20, a, b) end
+function turn_in_21(a, b) turn_in_stage(21, a, b) end
+function turn_in_22(a, b) turn_in_stage(22, a, b) end
+function turn_in_25(a, b) turn_in_stage(25, a, b) end
+function turn_in_26(a, b) turn_in_stage(26, a, b) end
+function turn_in_27(a, b) turn_in_stage(27, a, b) end
 
 -- Act IV: Kamerton to Cold / Sid / Wolf
-local END_ICONS = { cold = "ui_inGame2_cold", sid = "ui_inGame2_sid", wolf = "ui_inGame2_wolf" }
 local function choose(key, first_speaker, second_speaker)
 	local c = CHOICES[key]
 	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
@@ -1042,6 +1377,7 @@ local function choose(key, first_speaker, second_speaker)
 	clear_choice_spots()
 	save_var(db.actor, VAR_END_TIME, utils_data.CTime_to_table(game.get_game_time()))
 	task_manager.get_task_manager():set_task_completed(STAGES[16].task)
+	schedule_stage(ACT5_FIRST[key], true)
 	-- after the dialog window closes, so it isn't hidden behind it
 	CreateTimeEvent("szm_ending", key, 3, function()
 		db.actor:give_game_news(tr("szm_story_end_title"), tr("szm_story_end_" .. key), END_ICONS[key], 0, 25000, 0)
@@ -1183,6 +1519,15 @@ for n = 1, #STAGES do
 		if st.talk_to then return end
 		tsk.stage = objective_done(n) and 1 or 0
 
+		if st.auto_complete and tsk.stage == 1 then
+			-- no report dialog: complete now, the next stage comes over the radio later
+			if not turned_in[n] then
+				turned_in[n] = true
+				act5_after(n)
+			end
+			return "complete"
+		end
+
 		if st.auto_next and tsk.stage == 1 then
 			-- no turn-in dialog: complete now, the next stage starts right away
 			CreateTimeEvent("szm_auto_next", tostring(n), 1, function()
@@ -1261,18 +1606,6 @@ local function try_prologue()
 	printf("[SZM] prologue scheduled")
 end
 
-local function check_epilogue()
-	if has_alife_info(INFO_EPILOGUE) then return end
-	local t = load_var(db.actor, VAR_END_TIME)
-	if not t then return end
-	local since = game.get_game_time():diffSec(utils_data.CTime_from_table(t))
-	if since < EPILOGUE_DELAY_H * 3600 then return end
-
-	give_info(INFO_EPILOGUE)
-	local ending = has_alife_info("szm_end_cold") and "cold" or has_alife_info("szm_end_sid") and "sid" or "wolf"
-	play_hum("szm_epilogue_" .. ending)
-end
-
 ---------------------------< Callbacks >---------------------------
 -- Guarantee boar legs from the stage 2 boars (base GAMMA drop: 4 rolls at 18%)
 local function monster_on_loot_init(victim, loot_table)
@@ -1296,7 +1629,7 @@ local function actor_on_update()
 	if tg < tg_epilogue then return end
 	tg_epilogue = tg + 5000
 	try_prologue()
-	check_epilogue()
+	check_next_stage()
 end
 
 local function actor_on_first_update()
