@@ -204,6 +204,13 @@ OLD_OFFER_SPOT = "secondary_task_location"   -- used before; removed from our NP
 -- Spawn smarts used by the last few stages are skipped, so consecutive tasks don't share a location
 RECENT_SMARTS = 6
 
+-- Leash for the stalkers of the stage squads: they ignore enemies (a stray dog, a passing squad)
+-- that are further than LEASH_RADIUS from their spawn smart, unless the enemy is within
+-- SELF_DEFENSE_RADIUS of them. The actor and the actor's companions are never ignored.
+-- Without enemies they walk back to the smart (scripted_target), so they don't scatter over the map.
+LEASH_RADIUS        = 60
+SELF_DEFENSE_RADIUS = 20
+
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
 	cold = { info = "szm_end_cold", rewards = { {"cs_light_outfit", 1}, {"medkit", 3} },   -- CS-2a: good but light
@@ -631,11 +638,43 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 	return squad
 end
 
+---------------------------< Leash >---------------------------
+-- npc id -> { pos = anchor, n = stage }; not saved, rebuilt by the status functors
+local leash = {}
+local LEASH_SQR        = LEASH_RADIUS * LEASH_RADIUS
+local SELF_DEFENSE_SQR = SELF_DEFENSE_RADIUS * SELF_DEFENSE_RADIUS
+
+local function clear_leash(n)
+	for id, l in pairs(leash) do
+		if l.n == n then leash[id] = nil end
+	end
+end
+
+local function set_leash(n, squad)
+	local smart = squad.scripted_target and SIMBOARD.smarts_by_names[squad.scripted_target]
+	if not smart then return end
+	for k in squad:squad_members() do
+		leash[k.id] = { pos = smart.position, n = n }
+	end
+end
+
+local function on_enemy_eval(obj, enemy, flags)
+	local l = leash[obj:id()]
+	if not l then return end
+	if enemy:id() == AC_ID or enemy:has_info("npcx_is_companion") then return end
+	if enemy:position():distance_to_sqr(l.pos) > LEASH_SQR
+		and enemy:position():distance_to_sqr(obj:position()) > SELF_DEFENSE_SQR then
+		flags.override = true
+		flags.result = false
+	end
+end
+
 local function remove_squad(n)
 	local squad = get_squad(n)
 	if squad then
 		squad:remove_squad()
 	end
+	clear_leash(n)
 	save_var(db.actor, var_squad(n), nil)
 end
 
@@ -1017,7 +1056,23 @@ function turn_in_16_wolf(a, b) choose("wolf", a, b) end
 
 ---------------------------< Task functors >---------------------------
 -- Marker for a squad stage: the body holding the item once its carrier is dead and the item
--- hasn't been picked up yet (also the boars, until the legs are cut); otherwise the squad
+-- hasn't been picked up yet (also the boars, until the legs are cut); otherwise the squad member
+-- nearest to the actor, so a member that wandered off isn't left without a marker
+local function nearest_member(squad)
+	local actor_pos = db.actor:position()
+	local best, best_dist
+	for k in squad:squad_members() do
+		local se_obj = k.object or alife_object(k.id)
+		if se_obj then
+			local dist = se_obj.position:distance_to_sqr(actor_pos)
+			if not best_dist or dist < best_dist then
+				best, best_dist = k.id, dist
+			end
+		end
+	end
+	return best or squad:commander_id()
+end
+
 local function squad_target(n)
 	if STAGES[n].fetch and not has_fetch(n) then
 		local cid = load_var(db.actor, var_carrier(n))
@@ -1032,7 +1087,7 @@ local function squad_target(n)
 		end
 	end
 	local squad = get_squad(n)
-	return squad and squad:commander_id()
+	return squad and nearest_member(squad)
 end
 
 -- Stage 0 marker; stage 1 points at turn_in_to or the task giver
@@ -1109,6 +1164,7 @@ for n = 1, #STAGES do
 			if squad then
 				squad.force_online = true
 				sim_offline_combat.task_squads[squad.id] = true
+				set_leash(n, squad)
 			end
 		end
 		if st.hum_on_fetch and not has_alife_info("szm_hum_heard_" .. n) and has_fetch(n) then
@@ -1282,6 +1338,7 @@ function on_game_start()
 	RegisterScriptCallback("monster_on_loot_init", monster_on_loot_init)
 	RegisterScriptCallback("actor_on_first_update", actor_on_first_update)
 	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
 	if rax_icon_layers and rax_icon_layers.register then
 		rax_icon_layers.register("szm_story_item_icon", story_item_icon)
 	end
