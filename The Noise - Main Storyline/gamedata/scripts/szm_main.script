@@ -235,8 +235,9 @@ MEDUSA_SPAWN = { pos = {-249.45230102539, -13.491371154785, -29.858497619629}, l
 
 DETECTORS = { "detector_simple", "detector_advanced", "detector_elite", "detector_scientific", "detector_grizzly" }
 
--- Prologue starts this many seconds after the first update on a fresh loner game in Cordon
-PROLOGUE_DELAY = 20
+-- Prologue starts this many seconds after a loner is in Cordon (new game, loaded save or arrival),
+-- so Sid's call doesn't get lost while the player is still sorting the inventory
+PROLOGUE_DELAY = 60
 
 ---------------------------< Save vars / infos >---------------------------
 local function var_squad(n)  return "szm_squad_" .. n end
@@ -1097,6 +1098,11 @@ local function try_prologue()
 
 	prologue_scheduled = true
 	CreateTimeEvent("szm_prologue", "start", PROLOGUE_DELAY, function()
+		if level.name() ~= "l01_escape" then
+			-- left Cordon during the delay: wait for the next arrival
+			prologue_scheduled = false
+			return true
+		end
 		if not has_alife_info(INFO_STARTED) then
 			give_info(INFO_STARTED)
 			radio_msg("szm_name_sid", "szm_prologue_msg", "ui_inGame2_sid")

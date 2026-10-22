@@ -1,0 +1,31 @@
+# Push a tag like v1.0 -> builds an MO2-ready zip (gamedata/ at the archive root) and attaches it to the release
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build zip
+        run: |
+          ZIP="The_Noise_Main_Storyline_${GITHUB_REF_NAME}.zip"
+          cd "The Noise - Main Storyline"
+          zip -r -X "../$ZIP" gamedata
+          cd ..
+          unzip -l "$ZIP"
+          echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$ZIP" --title "The Noise $GITHUB_REF_NAME" --generate-notes \
+            || gh release upload "$GITHUB_REF_NAME" "$ZIP" --clobber
