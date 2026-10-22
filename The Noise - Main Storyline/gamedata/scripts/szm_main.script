@@ -379,6 +379,14 @@ GEAR_OVERFLOW = {
 WORN_PART_MIN = 40
 WORN_PART_MAX = 80
 
+-- If the scaled rewards fail at runtime (an engine function or a config this game doesn't have), the
+-- error goes to the log and the stage gives these fixed rewards instead, with unscaled money
+FIXED_GEAR = {
+	weapon   = { "wpn_sks_b", 1, pristine = true },
+	outfit   = { "cs_light_outfit", 1 },
+	backpack = { "itm_backpack", 1 },
+}
+
 -- Gear level 0-3: the highest weapon or outfit tier the actor's best equipped item is worth.
 -- It scales the money of every stage (szm_reward_money) and the medkit type of "@medkit".
 MONEY_MULT = { [0] = 1.0, [1] = 1.25, [2] = 1.5, [3] = 2.0 }
@@ -561,6 +569,18 @@ local function give_items(list)
 end
 
 ---------------------------< Scaled rewards >---------------------------
+-- pcall with the error logged once per place (actor_on_update would repeat it every few seconds)
+local errors_logged = {}
+local function safe_call(where, fn, ...)
+	local ok, res = pcall(fn, ...)
+	if ok then return true, res end
+	if not errors_logged[where] then
+		errors_logged[where] = true
+		printf("! [SZM] scaled rewards: %s failed, using fixed rewards: %s", where, tostring(res))
+	end
+	return false
+end
+
 local function item_cost(sec)
 	return ini_sys:r_float_ex(sec, "cost") or 0
 end
@@ -637,7 +657,8 @@ local function gear_level()
 end
 
 local function money_mult()
-	return MONEY_MULT[gear_level()] or 1
+	local ok, lvl = safe_call("gear_level", gear_level)
+	return ok and MONEY_MULT[lvl] or 1
 end
 
 local function round_money(x)
@@ -646,7 +667,7 @@ end
 
 -- Resolves "@gear" / "@medkit": { items = rewards for give_items, cash = money instead of gear,
 -- notes = what the giver has to explain, in order: "swap_<category>" (money instead), "worn_weapon" }
-local function plan_rewards(list)
+local function plan_rewards_scaled(list)
 	local best, lvl = best_gear(), gear_level()
 	local plan = { items = {}, cash = 0, notes = {} }
 	for _, it in ipairs(list or {}) do
@@ -673,6 +694,29 @@ local function plan_rewards(list)
 		end
 	end
 	return plan
+end
+
+-- The rewards as before scaling: FIXED_GEAR, plain medkits, no money instead of gear
+local function plan_rewards_fixed(list)
+	local plan = { items = {}, cash = 0, notes = {} }
+	for _, it in ipairs(list or {}) do
+		if it[1] == "@gear" then
+			local g = FIXED_GEAR[it[2]]
+			if g then
+				plan.items[#plan.items + 1] = { g[1], g[2], pristine = g.pristine, ammo = it.ammo }
+			end
+		elseif it[1] == "@medkit" then
+			plan.items[#plan.items + 1] = { "medkit", it[2] }
+		else
+			plan.items[#plan.items + 1] = it
+		end
+	end
+	return plan
+end
+
+local function plan_rewards(list)
+	local ok, plan = safe_call("plan_rewards", plan_rewards_scaled, list)
+	return ok and plan or plan_rewards_fixed(list)
 end
 
 local function give_plan(plan, first_speaker, second_speaker)
@@ -1436,8 +1480,9 @@ local function take_plan(key, rewards)
 end
 
 local function reward_note(first_speaker, second_speaker)
-	local plan = current_plan(first_speaker, second_speaker)
-	return plan and plan.notes[1]
+	-- on an error: no note, the NPC says the plain reward line
+	local ok, plan = safe_call("current_plan", current_plan, first_speaker, second_speaker)
+	return ok and plan and plan.notes[1] or nil
 end
 
 local function turn_in_stage(n, first_speaker, second_speaker)
@@ -1882,7 +1927,7 @@ local function actor_on_update()
 	tg_epilogue = tg + 5000
 	try_prologue()
 	check_next_stage()
-	best_gear()   -- remember the best gear as it is equipped, not only at the reports
+	safe_call("best_gear", best_gear)   -- remember the best gear as it is equipped, not only at the reports
 end
 
 local function actor_on_first_update()
