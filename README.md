@@ -48,11 +48,12 @@ no weapon above an SKS.
    (for G.A.M.M.A.: `<GAMMA>\mods\`).
 2. Refresh MO2 (F5) and enable the mod. Load order doesn't matter much: it adds its own files and uses
    DXML/DLTX instead of overwriting shared configs.
-3. Start a new game as a loner in Cordon. Sid's radio call comes about 20 seconds after you load in.
+3. Start a new game as a loner in Cordon, or load an existing loner save. Sid's radio call comes about
+   a minute after you are in Cordon (an existing save elsewhere gets it after arriving in Cordon).
 
 ## Notes
 
-- The story starts only on a fresh game as a loner starting in Cordon. It disables Fanatic's "Training Day".
+- The story starts for a loner (new game or existing save) once they are in Cordon. It disables Fanatic's "Training Day".
 - Internal ids use the `szm_` prefix (from the working title "Szum"). Don't rename them: saves depend on them.
 - Uninstalling mid-story leaves the quest items and task entries orphaned in your save.
 - `dialogs_szm.xml` is generated: edit `tools/szm_gen_dialogs.py` (stage givers, chaining) and the texts,
