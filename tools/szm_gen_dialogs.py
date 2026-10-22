@@ -42,27 +42,31 @@ def offer_phrases(m, who, base):
         ph(b + 5, "szm_declined_%s" % who),
     ]
 
-# Scaled rewards: when a gear reward is given as money, the NPC says szm_swap_<who>_<category> first,
-# the actor answers szm_swap_ok and the reward line follows (a copy of it, the original is for "no swap")
-SWAP_CATS = ("weapon", "outfit", "backpack")
-SWAP_BASE, SWAP_OK, SWAP_REWARD = 200, 250, 300
+# Scaled rewards: when a gear reward is given as money (swap) or as a better but worn gun (worn), the NPC
+# says szm_<kind>_<who>_<category> first, the actor answers szm_<kind>_ok and the reward line follows
+# (a copy of it: the original is for "nothing to explain")
+NOTES = (("swap", "weapon"), ("swap", "outfit"), ("swap", "backpack"), ("worn", "weapon"))
+NOTE_BASE, OK_BASE, NOTE_REWARD = 200, 250, 300
 
 def swap_branch(phrases, before, reward, who):
-    """phrases: list of (id, text, nexts, action, precond); adds the swap lines between phrase `before`
+    """phrases: list of (id, text, nexts, action, precond); adds the note lines between phrase `before`
     (actor) and `reward` (NPC) if `who` has any"""
-    cats = [c for c in SWAP_CATS if "szm_swap_%s_%s" % (who, c) in ids]
-    if not cats:
+    notes = [(k, c) for k, c in NOTES if "szm_%s_%s_%s" % (k, who, c) in ids]
+    if not notes:
         return
+    kinds = sorted({k for k, c in notes})
+    ok_id = {k: OK_BASE + j for j, k in enumerate(kinds)}
     p = {q[0]: q for q in phrases}
     i, text, nexts, action, _ = p[reward]
     phrases[phrases.index(p[reward])] = (i, text, nexts, action, "szm_main.reward_not_swapped")
-    swaps = [SWAP_BASE + j for j in range(len(cats))]
+    note_ids = [NOTE_BASE + j for j in range(len(notes))]
     b = p[before]
-    phrases[phrases.index(b)] = (b[0], b[1], swaps + [reward], b[3], b[4])
-    for sid, c in zip(swaps, cats):
-        phrases.append((sid, "szm_swap_%s_%s" % (who, c), [SWAP_OK], None, "szm_main.reward_swap_%s" % c))
-    phrases.append((SWAP_OK, "szm_swap_ok", [SWAP_REWARD], None, None))
-    phrases.append((SWAP_REWARD, text, nexts, action, None))
+    phrases[phrases.index(b)] = (b[0], b[1], note_ids + [reward], b[3], b[4])
+    for nid, (k, c) in zip(note_ids, notes):
+        phrases.append((nid, "szm_%s_%s_%s" % (k, who, c), [ok_id[k]], None, "szm_main.reward_%s_%s" % (k, c)))
+    for k in kinds:
+        phrases.append((ok_id[k], "szm_%s_ok" % k, [NOTE_REWARD], None, None))
+    phrases.append((NOTE_REWARD, text, nexts, action, None))
 
 def render(phrases):
     return [ph(i, text, nexts, action, precond) for i, text, nexts, action, precond in phrases]
@@ -119,7 +123,7 @@ xml = '''<?xml version="1.0" encoding="windows-1251"?>
 	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
 	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"
 	szm_16_<who>: the Act IV choice (Cold / Sid / Wolf). Who says what is set in modxml_szm.script.
-	200+ / 250 / 300: gear reward given as money - the NPC's swap line, the actor's answer, the reward line
+	200+ / 250+ / 300: gear reward given as money or as a worn gun - the NPC's line, the actor's answer, the reward line
 -->
 <game_dialogs>
 

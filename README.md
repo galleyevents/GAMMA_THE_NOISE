@@ -53,7 +53,9 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
 - Scaled rewards: the mod remembers the most valuable weapon, armor and backpack the player has had
   equipped. Gear rewards (Sid's backpack, Cold's armor, Sid's rifle) are the first item of a tier list
   (`GEAR_TIERS` in `szm_main.script`) clearly better than that; if the player has outgrown the whole
-  list, the giver says so in the report dialog and pays money instead. The same gear level scales the
+  list, the giver says so in the report dialog and pays money instead - except for weapons: then the
+  player gets a clearly better gun from `GEAR_OVERFLOW`, worn (only the barrel pristine, the other parts
+  40-80%), and money only when even that list is outgrown. The same gear level scales the
   money of every stage and the medkit type. The leather jacket and gas mask of stage 4 stay fixed (tutorial).
 - All tasks are main-story tasks (gold markers); the next quest giver gets a gold map marker too.
 - Turning in a stage leads straight into the next offer in the same conversation (or "later").

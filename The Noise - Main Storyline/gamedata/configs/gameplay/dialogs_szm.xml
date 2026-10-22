@@ -4,7 +4,7 @@
 	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
 	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"
 	szm_16_<who>: the Act IV choice (Cold / Sid / Wolf). Who says what is set in modxml_szm.script.
-	200+ / 250 / 300: gear reward given as money - the NPC's swap line, the actor's answer, the reward line
+	200+ / 250+ / 300: gear reward given as money or as a worn gun - the NPC's line, the actor's answer, the reward line
 -->
 <game_dialogs>
 
@@ -13,7 +13,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_1_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_1_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_1_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_1_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_1_done_3</text><action>szm_main.turn_in_1</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_2_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -26,7 +26,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_1_done_3</text><action>szm_main.turn_in_1</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -46,7 +48,7 @@
 	<dialog id="szm_2_done">
 		<precondition>szm_main.can_turn_in_2</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_2_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_2_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_2_done_1</text><action>szm_main.turn_in_2</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_3_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -59,7 +61,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_2_done_1</text><action>szm_main.turn_in_2</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -81,12 +85,14 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_3_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_3_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_3_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_3_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_3_done_3</text><action>szm_main.turn_in_3</action></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_wolf_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_wolf_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_wolf_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_wolf_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_3_done_3</text><action>szm_main.turn_in_3</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -108,7 +114,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_4_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_4_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_4_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_4_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_4_done_3</text><action>szm_main.turn_in_4</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_5_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -121,7 +127,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_4_done_3</text><action>szm_main.turn_in_4</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -141,7 +149,7 @@
 	<dialog id="szm_5_done">
 		<precondition>szm_main.can_turn_in_5</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_5_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_5_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_5_done_1</text><action>szm_main.turn_in_5</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_6_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -154,7 +162,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_5_done_1</text><action>szm_main.turn_in_5</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -176,7 +186,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_6_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_6_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_6_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_6_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_7_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -189,7 +199,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_spore_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -209,7 +221,7 @@
 	<dialog id="szm_7_done">
 		<precondition>szm_main.can_turn_in_7</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_7_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_7_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_7_done_1</text><action>szm_main.turn_in_7</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_8_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -222,7 +234,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_spore_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_7_done_1</text><action>szm_main.turn_in_7</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -242,7 +256,7 @@
 	<dialog id="szm_8_done">
 		<precondition>szm_main.can_turn_in_8</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_8_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_8_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_8_done_1</text><action>szm_main.turn_in_8</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_9_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -255,7 +269,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_spore_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_8_done_1</text><action>szm_main.turn_in_8</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -275,7 +291,7 @@
 	<dialog id="szm_9_done">
 		<precondition>szm_main.can_turn_in_9</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_9_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_9_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_9_done_1</text><action>szm_main.turn_in_9</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_10_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -288,7 +304,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_spore_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_9_done_1</text><action>szm_main.turn_in_9</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -310,7 +328,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_10_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_10_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_10_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_10_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_10_done_3</text><action>szm_main.turn_in_10</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_11_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -323,7 +341,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_spore_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_10_done_3</text><action>szm_main.turn_in_10</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -345,7 +365,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_11_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_11_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_11_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_11_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_11_done_3</text><action>szm_main.turn_in_11</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_12_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -358,7 +378,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_11_done_3</text><action>szm_main.turn_in_11</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -378,7 +400,7 @@
 	<dialog id="szm_12_done">
 		<precondition>szm_main.can_turn_in_12</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_12_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_12_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_12_done_1</text><action>szm_main.turn_in_12</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_13_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -391,7 +413,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_12_done_1</text><action>szm_main.turn_in_12</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -413,7 +437,7 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_13_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_13_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_13_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_13_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_13_done_3</text><action>szm_main.turn_in_13</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_14_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
@@ -426,7 +450,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_13_done_3</text><action>szm_main.turn_in_13</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -446,7 +472,7 @@
 	<dialog id="szm_14_done">
 		<precondition>szm_main.can_turn_in_14</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_14_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_14_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_14_done_1</text><action>szm_main.turn_in_14</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_15_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -459,7 +485,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_14_done_1</text><action>szm_main.turn_in_14</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -491,7 +519,7 @@
 	<dialog id="szm_17_done">
 		<precondition>szm_main.can_turn_in_17</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_17_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_17_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_17_done_1</text><action>szm_main.turn_in_17</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_18_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -504,7 +532,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_17_done_1</text><action>szm_main.turn_in_17</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -524,7 +554,7 @@
 	<dialog id="szm_18_done">
 		<precondition>szm_main.can_turn_in_18</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_18_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_18_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_18_done_1</text><action>szm_main.turn_in_18</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_23_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -537,7 +567,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_18_done_1</text><action>szm_main.turn_in_18</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -557,7 +589,7 @@
 	<dialog id="szm_19_done">
 		<precondition>szm_main.can_turn_in_19</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_19_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_19_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_19_done_1</text><action>szm_main.turn_in_19</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_20_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -570,7 +602,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_19_done_1</text><action>szm_main.turn_in_19</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -590,7 +624,7 @@
 	<dialog id="szm_20_done">
 		<precondition>szm_main.can_turn_in_20</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_20_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_20_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_20_done_1</text><action>szm_main.turn_in_20</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_23_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -603,7 +637,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_20_done_1</text><action>szm_main.turn_in_20</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -623,7 +659,7 @@
 	<dialog id="szm_21_done">
 		<precondition>szm_main.can_turn_in_21</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_21_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_21_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_21_done_1</text><action>szm_main.turn_in_21</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_22_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -636,7 +672,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_wolf_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_wolf_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_wolf_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_wolf_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_21_done_1</text><action>szm_main.turn_in_21</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -656,7 +694,7 @@
 	<dialog id="szm_22_done">
 		<precondition>szm_main.can_turn_in_22</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_22_done_0</text><next>200</next><next>201</next><next>202</next><next>1</next></phrase>
+			<phrase id="0"><text>szm_22_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_22_done_1</text><action>szm_main.turn_in_22</action><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_23_offer_0</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
@@ -669,7 +707,9 @@
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_wolf_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_wolf_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_wolf_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_wolf_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_22_done_1</text><action>szm_main.turn_in_22</action><next>2</next><next>3</next></phrase>
 		</phrase_list>
 	</dialog>
@@ -691,12 +731,14 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_25_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_25_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_25_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_25_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -706,12 +748,14 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_26_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_26_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_26_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_26_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_26_done_3</text><action>szm_main.turn_in_26</action></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_26_done_3</text><action>szm_main.turn_in_26</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -721,12 +765,14 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_27_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_27_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_27_done_2</text><next>200</next><next>201</next><next>202</next><next>3</next></phrase>
+			<phrase id="2"><text>szm_27_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_27_done_3</text><action>szm_main.turn_in_27</action></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_wolf_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_wolf_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_wolf_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_wolf_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_27_done_3</text><action>szm_main.turn_in_27</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -736,14 +782,16 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_16_cold_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_16_cold_1</text><next>2</next><next>3</next></phrase>
-			<phrase id="2"><text>szm_16_cold_2</text><next>200</next><next>201</next><next>202</next><next>4</next></phrase>
+			<phrase id="2"><text>szm_16_cold_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>4</next></phrase>
 			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
 			<phrase id="4"><precondition>szm_main.reward_not_swapped</precondition><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
 			<phrase id="5"><text>szm_16_cold_5</text></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -753,14 +801,16 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_16_sid_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_16_sid_1</text><next>2</next><next>3</next></phrase>
-			<phrase id="2"><text>szm_16_sid_2</text><next>200</next><next>201</next><next>202</next><next>4</next></phrase>
+			<phrase id="2"><text>szm_16_sid_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>4</next></phrase>
 			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
 			<phrase id="4"><precondition>szm_main.reward_not_swapped</precondition><text>szm_16_sid_4</text><action>szm_main.turn_in_16_sid</action></phrase>
 			<phrase id="5"><text>szm_16_sid_5</text></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_sid_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_sid_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_sid_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_sid_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_16_sid_4</text><action>szm_main.turn_in_16_sid</action></phrase>
 		</phrase_list>
 	</dialog>
@@ -770,14 +820,16 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_16_wolf_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_16_wolf_1</text><next>2</next><next>3</next></phrase>
-			<phrase id="2"><text>szm_16_wolf_2</text><next>200</next><next>201</next><next>202</next><next>4</next></phrase>
+			<phrase id="2"><text>szm_16_wolf_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>4</next></phrase>
 			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
 			<phrase id="4"><precondition>szm_main.reward_not_swapped</precondition><text>szm_16_wolf_4</text><action>szm_main.turn_in_16_wolf</action></phrase>
 			<phrase id="5"><text>szm_16_wolf_5</text></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_wolf_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_wolf_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_wolf_backpack</text><next>250</next></phrase>
+			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_wolf_weapon</text><next>251</next></phrase>
 			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
 			<phrase id="300"><text>szm_16_wolf_4</text><action>szm_main.turn_in_16_wolf</action></phrase>
 		</phrase_list>
 	</dialog>

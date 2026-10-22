@@ -29,6 +29,11 @@
 	<string id="szm_swap_wolf_outfit"><text>I had a suit stashed away for you, kid. But looks like you've outgrown it - yours is better than mine. Take the money, then.</text></string>
 	<string id="szm_swap_wolf_backpack"><text>I had a backpack stashed away for you, kid, but yours is better than mine. Take the money, then.</text></string>
 	<string id="szm_swap_ok"><text>Fair enough. Money always comes in handy.</text></string>
+	<string id="szm_worn_sid_weapon"><text>Eh, the rifle I'd put aside for you would be a step down from what you're carrying. So here's something better instead. It's been through a lot, I won't lie - but the barrel is like new, and that's the part you can't fix with a file and some grease. The rest you'll patch up yourself.</text></string>
+	<string id="szm_worn_spore_weapon"><text>The rifle I had for you would be a step down for you. Here's a better one from a fallen fighter's stash. It's seen hard use, but the barrel is perfect - our techs checked. The rest you can fix.</text></string>
+	<string id="szm_worn_cold_weapon"><text>What I had in our stores is worse than what you carry. Take this one instead - it went through hell with us, but the barrel is like new. Get the rest fixed and it will serve you well.</text></string>
+	<string id="szm_worn_wolf_weapon"><text>The rifle I kept for you would be a step down, kid. So take this one. Beaten up, I know, but the barrel is like new - and that's what counts. The rest you can fix.</text></string>
+	<string id="szm_worn_ok"><text>A good barrel is what counts. I'll fix the rest myself.</text></string>
 	<string id="szm_16_think"><text>I need to think about it.</text></string>
 
 	<!-- ===================== map spot hints ===================== -->

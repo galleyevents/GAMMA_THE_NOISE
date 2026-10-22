@@ -5,7 +5,9 @@ Nagrody pieniężne to przedziały losowane przy oddaniu zadania.
 Nagrody rosną z ekwipunkiem gracza: kwoty i apteczki zależą od najlepszego sprzętu,
 jaki miał na sobie, a plecak, pancerz i broń są o próg lepsze od jego własnych
 (najwyżej do górnego progu). Jeśli gracz ma już lepszy sprzęt, dostaje pieniądze,
-a zleceniodawca mówi o tym w dialogu. Kurtka i maska z etapu 4 są stałe (samouczek).
+a zleceniodawca mówi o tym w dialogu. Wyjątek: broń. Wtedy gracz dostaje
+wyraźnie lepszą, ale zużytą (zdrowa jest tylko lufa, reszta 40-80%); pieniądze
+dopiero, gdy i taka nie byłaby lepsza od jego własnej. Kurtka i maska z etapu 4 są stałe (samouczek).
 Kwoty podane niżej są dla gracza w słabym sprzęcie.
 
 
@@ -100,7 +102,7 @@ AKT IV - WYBÓR
    Cold, Sid i Wilk odzywają się przez radio i każdy chce Kamertonu. Wszyscy trzej
    mają znaczniki na mapie, a wygrywa ten, komu oddasz pierwszemu:
    - Cold: pancerz CS-2a lub lepszy (albo pieniądze), apteczki, +200 u Czystego Nieba
-   - Sid:  SKS lub lepsza broń w idealnym stanie (albo pieniądze), amunicja, 15 000 RU, -300 u Czystego Nieba
+   - Sid:  SKS lub lepsza broń w idealnym stanie (albo lepsza, ale zużyta), amunicja, 15 000 RU, -300 u Czystego Nieba
    - Wilk: niszczycie Kamerton; artefakt Dusza, apteczki, +150 u samotników
    Pojawia się baner "The Noise - storyline complete".
 
