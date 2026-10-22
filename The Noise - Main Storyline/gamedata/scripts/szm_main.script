@@ -64,6 +64,8 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
 -- turn_in_to   = story_id the actor reports to, if not the task giver
 -- area         = { smarts, min_dist, max_dist }: ring around the task giver
+-- far_from_actor = squads of the stage spawn at least this far (m) from the actor when on the actor's
+--                level; if no smart qualifies, the one farthest from the actor
 -- start_items / rewards = { {section, amount}, ... }
 --   { section, amount, pristine = true } : weapon with every part at PRISTINE_PART_CON
 --   { "@ammo", boxes }                   : boxes of ammo for the weapons in the actor's slots
@@ -282,6 +284,7 @@ STAGES = {
 			squad       = "szm_agr_u_merc_squad",
 			squad_area  = { AGR_U_SMARTS, 0, ANYWHERE },
 		},
+		far_from_actor = 40,    -- the mercenaries come when the journal is picked up: give the actor a moment
 		auto_complete = true,
 		next    = 24,
 	},
@@ -291,6 +294,7 @@ STAGES = {
 		squad   = "szm_agr_u_guard_squad",
 		carry   = "szm_resonator",
 		area    = { AGR_U_SMARTS, 0, ANYWHERE },
+		far_from_actor = 80,    -- starts while the actor is still in the tunnels, right after stage 23
 		fetch   = { "szm_resonator", 1 },
 		keep_fetch = true,
 		auto_complete = true,
@@ -640,6 +644,28 @@ local function remember_smart(name)
 	save_var(db.actor, VAR_USED, list)
 end
 
+-- Too close to the actor for a stage with far_from_actor (only smarts on the actor's level count)
+local function too_close_to_actor(n, smart)
+	local keep = STAGES[n].far_from_actor
+	return keep ~= nil and level_of(smart.m_game_vertex_id) == actor_level()
+		and smart.position:distance_to(db.actor:position()) < keep
+end
+
+-- far_from_actor stages when every smart is too close: the one farthest from the actor
+local function farthest_from_actor(smarts, exclude)
+	local best, best_dist
+	for _, name in ipairs(smarts) do
+		local smart = name ~= exclude and SIMBOARD.smarts_by_names[name]
+		if smart and level_of(smart.m_game_vertex_id) == actor_level() then
+			local dist = smart.position:distance_to(db.actor:position())
+			if not best_dist or dist > best_dist then
+				best, best_dist = smart, dist
+			end
+		end
+	end
+	return best
+end
+
 -- A smart in the [min_dist, max_dist] ring around origin; if none, the nearest one not closer than min_dist.
 -- Recently used smarts are skipped unless nothing else qualifies.
 local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
@@ -647,6 +673,9 @@ local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
 	local ring, fallback, fallback_dist = {}, nil, math.huge
 	for _, name in ipairs(smarts) do
 		local smart = name ~= exclude and (allow_recent or not is_recent(name)) and SIMBOARD.smarts_by_names[name]
+		if smart and too_close_to_actor(n, smart) then
+			smart = nil
+		end
 		if smart then
 			local dist = smart.position:distance_to(origin)
 			if dist >= min_dist and dist <= max_dist then
@@ -660,6 +689,9 @@ local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
 	local smart = #ring > 0 and ring[math.random(#ring)] or fallback
 	if not smart and not allow_recent then
 		return pick_spawn_smart(n, origin, area, exclude, true)
+	end
+	if not smart and STAGES[n].far_from_actor then
+		smart = farthest_from_actor(smarts, exclude)
 	end
 	if not smart then
 		printf("[SZM] stage %s: no spawn smart found", n)
