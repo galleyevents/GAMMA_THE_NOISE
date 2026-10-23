@@ -73,12 +73,26 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
 
 ## Installation (Mod Organizer 2)
 
-1. Copy the `The Noise - Main Storyline` folder into your MO2 `mods` folder
-   (for G.A.M.M.A.: `<GAMMA>\mods\`).
-2. Refresh MO2 (F5) and enable the mod. Load order doesn't matter much: it adds its own files and uses
+1. In MO2: *Install a new mod from an archive* and pick the release zip. The installer asks for the
+   reward mode (below). Updating: remove the old version first.
+   (Copying the `The Noise - Main Storyline` folder into `mods` by hand works too, with full rewards.)
+2. Enable the mod. Load order doesn't matter much: it adds its own files and uses
    DXML/DLTX instead of overwriting shared configs.
 3. Start a new game, or load an existing save, as a Loner, Duty, Freedom, Ecologist or Clear Sky character. Sid's radio call comes about
    a minute after you are in Cordon (an existing save elsewhere gets it after arriving in Cordon).
+
+## Reward modes
+
+| Mode | Money | Ammo, medicine | Gear (backpack, armor, weapons, tools, stage 4 jacket and gas mask, Sid's TOZ advance) | Story artifacts |
+|---|---|---|---|---|
+| Full (default) | yes | yes | yes | yes |
+| No gear | yes | yes | no | yes |
+| Money only | yes | no | no | yes |
+
+Picked in the installer (it adds `configs/mod_system_szm_mode.ltx`) and changeable at any time in MCM
+(*The Noise* > *Rewards*), which overrides the installer's choice. Quest items and what a task needs (the
+cooking kit) are always given. Reward lines that would promise removed items have `<id>_nogear` /
+`<id>_money` versions in `st_szm.xml`.
 
 ## Notes
 
@@ -98,6 +112,7 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
 The Noise - Main Storyline/gamedata/
   scripts/szm_main.script                    story engine (stages, spawns, markers, rewards)
   scripts/modxml_szm.script                  DXML: dialogs on Sid, Wolf, Spore, Cold; gold map spot
+  scripts/szm_mcm.script                     MCM: reward mode
   configs/mod_system_szm.ltx                 DLTX: registers the dialog file
   configs/gameplay/dialogs_szm.xml           dialogs (generated)
   configs/misc/task/tm_szm.ltx               tasks, money and goodwill rewards
@@ -106,4 +121,6 @@ The Noise - Main Storyline/gamedata/
   configs/text/eng/st_szm.xml                all texts
   textures/ui/ui_szm_icons.dds               quest item icons
 tools/szm_gen_dialogs.py                     dialog generator
+installer/fomod/                             MO2 installer (FOMOD), packed into the release zip
+installer/options/<mode>/                    what each reward mode adds (mod_system_szm_mode.ltx)
 ```

@@ -73,6 +73,8 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 --                                          actor's own; none -> a worn one from GEAR_OVERFLOW (weapons), else
 --                                          money instead (either way with a line in the report dialog)
 --   { "@medkit", amount }                : medkits of the actor's gear level (MEDKITS)
+--   advance = true (start_items)         : a gift, not needed for the stage: only in the "full" reward mode
+--   REWARD_KEEP decides which rewards each reward mode gives
 -- auto_next    = the task completes on its own when the objective is done and gives this stage
 -- medusa       = true (Jellyfish) or an item section spawned at MEDUSA_SPAWN, the anomaly field
 -- Act V (radio stages, no offer dialog):
@@ -110,7 +112,7 @@ STAGES = {
 		fetch   = { "szm_cylinder", 1 },
 		keep_fetch = true,      -- Sid gives the cylinder back for stage 6
 		hum_on_fetch = "szm_hum_bandit",
-		start_items = { {"wpn_toz34", 1, pristine = true}, {"ammo_12x70_buck", 2} },   -- Sid's advance for the job
+		start_items = { {"wpn_toz34", 1, pristine = true, advance = true}, {"ammo_12x70_buck", 2, advance = true} },   -- Sid's advance for the job
 		rewards = { {"novice_outfit", 1}, {"helm_respirator", 1} },   -- Leather Jacket + Refitted PBF: the weakest armor and gas mask
 	},
 	[5] = {  -- Jellyfish in the anomaly field; picking it up -> the Noise again
@@ -379,6 +381,17 @@ GEAR_OVERFLOW = {
 WORN_PART_MIN = 40
 WORN_PART_MAX = 80
 
+-- Reward modes, picked in the installer (FOMOD: configs\mod_system_szm_mode.ltx, [szm_settings] reward_mode)
+-- and changeable in MCM ("The Noise"). Money, quest items and the items a stage needs always stay.
+--   full       : everything
+--   no_gear    : money, ammo, medicine, artifacts - no gear, no Sid's advance (the TOZ)
+--   money_only : money and artifacts
+-- Reward lines with a <id>_nogear (any hardcore mode) or <id>_money (money_only) text use it.
+REWARD_KEEP = {
+	no_gear    = { ammo = true, medical = true, artefact = true },
+	money_only = { artefact = true },
+}
+
 -- If the scaled rewards fail at runtime (an engine function or a config this game doesn't have), the
 -- error goes to the log and the stage gives these fixed rewards instead, with unscaled money
 FIXED_GEAR = {
@@ -478,11 +491,39 @@ local function actor_is_csky()
 	return db.actor ~= nil and character_community(db.actor) == "actor_csky"
 end
 
--- String id, or its Clear Sky actor version (<id>_csky) when there is one
+-- Reward mode: MCM if it has one, else the installer's choice, else "full"
+local function installed_mode()
+	local m = ini_sys:r_string_ex("szm_settings", "reward_mode")
+	return (m == "full" or REWARD_KEEP[m]) and m or "full"
+end
+
+local function reward_mode()
+	if ui_mcm and ui_mcm.get then
+		local ok, m = pcall(ui_mcm.get, "szm/reward_mode")
+		if ok and (m == "full" or REWARD_KEEP[m]) then return m end
+	end
+	return installed_mode()
+end
+
+-- MCM's default (szm_mcm.script)
+function installed_reward_mode() return installed_mode() end
+
+local function has_text(id)
+	return game.translate_string(id) ~= id
+end
+
+-- String id, or its version for a Clear Sky actor (<id>_csky) or for the reward mode
+-- (<id>_money in money_only, <id>_nogear in both hardcore modes) when there is one
 local function text_id(id)
-	if actor_is_csky() then
-		local alt = id .. "_csky"
-		if game.translate_string(alt) ~= alt then return alt end
+	if actor_is_csky() and has_text(id .. "_csky") then
+		return id .. "_csky"
+	end
+	local mode = reward_mode()
+	if mode == "money_only" and has_text(id .. "_money") then
+		return id .. "_money"
+	end
+	if mode ~= "full" and has_text(id .. "_nogear") then
+		return id .. "_nogear"
 	end
 	return id
 end
@@ -734,7 +775,27 @@ local function plan_rewards_fixed(list)
 	return plan
 end
 
+local function reward_kind(it)
+	local sec = it[1]
+	if sec == "@ammo" or string.find(sec, "^ammo_") then return "ammo" end
+	if sec == "@medkit" or sec == "bandage" or string.find(sec, "^medkit") then return "medical" end
+	if string.find(sec, "^af_") then return "artefact" end
+	return "gear"
+end
+
+-- The rewards the reward mode gives
+local function mode_filter(list)
+	local keep = REWARD_KEEP[reward_mode()]
+	if not keep then return list end
+	local out = {}
+	for _, it in ipairs(list or {}) do
+		if keep[reward_kind(it)] then out[#out + 1] = it end
+	end
+	return out
+end
+
 local function plan_rewards(list)
+	list = mode_filter(list)
 	local ok, plan = safe_call("plan_rewards", plan_rewards_scaled, list)
 	return ok and plan or plan_rewards_fixed(list)
 end
@@ -1326,7 +1387,12 @@ local function start_stage_at(n, origin, giver_id)
 		end
 	end
 
-	give_items(st.start_items)
+	-- gifts (advance = true) only in the "full" reward mode; what the stage needs always
+	local items = {}
+	for _, it in ipairs(st.start_items or {}) do
+		if not it.advance or reward_mode() == "full" then items[#items + 1] = it end
+	end
+	give_items(items)
 	give_stage_task(n, giver_id)
 	clear_offer_spot()
 	return true
@@ -1714,6 +1780,13 @@ function reward_worn_weapon(a, b)   return reward_note(a, b) == "worn_weapon" en
 -- Phrases with a "_csky" text (szm_gen_dialogs.py): the Clear Sky actor's version or the usual one
 function actor_csky()     return actor_is_csky() end
 function actor_not_csky() return not actor_is_csky() end
+
+-- Phrases with "_nogear" / "_money" texts: which one the reward mode says
+function mode_full()      return reward_mode() == "full" end
+function mode_hardcore()  return reward_mode() ~= "full" end
+function mode_no_gear()   return reward_mode() == "no_gear" end
+function mode_money()     return reward_mode() == "money_only" end
+function mode_not_money() return reward_mode() ~= "money_only" end
 
 ---------------------------< Task functors >---------------------------
 -- Marker for a squad stage: the body holding the item once its carrier is dead and the item

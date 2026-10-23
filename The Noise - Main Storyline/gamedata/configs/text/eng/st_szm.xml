@@ -99,6 +99,7 @@
 	<!-- ===================== 4: the missing courier, the first Noise ===================== -->
 	<string id="szm_4_offer_0"><text>Wolf is fed and happy. You mentioned a real job?</text></string>
 	<string id="szm_4_offer_1"><text>I did. Grisha, my courier from the Swamps, was due here yesterday with a package. He never arrived. This morning a bandit was seen near the village carrying a bag that isn't his. Find him, take him out and search the body. Whatever he took from Grisha is mine - bring it back. And take this double-barrel, call it an advance. You won't do this job with your bare hands.</text></string>
+	<string id="szm_4_offer_1_nogear"><text>I did. Grisha, my courier from the Swamps, was due here yesterday with a package. He never arrived. This morning a bandit was seen near the village carrying a bag that isn't his. Find him, take him out and search the body. Whatever he took from Grisha is mine - bring it back. I hope you've got a gun on you - you won't do this job with your bare hands.</text></string>
 	<string id="szm_4_offer_2"><text>I'll find him.</text></string>
 	<string id="szm_4_offer_4"><text>He's marked on your PDA. And don't get yourself shot - dead men don't collect payment.</text></string>
 	<string id="szm_4_done_0"><text>The bandit's dead. He had this on him - a metal cylinder.</text></string>
@@ -112,10 +113,13 @@
 	<!-- ===================== 5: Jellyfish, the Noise again ===================== -->
 	<string id="szm_5_offer_0"><text>What comes next?</text></string>
 	<string id="szm_5_offer_1"><text>The anomaly field near the village. A Jellyfish has formed there - an artifact, worth good money. But I want more than money this time: if that noise has anything to do with anomalies, that's where you'll hear it. Bring me the Jellyfish and tell me what you heard. You'll get a proper backpack and some medicine.</text></string>
+	<string id="szm_5_offer_1_money"><text>The anomaly field near the village. A Jellyfish has formed there - an artifact, worth good money. But I want more than money this time: if that noise has anything to do with anomalies, that's where you'll hear it. Bring me the Jellyfish and tell me what you heard. I'll pay you well.</text></string>
+	<string id="szm_5_offer_1_nogear"><text>The anomaly field near the village. A Jellyfish has formed there - an artifact, worth good money. But I want more than money this time: if that noise has anything to do with anomalies, that's where you'll hear it. Bring me the Jellyfish and tell me what you heard. I'll pay you well, and throw in some medicine.</text></string>
 	<string id="szm_5_offer_2"><text>I'll bring you the Jellyfish.</text></string>
 	<string id="szm_5_offer_4"><text>The spot is marked on your PDA. Take out your detector and throw bolts ahead of you. And don't keep the Jellyfish in your backpack too long, it's a bit radioactive.</text></string>
 	<string id="szm_5_done_0"><text>I've got the Jellyfish. And Sid, the noise was there again. Louder this time, as if it were right next to me.</text></string>
 	<string id="szm_5_done_1"><text>Twice in Cordon in one week... This is bigger than a lost package. Here's the medicine, and something for your trouble. And listen - I think I know who might have answers.</text></string>
+	<string id="szm_5_done_1_money"><text>Twice in Cordon in one week... This is bigger than a lost package. Here's your money. And listen - I think I know who might have answers.</text></string>
 	<string id="szm_task_5_name"><text>The Noise: Jellyfish</text></string>
 	<string id="szm_task_5_descr"><text>A Jellyfish has formed in the anomaly field near the village. Sid wants it, and he wants to know whether the noise can be heard there. I need to find it with my detector. Better throw bolts ahead of me.</text></string>
 	<string id="szm_task_5_descr_return"><text>I have the Jellyfish. The noise was there again, louder. Return to Sidorovich.</text></string>
@@ -141,10 +145,12 @@
 	<!-- ===================== 7: renegades ===================== -->
 	<string id="szm_7_offer_0"><text>What do you need a hand with?</text></string>
 	<string id="szm_7_offer_1"><text>Something simple, to start. Renegades - bandits, only dumber and angrier - have crept up to the base again and they shoot anyone who goes out for water. Drive them off. I'll pay, and throw in ammo for whatever you're shooting.</text></string>
+	<string id="szm_7_offer_1_money"><text>Something simple, to start. Renegades - bandits, only dumber and angrier - have crept up to the base again and they shoot anyone who goes out for water. Drive them off. I'll pay.</text></string>
 	<string id="szm_7_offer_2"><text>I'll take care of the renegades.</text></string>
 	<string id="szm_7_offer_4"><text>They're marked on your PDA. Careful, there's a group of them. The Swamps give plenty of cover - use it.</text></string>
 	<string id="szm_7_done_0"><text>The renegades won't bother you anymore.</text></string>
 	<string id="szm_7_done_1"><text>I heard shooting, then silence. Good silence. Here's your money and ammo. As for the cylinder: our techs say it's part of some military device. But right now there's something more urgent.</text></string>
+	<string id="szm_7_done_1_money"><text>I heard shooting, then silence. Good silence. Here's your money. As for the cylinder: our techs say it's part of some military device. But right now there's something more urgent.</text></string>
 	<string id="szm_task_7_name"><text>The Noise: Renegades at the Base</text></string>
 	<string id="szm_task_7_descr"><text>A group of renegades is prowling near the Clear Sky base. Spore wants me to get rid of them. Their position is marked on my PDA.</text></string>
 	<string id="szm_task_7_descr_return"><text>The renegades are dead. Return to Spore.</text></string>
@@ -209,6 +215,7 @@
 	<string id="szm_task_12_reveal_news"><text>The recorder survived, though the casing is scorched. Voices in the distance - someone is heading for the crash site. Renegades, looters.</text></string>
 	<string id="szm_12_done_0"><text>I've got the recorder. The renegades wanted it too.</text></string>
 	<string id="szm_12_done_1"><text>Good work. Take these tools as well, our techs can spare them - out here you will be fixing your own gear. As for the recorder, it's encrypted with a military code - we won't crack it here. Your Sidorovich, though, knows people who can crack anything.</text></string>
+	<string id="szm_12_done_1_nogear"><text>Good work. Here's your pay - spend it wisely, out here you will be fixing your own gear. As for the recorder, it's encrypted with a military code - we won't crack it here. Your Sidorovich, though, knows people who can crack anything.</text></string>
 	<string id="szm_task_12_name"><text>The Noise: The Wreck</text></string>
 	<string id="szm_task_12_descr"><text>A military helicopter went down at the edge of the Swamps. The pilot's body should have a flight recorder on it. I need to get it.</text></string>
 	<string id="szm_task_12_descr_fight"><text>I have the recorder, but renegade looters are heading for the crash site. I need to deal with them.</text></string>
@@ -258,14 +265,16 @@
 	<string id="szm_16_cold_0"><text>Cold, I have the Kamerton.</text></string>
 	<string id="szm_16_cold_1"><text>By the Zone... You really have it. Give it to us, and we'll make sure nobody ever uses it. Kostya, Viktor and the others deserve that much.</text></string>
 	<string id="szm_16_cold_2"><text>Take it. Let Clear Sky deal with the Noise.</text></string>
-	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Take this, you've earned it - and know that in this base you'll always be one of us.</text></string>
-	<string id="szm_16_cold_4_csky"><text>Thank you. Kostya didn't die for nothing. Take this, you've earned it. Clear Sky won't forget what you did for us.</text></string>
+	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Whatever we can spare is yours - and know that in this base you'll always be one of us.</text></string>
+	<string id="szm_16_cold_4_csky"><text>Thank you. Kostya didn't die for nothing. Whatever we can spare is yours. Clear Sky won't forget what you did for us.</text></string>
 	<string id="szm_16_cold_5"><text>I understand. But don't wait too long, the army is looking for it too.</text></string>
 
 	<string id="szm_16_sid_0"><text>Sid, I have the Kamerton.</text></string>
 	<string id="szm_16_sid_1"><text>...You actually did it. I knew you were a good investment! My buyers will pay a fortune for this. Your cut: fifteen thousand and a little something extra.</text></string>
+	<string id="szm_16_sid_1_nogear"><text>...You actually did it. I knew you were a good investment! My buyers will pay a fortune for this. Your cut: fifteen thousand.</text></string>
 	<string id="szm_16_sid_2"><text>Deal. Take it.</text></string>
 	<string id="szm_16_sid_4"><text>Ha! Here's your money, and something from my storeroom. Clear Sky will be furious, but business is business. And don't tell anyone where the money came from.</text></string>
+	<string id="szm_16_sid_4_nogear"><text>Ha! Here's your money. Clear Sky will be furious, but business is business. And don't tell anyone where the money came from.</text></string>
 	<string id="szm_16_sid_5"><text>You're thinking too long, stalker. The offer won't last forever.</text></string>
 
 	<string id="szm_16_wolf_0"><text>Wolf, I have the Kamerton. I don't know who to give it to.</text></string>
@@ -425,5 +434,13 @@
 	<string id="szm_final_end_cold"><text>The resonator went to Clear Sky and the transmitter under Agroprom is silent. The Noise is over - this time for good.</text></string>
 	<string id="szm_final_end_sid"><text>Sidorovich buried the resonator deep in his bunker, and the transmitter under Agroprom is silent. The Noise is over - this time for good.</text></string>
 	<string id="szm_final_end_wolf"><text>You and Wolf gave the resonator to the Zone, and this time it left no echo. The Noise is over - this time for good.</text></string>
+
+	<!-- ===================== MCM (szm_mcm.script) ===================== -->
+	<string id="ui_mcm_menu_szm"><text>The Noise</text></string>
+	<string id="ui_mcm_szm_reward_mode"><text>Rewards</text></string>
+	<string id="ui_mcm_szm_reward_mode_desc"><text>What the story's tasks give. Money, quest items and what a task needs always stay. Changes apply to the next reward.</text></string>
+	<string id="ui_mcm_lst_szm_mode_full"><text>Full: gear, ammo, medicine, money</text></string>
+	<string id="ui_mcm_lst_szm_mode_no_gear"><text>No gear: ammo, medicine, money</text></string>
+	<string id="ui_mcm_lst_szm_mode_money_only"><text>Money only</text></string>
 
 </string_table>

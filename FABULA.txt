@@ -9,6 +9,8 @@ a zleceniodawca mówi o tym w dialogu. Wyjątek: broń. Wtedy gracz dostaje
 wyraźnie lepszą, ale zużytą (zdrowa jest tylko lufa, reszta 40-80%); pieniądze
 dopiero, gdy i taka nie byłaby lepsza od jego własnej. Kurtka i maska z etapu 4 są stałe (samouczek).
 Kwoty podane niżej są dla gracza w słabym sprzęcie.
+Tryby nagród (instalator MO2, potem MCM): pełne / bez sprzętu (pieniądze, amunicja,
+apteczki, artefakty; bez TOZ-a od Sida, kurtki i maski) / same pieniądze (i artefakty).
 
 
 PROLOG - KORDON

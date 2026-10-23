@@ -43,20 +43,32 @@ def offer_phrases(m, who, base):
         (b + 5, "szm_declined_%s" % who, [], None, ()),
     ]
 
-# Clear Sky actor: a phrase whose text has a <text>_csky variant gets a twin with that text (id + CSKY_OFFSET,
-# same nexts and action); the preconditions pick one of the two
-CSKY_OFFSET = 500
+# Text variants: a phrase whose text has a <text>_<suffix> version gets a twin with it (same nexts and
+# action), and the preconditions pick exactly one (same rules as text_id in szm_main.script):
+#   _csky              : the actor is Clear Sky                        (twin id + 500)
+#   _nogear / _money   : the reward mode is no_gear or money_only      (twin id + 1000 / + 1500)
+# A phrase can't have both a Clear Sky and a reward mode variant.
+def variant_set(text):
+    if text + "_csky" in ids:
+        assert text + "_nogear" not in ids and text + "_money" not in ids, text
+        return [("", "szm_main.actor_not_csky", 0), ("_csky", "szm_main.actor_csky", 500)]
+    ng, mo = text + "_nogear" in ids, text + "_money" in ids
+    if ng and mo:
+        return [("", "szm_main.mode_full", 0), ("_nogear", "szm_main.mode_no_gear", 1000),
+                ("_money", "szm_main.mode_money", 1500)]
+    if ng:
+        return [("", "szm_main.mode_full", 0), ("_nogear", "szm_main.mode_hardcore", 1000)]
+    if mo:
+        return [("", "szm_main.mode_not_money", 0), ("_money", "szm_main.mode_money", 1500)]
+    return None
 
-def csky_variants(phrases):
-    twins = {q[0]: q[0] + CSKY_OFFSET for q in phrases if q[1] + "_csky" in ids}
+def text_variants(phrases):
+    sets = {q[0]: variant_set(q[1]) for q in phrases}
     out = []
     for i, text, nexts, action, pre in phrases:
-        nexts = [x for n in nexts for x in ([n, twins[n]] if n in twins else [n])]
-        if i in twins:
-            out.append((i, text, nexts, action, tuple(pre) + ("szm_main.actor_not_csky",)))
-            out.append((twins[i], text + "_csky", nexts, action, tuple(pre) + ("szm_main.actor_csky",)))
-        else:
-            out.append((i, text, nexts, action, pre))
+        nexts = [n + off for n in nexts for _, _, off in (sets.get(n) or [("", None, 0)])]
+        for suffix, cond, off in (sets[i] or [("", None, 0)]):
+            out.append((i + off, text + suffix, nexts, action, tuple(pre) + ((cond,) if cond else ())))
     return out
 
 # Scaled rewards: when a gear reward is given as money (swap) or as a better but worn gun (worn), the NPC
@@ -86,7 +98,7 @@ def swap_branch(phrases, before, reward, who):
     phrases.append((NOTE_REWARD, text, nexts, action, ()))
 
 def render(phrases):
-    return [ph(i, text, nexts, action, precond) for i, text, nexts, action, precond in csky_variants(phrases)]
+    return [ph(i, text, nexts, action, precond) for i, text, nexts, action, precond in text_variants(phrases)]
 
 def dialog(did, precond, phrases):
     out = ['\t<dialog id="%s">' % did, "\t\t<precondition>%s</precondition>" % precond, "\t\t<phrase_list>"]
@@ -142,7 +154,7 @@ xml = '''<?xml version="1.0" encoding="windows-1251"?>
 	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
 	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"
 	szm_16_<who>: the Act IV choice (Cold / Sid / Wolf). Who says what is set in modxml_szm.script.
-	500+: the Clear Sky actor's version of a phrase (text id + _csky)
+	500+ / 1000+ / 1500+: a phrase's version for a Clear Sky actor (_csky) / the reward mode (_nogear, _money)
 	200+ / 250+ / 300: gear reward given as money or as a worn gun - the NPC's line, the actor's answer, the reward line
 -->
 <game_dialogs>

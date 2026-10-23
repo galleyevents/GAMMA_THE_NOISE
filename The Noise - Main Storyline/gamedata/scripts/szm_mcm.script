@@ -1,0 +1,17 @@
+-- The Noise - MCM (Mod Configuration Menu) options. Without MCM the installer's choice is used.
+-- Read by szm_main.script with ui_mcm.get("szm/reward_mode").
+
+function on_mcm_load()
+	return {
+		id = "szm", sh = true, gr = {
+			{ id = "reward_mode", type = "list", val = 0,
+			  def = szm_main.installed_reward_mode(),   -- the installer's choice (FOMOD)
+			  content = {
+				{ "full",       "szm_mode_full" },
+				{ "no_gear",    "szm_mode_no_gear" },
+				{ "money_only", "szm_mode_money_only" },
+			  },
+			},
+		},
+	}
+end
