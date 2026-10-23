@@ -352,6 +352,7 @@ SELF_DEFENSE_RADIUS = 20
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
 	cold = { info = "szm_end_cold", rewards = { {"@gear", "outfit"}, {"@medkit", 3} },   -- CS-2a or better
+	         hardcore_money = 5000,   -- only in the no_gear / money_only reward modes, instead of the armor
 	         goodwill = { {"csky", 200} } },
 	sid  = { info = "szm_end_sid",  rewards = { {"@gear", "weapon", ammo = 3} },   -- SKS or better, pristine
 	         money = 15000, goodwill = { {"csky", -300} } },
@@ -1744,8 +1745,9 @@ local function choose(key, first_speaker, second_speaker)
 	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 	itms_manager.relocate_item_from_actor(db.actor, npc, "szm_kamerton", 1)
 	give_plan(take_plan(key, c.rewards), first_speaker, second_speaker)
-	if c.money then
-		dialogs.relocate_money_to_actor(first_speaker, second_speaker, round_money(c.money * money_mult()))
+	local money = c.money or (reward_mode() ~= "full" and c.hardcore_money)
+	if money then
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, round_money(money * money_mult()))
 	end
 	for _, g in ipairs(c.goodwill or {}) do
 		xr_effects.inc_faction_goodwill_to_actor(db.actor, nil, { g[1], g[2] })

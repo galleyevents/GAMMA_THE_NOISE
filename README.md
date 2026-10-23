@@ -91,7 +91,7 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
 
 Picked in the installer (it adds `configs/mod_system_szm_mode.ltx`) and changeable at any time in MCM
 (*The Noise* > *Rewards*), which overrides the installer's choice. Quest items and what a task needs (the
-cooking kit) are always given. Reward lines that would promise removed items have `<id>_nogear` /
+cooking kit) are always given. In the hardcore modes Cold pays 5 000 RU for the Kamerton instead of the armor. Reward lines that would promise removed items have `<id>_nogear` /
 `<id>_money` versions in `st_szm.xml`.
 
 ## Notes
