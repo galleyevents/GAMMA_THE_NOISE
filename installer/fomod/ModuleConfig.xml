@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Noise - MO2 installer. The release zip has gamedata\, fomod\ and options\ at its root
+     (built by .github/workflows/release.yml). Each reward mode only adds configs\mod_system_szm_mode.ltx;
+     the mode can be changed later in MCM. -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://qconsulting.ca/fo3/ModConfig5.0.xsd">
+	<moduleName>The Noise - Main Storyline</moduleName>
+	<requiredInstallFiles>
+		<folder source="gamedata" destination="gamedata" />
+	</requiredInstallFiles>
+	<installSteps order="Explicit">
+		<installStep name="Rewards">
+			<optionalFileGroups order="Explicit">
+				<group name="Quest rewards" type="SelectExactlyOne">
+					<plugins order="Explicit">
+						<plugin name="Full rewards">
+							<description>Money, gear (backpack, armor, weapons, tools), ammo and medicine. Gear rewards scale with your own gear.</description>
+							<typeDescriptor><type name="Recommended" /></typeDescriptor>
+						</plugin>
+						<plugin name="No gear (hardcore)">
+							<description>Money, ammo, medicine and the story's artifacts. No backpack, armor, weapons or tools, and no shotgun from Sid as an advance.</description>
+							<files>
+								<folder source="options\no_gear" destination="" />
+							</files>
+							<typeDescriptor><type name="Optional" /></typeDescriptor>
+						</plugin>
+						<plugin name="Money only (hardcore)">
+							<description>Money and the story's artifacts only. Quest items and what a task needs (the cooking kit) are always given.</description>
+							<files>
+								<folder source="options\money_only" destination="" />
+							</files>
+							<typeDescriptor><type name="Optional" /></typeDescriptor>
+						</plugin>
+					</plugins>
+				</group>
+			</optionalFileGroups>
+		</installStep>
+	</installSteps>
+</config>

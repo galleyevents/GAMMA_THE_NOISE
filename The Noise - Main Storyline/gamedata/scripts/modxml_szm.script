@@ -16,10 +16,14 @@ local INSERTS = {
 			"szm_14_offer", "szm_14_done",
 			"szm_15_offer",
 			"szm_16_sid",
+			"szm_19_offer", "szm_19_done", "szm_20_offer", "szm_20_done",   -- Act V
+			"szm_23_offer", "szm_26_done",
 		},
 		esc_2_12_stalker_wolf = {       -- Wolf
 			"szm_3_done",
 			"szm_16_wolf",
+			"szm_21_offer", "szm_21_done", "szm_22_offer", "szm_22_done",   -- Act V
+			"szm_23_offer", "szm_27_done",
 		},
 	},
 	[ [[gameplay\character_desc_marsh.xml]] ] = {
@@ -36,6 +40,8 @@ local INSERTS = {
 			"szm_12_offer", "szm_12_done",
 			"szm_13_offer",
 			"szm_16_cold",
+			"szm_17_offer", "szm_17_done", "szm_18_offer", "szm_18_done",   -- Act V
+			"szm_23_offer", "szm_25_done",
 		},
 	},
 }

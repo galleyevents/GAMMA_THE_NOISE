@@ -5,7 +5,11 @@
 -- Act I     2-6    : Cordon, Sid's lessons (bandit, boars, Jellyfish + first Hum, campfire with Wolf), go to Spore
 -- Act II    7-12   : Great Swamp, Spore's jobs, Cold, the helicopter wreck
 -- Act III   13-15  : Sid decrypts the flight recorder, Garbage, the dead convoy in Agroprom
--- Act IV    16     : who gets the Kamerton: Cold, Sid or Wolf (destroy it); epilogue a day later
+-- Act IV    16     : who gets the Kamerton: Cold, Sid or Wolf (destroy it)
+-- Act V     17-27  : a day later the Noise is back; two stages for the chosen side (Cold 17-18, Sid 19-20,
+--                    Wolf 21-22), then Agroprom's underground (23-24) and back to that side (25 / 26 / 27).
+--                    Only the first Act V stage waits (ACT5_FIRST_DELAY_H): the radio call is a surprise after
+--                    the "storyline complete" banner. The rest follows right away, offered in the report dialogs.
 --
 -- Every stage: offer dialog -> task stage 0 (objective) -> task stage 1 (report) -> turn-in dialog -> rewards
 -- The next stage is offered only after the previous one has been turned in.
@@ -39,6 +43,8 @@ AGROPROM_SMARTS = {
 	"agr_smart_terrain_5_2", "agr_smart_terrain_5_3", "agr_smart_terrain_5_7",
 	"agr_smart_terrain_6_4", "agr_smart_terrain_7_5",
 }
+-- Agroprom underground (l03u_agr_underground); agr_u_bandits has residents and is left out
+AGR_U_SMARTS = { "agr_u_soldiers", "agr_u_monsters", "agr_u_bloodsucker_1" }
 ANYWHERE = 1000000   -- max distance meaning "any smart of the list" (giver on another level)
 
 ---------------------------< NPCs >---------------------------
@@ -58,11 +64,27 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
 -- turn_in_to   = story_id the actor reports to, if not the task giver
 -- area         = { smarts, min_dist, max_dist }: ring around the task giver
+-- far_from_actor = squads of the stage spawn at least this far (m) from the actor when on the actor's
+--                level; if no smart qualifies, the one farthest from the actor
 -- start_items / rewards = { {section, amount}, ... }
 --   { section, amount, pristine = true } : weapon with every part at PRISTINE_PART_CON
 --   { "@ammo", boxes }                   : boxes of ammo for the weapons in the actor's slots
+--   { "@gear", category, ammo = boxes }  : the first item of GEAR_TIERS[category] clearly better than the
+--                                          actor's own; none -> a worn one from GEAR_OVERFLOW (weapons), else
+--                                          money instead (either way with a line in the report dialog)
+--   { "@medkit", amount }                : medkits of the actor's gear level (MEDKITS)
+--   advance = true (start_items)         : a gift, not needed for the stage: only in the "full" reward mode
+--   REWARD_KEEP decides which rewards each reward mode gives
 -- auto_next    = the task completes on its own when the objective is done and gives this stage
--- Money and goodwill come from on_complete in tm_szm.ltx.
+-- medusa       = true (Jellyfish) or an item section spawned at MEDUSA_SPAWN, the anomaly field
+-- Act V (radio stages, no offer dialog):
+--   giver      = story_id of who calls the actor and takes the report ("@end": the side chosen in Act IV)
+--   offer      = handed out by the giver in a dialog (the first stage after a radio call asking the actor over)
+--   next       = the stage that follows (offered at once, or started at once over the radio), or { cold = n, ... }
+--   auto_complete = no report dialog: the task completes when the objective is done
+--   intro_hum  = the Noise (with this PDA message) when the stage starts
+--   final      = the end of the storyline
+-- Money and goodwill come from on_complete in tm_szm.ltx (szm_reward_money scales it by MONEY_MULT).
 STAGES = {
 	-- ===== Prologue =====
 	[1] = {  -- Sid calls the new stalker on the radio, talk to him (given automatically)
@@ -90,7 +112,7 @@ STAGES = {
 		fetch   = { "szm_cylinder", 1 },
 		keep_fetch = true,      -- Sid gives the cylinder back for stage 6
 		hum_on_fetch = "szm_hum_bandit",
-		start_items = { {"wpn_toz34", 1, pristine = true}, {"ammo_12x70_buck", 2} },   -- Sid's advance for the job
+		start_items = { {"wpn_toz34", 1, pristine = true, advance = true}, {"ammo_12x70_buck", 2, advance = true} },   -- Sid's advance for the job
 		rewards = { {"novice_outfit", 1}, {"helm_respirator", 1} },   -- Leather Jacket + Refitted PBF: the weakest armor and gas mask
 	},
 	[5] = {  -- Jellyfish in the anomaly field; picking it up -> the Noise again
@@ -98,7 +120,7 @@ STAGES = {
 		fetch   = { "af_medusa", 1 },
 		medusa  = true,
 		hum_on_fetch = "szm_hum_medusa",
-		rewards = { {"itm_backpack", 1}, {"medkit", 3}, {"bandage", 5} },
+		rewards = { {"@gear", "backpack"}, {"@medkit", 3}, {"bandage", 5} },
 	},
 	[6] = {  -- take the cylinder to Spore
 		task    = "szm_task_6",
@@ -110,20 +132,20 @@ STAGES = {
 		task    = "szm_task_7",
 		squad   = "szm_renegade_squad",
 		area    = { MARSH_SMARTS, 120, 350 },
-		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 	},
 	[8] = {  -- the missing scout Wiktor and his PDA
 		task    = "szm_task_8",
 		corpse  = "sim_default_csky_0",
 		area    = { MARSH_SMARTS, 200, 500 },
 		fetch   = { "szm_scout_pda", 1 },
-		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 	},
 	[9] = {  -- the bloodsucker the Hum drove to the base
 		task    = "szm_task_9",
 		squad   = "szm_bloodsucker_squad",
 		area    = { MARSH_SMARTS, 150, 400 },
-		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 	},
 	[10] = { -- Kostia's strike team, killed by soldiers; Spore sends two of his fighters along
 		task    = "szm_task_10",
@@ -135,7 +157,7 @@ STAGES = {
 			squad       = "szm_army_squad",
 			squad_area  = { MARSH_SMARTS, 150, 400 },
 		},
-		rewards = { {"medkit", 3}, {"@ammo", 3} },
+		rewards = { {"@medkit", 3}, {"@ammo", 3} },
 	},
 	[11] = { -- Spore sends the actor to Cold
 		task    = "szm_task_11",
@@ -152,7 +174,7 @@ STAGES = {
 			squad       = "szm_renegade_squad",
 			squad_area  = { MARSH_SMARTS, 60, 250 },
 		},
-		rewards = { {"itm_basickit", 1}, {"medkit", 2}, {"@ammo", 2} },   -- basic tools only here
+		rewards = { {"itm_basickit", 1}, {"@medkit", 2}, {"@ammo", 2} },   -- basic tools only here
 	},
 	-- ===== Act III: Cordon, Garbage, Agroprom =====
 	[13] = { -- take the flight recorder to Sid
@@ -166,7 +188,7 @@ STAGES = {
 		carry   = "szm_sid_package",
 		area    = { GARBAGE_SMARTS, 0, ANYWHERE },
 		fetch   = { "szm_sid_package", 1 },
-		rewards = { {"medkit", 2}, {"@ammo", 2} },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 	},
 	[15] = { -- the dead convoy in Agroprom, the officer's PDA, the mercenaries with the Kamerton
 		task    = "szm_task_15",
@@ -187,6 +209,122 @@ STAGES = {
 		fetch   = { "szm_kamerton", 1 },
 		choice  = true,
 	},
+	-- ===== Act V, Cold: the Swamps, then the army's frequency logs in Agroprom =====
+	[17] = { -- the army's reprisal against Clear Sky
+		task    = "szm_task_17",
+		offer   = true,
+		giver   = COLD,
+		intro_hum = "szm_epilogue_cold",
+		squad   = "szm_army_squad",
+		area    = { MARSH_SMARTS, 150, 500 },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
+		next    = 18,
+	},
+	[18] = { -- a signal team in Agroprom carrying the frequency log
+		task    = "szm_task_18",
+		offer   = true,
+		giver   = COLD,
+		squad   = "szm_army_signal_squad",
+		carry   = "szm_signal_log",
+		area    = { AGROPROM_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_signal_log", 1 },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, Sid: the buyer, then Clear Sky's revenge =====
+	[19] = { -- the buyer never paid: his men in the Garbage, his PDA
+		task    = "szm_task_19",
+		offer   = true,
+		giver   = SID,
+		intro_hum = "szm_epilogue_sid",
+		squad   = "szm_buyer_squad",
+		carry   = "szm_buyer_pda",
+		area    = { GARBAGE_SMARTS, 0, ANYWHERE },
+		fetch   = { "szm_buyer_pda", 1 },
+		rewards = { {"@ammo", 2} },
+		next    = 20,
+	},
+	[20] = { -- a Clear Sky hit squad in Cordon
+		task    = "szm_task_20",
+		offer   = true,
+		giver   = SID,
+		squad   = "szm_csky_hit_squad",
+		area    = { CORDON_SMARTS, 150, 500 },
+		rewards = { {"@medkit", 2}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, Wolf: the echo in the anomaly field, then mercenary scouts =====
+	[21] = { -- an artifact where the Kamerton vanished
+		task    = "szm_task_21",
+		offer   = true,
+		giver   = WOLF,
+		intro_hum = "szm_epilogue_wolf",
+		medusa  = "szm_echo",
+		fetch   = { "szm_echo", 1 },
+		keep_fetch = true,      -- Wolf lets the actor keep it
+		hum_on_fetch = "szm_hum_echo",
+		rewards = { {"@medkit", 2} },
+		next    = 22,
+	},
+	[22] = { -- mercenary scouts looking for the Kamerton in Cordon
+		task    = "szm_task_22",
+		offer   = true,
+		giver   = WOLF,
+		squad   = "szm_merc_scout_squad",
+		carry   = "szm_merc_orders",
+		area    = { CORDON_SMARTS, 100, 400 },
+		fetch   = { "szm_merc_orders", 1 },
+		rewards = { {"@medkit", 1}, {"@ammo", 2} },
+		next    = 23,
+	},
+	-- ===== Act V, together again: Agroprom's underground =====
+	[23] = { -- dead scientists, their journal, the mercenaries guarding the tunnels
+		task    = "szm_task_23",
+		offer   = true,
+		giver   = "@end",
+		fetch   = { "szm_lab_journal", 1 },
+		strike  = {
+			corpses     = { "sim_default_ecolog_1", "sim_default_ecolog_2", "sim_default_killer_1" },
+			corpse_area = { AGR_U_SMARTS, 0, ANYWHERE },
+			reveal      = "szm_lab_journal",
+			squad       = "szm_agr_u_merc_squad",
+			squad_area  = { AGR_U_SMARTS, 0, ANYWHERE },
+		},
+		far_from_actor = 40,    -- the mercenaries come when the journal is picked up: give the actor a moment
+		auto_complete = true,
+		next    = 24,
+	},
+	[24] = { -- the transmitter's guards and its resonator
+		task    = "szm_task_24",
+		giver   = "@end",
+		squad   = "szm_agr_u_guard_squad",
+		carry   = "szm_resonator",
+		area    = { AGR_U_SMARTS, 0, ANYWHERE },
+		far_from_actor = 80,    -- starts while the actor is still in the tunnels, right after stage 23
+		fetch   = { "szm_resonator", 1 },
+		keep_fetch = true,
+		auto_complete = true,
+		next    = { cold = 25, sid = 26, wolf = 27 },
+	},
+	[25] = { task = "szm_task_25", giver = COLD, talk_to = COLD, fetch = { "szm_resonator", 1 }, final = "cold",
+	         rewards = { {"@medkit", 3}, {"@ammo", 3} } },
+	[26] = { task = "szm_task_26", giver = SID,  talk_to = SID,  fetch = { "szm_resonator", 1 }, final = "sid",
+	         rewards = { {"@ammo", 3} } },
+	[27] = { task = "szm_task_27", giver = WOLF, talk_to = WOLF, fetch = { "szm_resonator", 1 }, final = "wolf",
+	         rewards = { {"af_night_star", 1}, {"@medkit", 2} } },
+}
+
+-- Act V timing: only the first stage waits. ACT5_TEST_DELAY (real seconds) overrides it for testing;
+-- nil for a release. A stage that fails to start (no spawn smart, giver away) is retried a minute later.
+ACT5_FIRST_DELAY_H = 24   -- in-game hours from the Act IV choice to the first Act V stage
+ACT5_TEST_DELAY    = nil
+ACT5_FIRST = { cold = 17, sid = 19, wolf = 21 }
+
+-- Who calls on the radio
+GIVER_RADIO = {
+	[COLD] = { name = "szm_name_cold", icon = "ui_inGame2_cold" },
+	[SID]  = { name = "szm_name_sid",  icon = "ui_inGame2_sid" },
+	[WOLF] = { name = "szm_name_wolf", icon = "ui_inGame2_wolf" },
 }
 
 -- Who offers each stage: after a stage is turned in, this NPC gets a map spot until the next offer is accepted
@@ -213,14 +351,60 @@ SELF_DEFENSE_RADIUS = 20
 
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
-	cold = { info = "szm_end_cold", rewards = { {"cs_light_outfit", 1}, {"medkit", 3} },   -- CS-2a: good but light
+	cold = { info = "szm_end_cold", rewards = { {"@gear", "outfit"}, {"@medkit", 3} },   -- CS-2a or better
+	         hardcore_money = 5000,   -- only in the no_gear / money_only reward modes, instead of the armor
 	         goodwill = { {"csky", 200} } },
-	sid  = { info = "szm_end_sid",  rewards = { {"wpn_sks_b", 1, pristine = true}, {"ammo_7.62x39_fmj", 3} },   -- SKS: a modest rifle
+	sid  = { info = "szm_end_sid",  rewards = { {"@gear", "weapon", ammo = 3} },   -- SKS or better, pristine
 	         money = 15000, goodwill = { {"csky", -300} } },
-	wolf = { info = "szm_end_wolf", rewards = { {"af_soul", 1}, {"medkit", 2} },
+	wolf = { info = "szm_end_wolf", rewards = { {"af_soul", 1}, {"@medkit", 2} },
 	         goodwill = { {"stalker", 150}, {"csky", 50} } },
 }
-EPILOGUE_DELAY_H = 24   -- in-game hours after the choice
+
+---------------------------< Scaled rewards >---------------------------
+-- "@gear" rewards: what the giver can hand out, per category. Sorted by cost at runtime, sections missing
+-- from the game are skipped (logged), the most expensive one is the cap. The actor gets the first one
+-- that costs more than UPGRADE_MARGIN x the best item of that category the actor has had equipped;
+-- if even the cap isn't, money instead: CASH_SWAP_RATIO x the cap's cost.
+GEAR_TIERS = {
+	weapon   = { "wpn_sks_b", "wpn_ak74", "wpn_abakan" },
+	outfit   = { "cs_light_outfit", "cs_medium_outfit", "cs_heavy_outfit" },
+	backpack = { "itm_backpack" },
+}
+UPGRADE_MARGIN  = 1.2
+CASH_SWAP_RATIO = 0.6
+
+-- Weapons only: an actor who has outgrown GEAR_TIERS.weapon still gets a clearly better gun, from this
+-- list (beyond the usual cap), but worn: the barrel (the weapon's own condition, and any part named
+-- "barrel") pristine, every other part at WORN_PART_MIN..WORN_PART_MAX %. Outgrown this list too: money.
+GEAR_OVERFLOW = {
+	weapon = { "wpn_sig550", "wpn_g36", "wpn_groza", "wpn_val", "wpn_fn2000" },
+}
+WORN_PART_MIN = 40
+WORN_PART_MAX = 80
+
+-- Reward modes, picked in the installer (FOMOD: configs\mod_system_szm_mode.ltx, [szm_settings] reward_mode)
+-- and changeable in MCM ("The Noise"). Money, quest items and the items a stage needs always stay.
+--   full       : everything
+--   no_gear    : money, ammo, medicine, artifacts - no gear, no Sid's advance (the TOZ)
+--   money_only : money and artifacts
+-- Reward lines with a <id>_nogear (any hardcore mode) or <id>_money (money_only) text use it.
+REWARD_KEEP = {
+	no_gear    = { ammo = true, medical = true, artefact = true },
+	money_only = { artefact = true },
+}
+
+-- If the scaled rewards fail at runtime (an engine function or a config this game doesn't have), the
+-- error goes to the log and the stage gives these fixed rewards instead, with unscaled money
+FIXED_GEAR = {
+	weapon   = { "wpn_sks_b", 1, pristine = true },
+	outfit   = { "cs_light_outfit", 1 },
+	backpack = { "itm_backpack", 1 },
+}
+
+-- Gear level 0-3: the highest weapon or outfit tier the actor's best equipped item is worth.
+-- It scales the money of every stage (szm_reward_money) and the medkit type of "@medkit".
+MONEY_MULT = { [0] = 1.0, [1] = 1.25, [2] = 1.5, [3] = 2.0 }
+MEDKITS    = { [0] = "medkit", [1] = "medkit", [2] = "medkit_army", [3] = "medkit_scientic" }
 
 -- Each boar of the stage 2 squad is guaranteed at least this many legs when butchered
 BOAR_LEGS_PER_BOAR = 2
@@ -249,6 +433,13 @@ MEDUSA_SPAWN = { pos = {-249.45230102539, -13.491371154785, -29.858497619629}, l
 
 DETECTORS = { "detector_simple", "detector_advanced", "detector_elite", "detector_scientific", "detector_grizzly" }
 
+-- Factions the story is for. Every hostile story squad has relationship = enemy (squad_descr_szm.ltx),
+-- so it fights the actor whatever the actor's faction thinks of it. A Clear Sky actor can't sell the
+-- Kamerton to Sid (no dialog, radio message or map spot from him) and gets the "_csky" texts.
+ALLOWED_COMMUNITIES = {
+	actor_stalker = true, actor_dolg = true, actor_freedom = true, actor_ecolog = true, actor_csky = true,
+}
+
 -- Prologue starts this many seconds after a loner is in Cordon (new game, loaded save or arrival),
 -- so Sid's call doesn't get lost while the player is still sorting the inventory
 PROLOGUE_DELAY = 60
@@ -262,14 +453,17 @@ local function var_escort(n) return "szm_escort_" .. n end   -- id of the compan
 local function escort_info(n) return "szm_escort_given_" .. n end   -- given once, dead companions don't come back
 local VAR_BOARS    = "szm_boar_ids"
 local VAR_MEDUSA   = "szm_medusa_id"
-local VAR_END_TIME = "szm_end_time"     -- game time of the choice, for the epilogue
+local VAR_END_TIME = "szm_end_time"     -- game time of the choice
+local VAR_NEXT     = "szm_next_stage"   -- Act V: { n, t = game time it was scheduled, delay = seconds }
 local VAR_USED     = "szm_used_smarts"  -- names of recently used spawn smarts
 local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offer" map spot
+local VAR_GEAR     = "szm_best_gear"    -- { weapon = cost, outfit = cost, backpack = cost }: best ever equipped
 
 local function done_info(n)  return "szm_stage_" .. n .. "_done" end
 local INFO_STARTED  = "szm_started"
 local INFO_CHOICE_MSGS = "szm_choice_msgs_sent"
-local INFO_EPILOGUE = "szm_epilogue_done"
+local INFO_EPILOGUE = "szm_epilogue_done"   -- old saves: the epilogue message was already sent
+local INFO_ACT5     = "szm_act5_started"
 
 ---------------------------< Helpers >---------------------------
 local function get_task(n)
@@ -294,7 +488,62 @@ local function has_fetch(n)
 	return count_items(fetch[1]) >= fetch[2]
 end
 
-local function tr(id) return game.translate_string(id) end
+local function actor_is_csky()
+	return db.actor ~= nil and character_community(db.actor) == "actor_csky"
+end
+
+-- Reward mode: MCM if it has one, else the installer's choice, else "full"
+local function installed_mode()
+	local m = ini_sys:r_string_ex("szm_settings", "reward_mode")
+	return (m == "full" or REWARD_KEEP[m]) and m or "full"
+end
+
+local function reward_mode()
+	if ui_mcm and ui_mcm.get then
+		local ok, m = pcall(ui_mcm.get, "szm/reward_mode")
+		if ok and (m == "full" or REWARD_KEEP[m]) then return m end
+	end
+	return installed_mode()
+end
+
+-- MCM's default (szm_mcm.script)
+function installed_reward_mode() return installed_mode() end
+
+local function has_text(id)
+	return game.translate_string(id) ~= id
+end
+
+-- String id, or its version for a Clear Sky actor (<id>_csky) or for the reward mode
+-- (<id>_money in money_only, <id>_nogear in both hardcore modes) when there is one
+local function text_id(id)
+	if actor_is_csky() and has_text(id .. "_csky") then
+		return id .. "_csky"
+	end
+	local mode = reward_mode()
+	if mode == "money_only" and has_text(id .. "_money") then
+		return id .. "_money"
+	end
+	if mode ~= "full" and has_text(id .. "_nogear") then
+		return id .. "_nogear"
+	end
+	return id
+end
+
+local function tr(id) return game.translate_string(text_id(id)) end
+
+-- The side chosen in Act IV: "cold", "sid", "wolf" or nil
+local function ending()
+	return has_alife_info("szm_end_cold") and "cold" or has_alife_info("szm_end_sid") and "sid"
+		or has_alife_info("szm_end_wolf") and "wolf" or nil
+end
+
+local function stage_giver(st)
+	if st.giver == "@end" then
+		local e = ending()
+		return e == "cold" and COLD or e == "sid" and SID or e == "wolf" and WOLF or nil
+	end
+	return st.giver
+end
 
 local function level_of(gvid)
 	return game_graph():vertex(gvid):level_id()
@@ -304,8 +553,9 @@ local function actor_level()
 	return level_of(db.actor:game_vertex_id())
 end
 
--- Spawn a weapon in the actor's inventory with all parts in perfect condition
-local function give_pristine_weapon(section)
+-- Spawn a weapon in the actor's inventory with all parts in perfect condition;
+-- worn: only the barrel, the rest at WORN_PART_MIN..WORN_PART_MAX
+local function give_pristine_weapon(section, worn)
 	local cond = pristine_wpn_cond()
 	local se_obj = alife_create_item(section, db.actor, { cond = cond })
 	if not se_obj then
@@ -317,12 +567,26 @@ local function give_pristine_weapon(section)
 	if parts then
 		-- same layout item_parts.evaluate_parts saves: [weapon] = condition, [part] = part condition
 		local data = { [base] = math.ceil(cond * 100) }
+		local log = {}
 		for _, part in ipairs(str_explode(parts, ",")) do
-			data[part] = PRISTINE_PART_CON
+			local barrel = string.find(part, "barrel") ~= nil
+			data[part] = (worn and not barrel) and math.random(WORN_PART_MIN, WORN_PART_MAX) or PRISTINE_PART_CON
+			log[#log + 1] = part .. "=" .. data[part]
 		end
 		item_parts.set_parts_con(se_obj.id, data)
+		if worn then
+			printf("[SZM] worn %s: %s", section, table.concat(log, ", "))
+		end
 	end
 	news_manager.relocate_item(db.actor, "in", section, 1)
+end
+
+local function give_ammo_boxes(sec, boxes)
+	local box_size = ini_sys:r_u32(sec, "box_size")
+	for i = 1, boxes do
+		alife_create_item(sec, db.actor, { ammo = box_size })
+	end
+	news_manager.relocate_item(db.actor, "in", sec, box_size * boxes)
 end
 
 -- Full boxes of the first ammo type of each firearm in the weapon slots (like dialogs.give_suitable_ammo)
@@ -343,11 +607,7 @@ local function give_weapon_ammo(boxes)
 		ammo_secs[1] = FALLBACK_AMMO
 	end
 	for _, sec in ipairs(ammo_secs) do
-		local box_size = ini_sys:r_u32(sec, "box_size")
-		for i = 1, boxes do
-			alife_create_item(sec, db.actor, { ammo = box_size })
-		end
-		news_manager.relocate_item(db.actor, "in", sec, box_size * boxes)
+		give_ammo_boxes(sec, boxes)
 	end
 end
 
@@ -355,13 +615,197 @@ local function give_items(list)
 	for _, it in ipairs(list or {}) do
 		if it[1] == "@ammo" then
 			give_weapon_ammo(it[2])
-		elseif it.pristine then
+		elseif it.pristine or it.worn then
 			for i = 1, it[2] do
-				give_pristine_weapon(it[1])
+				give_pristine_weapon(it[1], it.worn)
 			end
 		else
 			itms_manager.relocate_item_to_actor(db.actor, nil, it[1], it[2])
 		end
+		if it.ammo then
+			-- boxes of the first ammo type of a weapon reward
+			local ammo = parse_list(ini_sys, it[1], "ammo_class")
+			give_ammo_boxes(ammo and ammo[1] or FALLBACK_AMMO, it.ammo)
+		end
+	end
+end
+
+---------------------------< Scaled rewards >---------------------------
+-- pcall with the error logged once per place (actor_on_update would repeat it every few seconds)
+local errors_logged = {}
+local function safe_call(where, fn, ...)
+	local ok, res = pcall(fn, ...)
+	if ok then return true, res end
+	if not errors_logged[where] then
+		errors_logged[where] = true
+		printf("! [SZM] scaled rewards: %s failed, using fixed rewards: %s", where, tostring(res))
+	end
+	return false
+end
+
+local function item_cost(sec)
+	return ini_sys:r_float_ex(sec, "cost") or 0
+end
+
+-- GEAR_TIERS[cat] (or GEAR_OVERFLOW[cat]) that exist in this game, cheapest first (cached)
+local tiers_cache = {}
+local function gear_tiers(cat, overflow)
+	local key = (overflow and "+" or "") .. cat
+	if tiers_cache[key] then return tiers_cache[key] end
+	local list = {}
+	for _, sec in ipairs((overflow and GEAR_OVERFLOW or GEAR_TIERS)[cat] or {}) do
+		if ini_sys:section_exist(sec) then
+			list[#list + 1] = sec
+		else
+			printf("[SZM] %s.%s: no section %s, skipped", overflow and "GEAR_OVERFLOW" or "GEAR_TIERS", cat, sec)
+		end
+	end
+	table.sort(list, function(a, b) return item_cost(a) < item_cost(b) end)
+	tiers_cache[key] = list
+	return list
+end
+
+-- The first of the list worth more than UPGRADE_MARGIN x the actor's best of that category
+local function first_upgrade(list, best)
+	for _, sec in ipairs(list) do
+		if item_cost(sec) > best * UPGRADE_MARGIN then
+			return sec
+		end
+	end
+end
+
+local function gear_category(obj)
+	if IsWeapon(obj) then
+		return not IsMelee(obj) and "weapon" or nil
+	elseif IsOutfit(obj) then
+		return "outfit"
+	elseif clsid.equ_backpack and obj:clsid() == clsid.equ_backpack then
+		return "backpack"
+	end
+end
+
+-- The most valuable item ever equipped, per category. Remembered in the save, so taking the gear off
+-- before a report doesn't lower the rewards.
+local function best_gear()
+	local best = load_var(db.actor, VAR_GEAR) or { weapon = 0, outfit = 0, backpack = 0 }
+	local changed = false
+	for slot = 1, 16 do
+		local obj = db.actor:item_in_slot(slot)
+		local cat = obj and gear_category(obj)
+		if cat then
+			local cost = item_cost(obj:section())
+			if cost > (best[cat] or 0) then
+				best[cat] = cost
+				changed = true
+			end
+		end
+	end
+	if changed then
+		save_var(db.actor, VAR_GEAR, best)
+	end
+	return best
+end
+
+local function gear_level()
+	local best, lvl = best_gear(), 0
+	for _, cat in ipairs({ "weapon", "outfit" }) do
+		for i, sec in ipairs(gear_tiers(cat)) do
+			if (best[cat] or 0) >= item_cost(sec) then
+				lvl = math.max(lvl, i)
+			end
+		end
+	end
+	return math.min(lvl, 3)
+end
+
+local function money_mult()
+	local ok, lvl = safe_call("gear_level", gear_level)
+	return ok and MONEY_MULT[lvl] or 1
+end
+
+local function round_money(x)
+	return math.floor(x / 100 + 0.5) * 100
+end
+
+-- Resolves "@gear" / "@medkit": { items = rewards for give_items, cash = money instead of gear,
+-- notes = what the giver has to explain, in order: "swap_<category>" (money instead), "worn_weapon" }
+local function plan_rewards_scaled(list)
+	local best, lvl = best_gear(), gear_level()
+	local plan = { items = {}, cash = 0, notes = {} }
+	for _, it in ipairs(list or {}) do
+		if it[1] == "@gear" then
+			local cat = it[2]
+			local tiers, mine = gear_tiers(cat), best[cat] or 0
+			local pick = first_upgrade(tiers, mine)
+			local worn = not pick and first_upgrade(gear_tiers(cat, true), mine)
+			if pick then
+				plan.items[#plan.items + 1] = { pick, 1, pristine = (cat == "weapon") or nil, ammo = it.ammo }
+			elseif worn then
+				plan.items[#plan.items + 1] = { worn, 1, worn = true, ammo = it.ammo }
+				plan.notes[#plan.notes + 1] = "worn_" .. cat
+			elseif #tiers > 0 then
+				plan.cash = plan.cash + round_money(item_cost(tiers[#tiers]) * CASH_SWAP_RATIO)
+				plan.notes[#plan.notes + 1] = "swap_" .. cat
+			end
+		elseif it[1] == "@medkit" then
+			local sec = MEDKITS[lvl]
+			if not (sec and ini_sys:section_exist(sec)) then sec = "medkit" end
+			plan.items[#plan.items + 1] = { sec, it[2] }
+		else
+			plan.items[#plan.items + 1] = it
+		end
+	end
+	return plan
+end
+
+-- The rewards as before scaling: FIXED_GEAR, plain medkits, no money instead of gear
+local function plan_rewards_fixed(list)
+	local plan = { items = {}, cash = 0, notes = {} }
+	for _, it in ipairs(list or {}) do
+		if it[1] == "@gear" then
+			local g = FIXED_GEAR[it[2]]
+			if g then
+				plan.items[#plan.items + 1] = { g[1], g[2], pristine = g.pristine, ammo = it.ammo }
+			end
+		elseif it[1] == "@medkit" then
+			plan.items[#plan.items + 1] = { "medkit", it[2] }
+		else
+			plan.items[#plan.items + 1] = it
+		end
+	end
+	return plan
+end
+
+local function reward_kind(it)
+	local sec = it[1]
+	if sec == "@ammo" or string.find(sec, "^ammo_") then return "ammo" end
+	if sec == "@medkit" or sec == "bandage" or string.find(sec, "^medkit") then return "medical" end
+	if string.find(sec, "^af_") then return "artefact" end
+	return "gear"
+end
+
+-- The rewards the reward mode gives
+local function mode_filter(list)
+	local keep = REWARD_KEEP[reward_mode()]
+	if not keep then return list end
+	local out = {}
+	for _, it in ipairs(list or {}) do
+		if keep[reward_kind(it)] then out[#out + 1] = it end
+	end
+	return out
+end
+
+local function plan_rewards(list)
+	list = mode_filter(list)
+	local ok, plan = safe_call("plan_rewards", plan_rewards_scaled, list)
+	return ok and plan or plan_rewards_fixed(list)
+end
+
+local function give_plan(plan, first_speaker, second_speaker)
+	give_items(plan.items)
+	if plan.cash > 0 then
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, plan.cash)
+		printf("[SZM] gear swapped for %s RU (%s)", plan.cash, table.concat(plan.notes, ", "))
 	end
 end
 
@@ -430,10 +874,19 @@ local CHOICE_SPOTS = {
 	{ story_id = WOLF, hint = "szm_choice_hint_wolf" },
 }
 
+-- A Clear Sky actor can't sell the Kamerton to Sid
+local function sid_choice_allowed()
+	return not actor_is_csky()
+end
+
 local function mark_choice_spots()
 	for _, c in ipairs(CHOICE_SPOTS) do
 		local id = get_story_object_id(c.story_id)
 		remove_spot(id, OLD_OFFER_SPOT)
+		if c.story_id == SID and not sid_choice_allowed() then
+			remove_spot(id, OFFER_SPOT)
+			id = nil
+		end
 		if id and level.map_has_object_spot(id, OFFER_SPOT) == 0 then
 			level.map_add_object_spot_ser(id, OFFER_SPOT, tr(c.hint))
 		end
@@ -455,7 +908,9 @@ end
 
 local function send_choice_messages()
 	for _, m in ipairs(CHOICE_MSGS) do
-		radio_msg(m.name, m.text, m.icon, m.delay)
+		if m.name ~= "szm_name_sid" or sid_choice_allowed() then
+			radio_msg(m.name, m.text, m.icon, m.delay)
+		end
 	end
 	CreateTimeEvent("szm_choice_msgs", "snd", 0, function()
 		xr_sound.set_sound_play(AC_ID, "pda_tips")
@@ -497,6 +952,28 @@ local function remember_smart(name)
 	save_var(db.actor, VAR_USED, list)
 end
 
+-- Too close to the actor for a stage with far_from_actor (only smarts on the actor's level count)
+local function too_close_to_actor(n, smart)
+	local keep = STAGES[n].far_from_actor
+	return keep ~= nil and level_of(smart.m_game_vertex_id) == actor_level()
+		and smart.position:distance_to(db.actor:position()) < keep
+end
+
+-- far_from_actor stages when every smart is too close: the one farthest from the actor
+local function farthest_from_actor(smarts, exclude)
+	local best, best_dist
+	for _, name in ipairs(smarts) do
+		local smart = name ~= exclude and SIMBOARD.smarts_by_names[name]
+		if smart and level_of(smart.m_game_vertex_id) == actor_level() then
+			local dist = smart.position:distance_to(db.actor:position())
+			if not best_dist or dist > best_dist then
+				best, best_dist = smart, dist
+			end
+		end
+	end
+	return best
+end
+
 -- A smart in the [min_dist, max_dist] ring around origin; if none, the nearest one not closer than min_dist.
 -- Recently used smarts are skipped unless nothing else qualifies.
 local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
@@ -504,6 +981,9 @@ local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
 	local ring, fallback, fallback_dist = {}, nil, math.huge
 	for _, name in ipairs(smarts) do
 		local smart = name ~= exclude and (allow_recent or not is_recent(name)) and SIMBOARD.smarts_by_names[name]
+		if smart and too_close_to_actor(n, smart) then
+			smart = nil
+		end
 		if smart then
 			local dist = smart.position:distance_to(origin)
 			if dist >= min_dist and dist <= max_dist then
@@ -517,6 +997,9 @@ local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
 	local smart = #ring > 0 and ring[math.random(#ring)] or fallback
 	if not smart and not allow_recent then
 		return pick_spawn_smart(n, origin, area, exclude, true)
+	end
+	if not smart and STAGES[n].far_from_actor then
+		smart = farthest_from_actor(smarts, exclude)
 	end
 	if not smart then
 		printf("[SZM] stage %s: no spawn smart found", n)
@@ -693,9 +1176,9 @@ local function spawn_corpse(n, origin)
 	return se_npc
 end
 
-local function spawn_medusa()
+local function spawn_medusa(section)
 	local p = MEDUSA_SPAWN
-	local se_obj = alife_create("af_medusa", vector():set(p.pos[1], p.pos[2], p.pos[3]), p.lvid, p.gvid)
+	local se_obj = alife_create(section or "af_medusa", vector():set(p.pos[1], p.pos[2], p.pos[3]), p.lvid, p.gvid)
 	if se_obj then
 		save_var(db.actor, VAR_MEDUSA, se_obj.id)
 	end
@@ -880,12 +1363,12 @@ local function give_stage_task(n, giver_id)
 	task_manager.get_task_manager():give_task(STAGES[n].task, giver_id)
 end
 
-local function start_stage(n, first_speaker, second_speaker)
-	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+-- origin: where distances of the spawn areas are measured from (the task giver)
+local function start_stage_at(n, origin, giver_id)
 	local st = STAGES[n]
 
 	if st.squad then
-		local squad = spawn_squad(n, npc:position(), nil, nil, nil, st.carry)
+		local squad = spawn_squad(n, origin, nil, nil, nil, st.carry)
 		if not squad then return end
 		if n == BOAR_STAGE then
 			local ids = {}
@@ -895,24 +1378,210 @@ local function start_stage(n, first_speaker, second_speaker)
 			save_var(db.actor, VAR_BOARS, ids)
 		end
 	end
-	if st.corpse and not spawn_corpse(n, npc:position()) then return end
-	if st.strike and not start_strike(n, npc:position()) then return end
+	if st.corpse and not spawn_corpse(n, origin) then return end
+	if st.strike and not start_strike(n, origin) then return end
 	if st.escort then spawn_escort(n) end
 	if st.medusa then
-		spawn_medusa()
+		spawn_medusa(type(st.medusa) == "string" and st.medusa or nil)
 		if not has_detector() then
 			give_items({ {"detector_simple", 1} })
 		end
 	end
 
-	give_items(st.start_items)
-	give_stage_task(n, npc:id())
+	-- gifts (advance = true) only in the "full" reward mode; what the stage needs always
+	local items = {}
+	for _, it in ipairs(st.start_items or {}) do
+		if not it.advance or reward_mode() == "full" then items[#items + 1] = it end
+	end
+	give_items(items)
+	give_stage_task(n, giver_id)
 	clear_offer_spot()
+	return true
+end
+
+local function start_stage(n, first_speaker, second_speaker)
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	return start_stage_at(n, npc:position(), npc:id())
+end
+
+---------------------------< Act V: radio stages >---------------------------
+local function schedule_stage(n, first)
+	local delay = not first and 60 * level.get_time_factor()
+		or ACT5_TEST_DELAY and ACT5_TEST_DELAY * level.get_time_factor()
+		or ACT5_FIRST_DELAY_H * 3600
+	save_var(db.actor, VAR_NEXT, { n = n, t = utils_data.CTime_to_table(game.get_game_time()), delay = delay })
+	printf("[SZM] stage %s scheduled in %s game seconds", n, math.floor(delay))
+end
+
+local function next_of(st)
+	if type(st.next) == "table" then
+		local e = ending()
+		return e and st.next[e]
+	end
+	return st.next
+end
+
+local function called_info(n) return "szm_called_" .. n end
+
+local function mark_offer_spot(story_id)
+	clear_offer_spot()
+	local id = story_id and get_story_object_id(story_id)
+	if not id then return end
+	level.map_add_object_spot_ser(id, OFFER_SPOT, tr("szm_offer_hint"))
+	save_var(db.actor, VAR_SPOT, id)
+end
+
+-- Offer stages: the giver calls and asks the actor to come over (gold map spot on the giver);
+-- the stage itself is handed out in the giver's offer dialog. false = try again later
+local function call_for_offer(n)
+	local st = STAGES[n]
+	local giver = stage_giver(st)
+	if not (giver and get_story_se_object(giver) and story_npc_alive(giver)) then
+		printf("[SZM] stage %s: giver %s not available", n, tostring(giver))
+		return false
+	end
+	if st.intro_hum then
+		play_hum(st.intro_hum)
+	end
+	local r = GIVER_RADIO[giver]
+	radio_msg(r.name, "szm_task_" .. n .. "_call", r.icon, st.intro_hum and 6 or 0)
+	xr_sound.set_sound_play(AC_ID, "pda_tips")
+	give_info(called_info(n))
+	give_info(INFO_ACT5)
+	mark_offer_spot(giver)
+	printf("[SZM] stage %s: %s called the actor", n, giver)
+	return true
+end
+
+-- The giver calls on the radio and the task starts; false = try again later
+local function start_radio_stage(n)
+	local st = STAGES[n]
+	local giver = stage_giver(st)
+	local se_giver = giver and get_story_se_object(giver)
+	if not (se_giver and story_npc_alive(giver)) then
+		printf("[SZM] stage %s: giver %s not available", n, tostring(giver))
+		return false
+	end
+	if not start_stage_at(n, se_giver.position, se_giver.id) then
+		printf("[SZM] stage %s: could not start, retrying", n)
+		return false
+	end
+	if st.intro_hum then
+		play_hum(st.intro_hum)
+	end
+	local r = GIVER_RADIO[giver]
+	radio_msg(r.name, "szm_task_" .. n .. "_radio", r.icon, st.intro_hum and 6 or 0)
+	xr_sound.set_sound_play(AC_ID, "pda_tips")
+	give_info(INFO_ACT5)
+	return true
+end
+
+local function any_story_task()
+	for i = 1, #STAGES do
+		if get_task(i) then return true end
+	end
+	return false
+end
+
+-- Checked every few seconds from actor_on_update
+local function check_next_stage()
+	local v = load_var(db.actor, VAR_NEXT)
+	if not v then
+		-- saves made after the Act IV choice, before Act V existed
+		local e = ending()
+		if e and not has_alife_info(INFO_ACT5) and not any_story_task() then
+			schedule_stage(ACT5_FIRST[e], true)
+		end
+		return
+	end
+	if game.get_game_time():diffSec(utils_data.CTime_from_table(v.t)) < v.delay then return end
+	if any_story_task() then return end
+	local ok
+	if STAGES[v.n].offer then
+		ok = call_for_offer(v.n)
+	else
+		ok = start_radio_stage(v.n)
+	end
+	if ok then
+		save_var(db.actor, VAR_NEXT, nil)
+	else
+		v.t = utils_data.CTime_to_table(game.get_game_time())   -- try again a bit later
+		v.delay = 60 * level.get_time_factor()
+		save_var(db.actor, VAR_NEXT, v)
+	end
+end
+
+local END_ICONS = { cold = "ui_inGame2_cold", sid = "ui_inGame2_sid", wolf = "ui_inGame2_wolf" }
+
+-- After a stage of Act V is done: schedule the next one, or the end of the storyline
+local function act5_after(n)
+	local st = STAGES[n]
+	local nxt = st.next and next_of(st)
+	if nxt and STAGES[nxt].offer then
+		-- offered right away: in the same report dialog, or later from the giver (gold map spot)
+		give_info(called_info(nxt))
+		mark_offer_spot(stage_giver(STAGES[nxt]))
+	elseif nxt then
+		-- no dialog (the actor is still in Agroprom's tunnels): over the radio, as soon as this task is closed
+		CreateTimeEvent("szm_act5_next", tostring(nxt), 2, function()
+			if not get_task(nxt) and not start_radio_stage(nxt) then
+				schedule_stage(nxt)   -- retried by check_next_stage
+			end
+			return true
+		end)
+	end
+	if st.final then
+		CreateTimeEvent("szm_final", tostring(n), 3, function()
+			db.actor:give_game_news(tr("szm_final_end_title"), tr("szm_final_end_" .. st.final), END_ICONS[st.final], 0, 25000, 0)
+			xr_sound.set_sound_play(AC_ID, "pda_tips")
+			return true
+		end)
+		-- quest items of Act V that stay with the actor
+		for _, sec in ipairs({ "szm_echo" }) do
+			if count_items(sec) > 0 then
+				itms_manager.relocate_item_from_actor(db.actor, nil, sec, 1)
+			end
+		end
+		printf("[SZM] storyline finished (%s)", st.final)
+	end
 end
 
 -- The task manager completes a task on its next update, not at once: remember the turn-in
 -- so the report dialog doesn't come back in the meantime (the next offer follows in the same dialog)
 local turned_in = {}
+
+-- Reward plans made by the report dialog's preconditions (key: stage, or the Act IV choice), so what
+-- the NPC says ("you've got better gear, take the money") matches what the action gives
+local plans = {}
+local CHOICE_BY_GIVER = { [COLD] = "cold", [SID] = "sid", [WOLF] = "wolf" }
+
+local function current_plan(first_speaker, second_speaker)
+	for n = 1, #STAGES do
+		if get_task(n) then   -- one story task at a time: the one being reported
+			local key, rewards = n, STAGES[n].rewards
+			if STAGES[n].choice then
+				local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+				key = npc and CHOICE_BY_GIVER[get_object_story_id(npc:id())]
+				if not key then return end
+				rewards = CHOICES[key].rewards
+			end
+			plans[key] = plan_rewards(rewards)
+			return plans[key]
+		end
+	end
+end
+
+local function take_plan(key, rewards)
+	local plan = plans[key] or plan_rewards(rewards)
+	plans[key] = nil
+	return plan
+end
+
+local function reward_note(first_speaker, second_speaker)
+	-- on an error: no note, the NPC says the plain reward line
+	local ok, plan = safe_call("current_plan", current_plan, first_speaker, second_speaker)
+	return ok and plan and plan.notes[1] or nil
+end
 
 local function turn_in_stage(n, first_speaker, second_speaker)
 	local st = STAGES[n]
@@ -921,9 +1590,10 @@ local function turn_in_stage(n, first_speaker, second_speaker)
 		local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 		itms_manager.relocate_item_from_actor(db.actor, npc, st.fetch[1], st.fetch[2])
 	end
-	give_items(st.rewards)
+	give_plan(take_plan(n, st.rewards), first_speaker, second_speaker)
 	task_manager.get_task_manager():set_task_completed(st.task)
 	mark_next_offer(n)
+	act5_after(n)
 end
 
 local function can_offer(n)
@@ -1024,16 +1694,60 @@ function turn_in_13(a, b) turn_in_stage(13, a, b) end
 function turn_in_14(a, b) turn_in_stage(14, a, b) end
 function turn_in_15(a, b) turn_in_stage(15, a, b) end
 function turn_in_16(a, b) turn_in_stage(16, a, b) end
+-- Act V: offer dialogs (after the radio call) and report dialogs
+local function can_offer_act5(n, first_speaker, second_speaker)
+	if not has_alife_info(called_info(n)) or has_alife_info(done_info(n)) then return false end
+	for i = 1, #STAGES do
+		if get_task(i) then return false end
+	end
+	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
+	local giver = stage_giver(STAGES[n])
+	return npc ~= nil and giver ~= nil and get_object_story_id(npc:id()) == giver
+end
+function can_offer_17(a, b) return can_offer_act5(17, a, b) end
+function can_offer_18(a, b) return can_offer_act5(18, a, b) end
+function can_offer_19(a, b) return can_offer_act5(19, a, b) end
+function can_offer_20(a, b) return can_offer_act5(20, a, b) end
+function can_offer_21(a, b) return can_offer_act5(21, a, b) end
+function can_offer_22(a, b) return can_offer_act5(22, a, b) end
+function can_offer_23(a, b) return can_offer_act5(23, a, b) end
+function can_offer_24(a, b) return can_offer_act5(24, a, b) end
+function give_17(a, b) start_stage(17, a, b) end
+function give_18(a, b) start_stage(18, a, b) end
+function give_19(a, b) start_stage(19, a, b) end
+function give_20(a, b) start_stage(20, a, b) end
+function give_21(a, b) start_stage(21, a, b) end
+function give_22(a, b) start_stage(22, a, b) end
+function give_23(a, b) start_stage(23, a, b) end
+function give_24(a, b) start_stage(24, a, b) end
+function can_turn_in_17() return can_turn_in(17) end
+function can_turn_in_18() return can_turn_in(18) end
+function can_turn_in_19() return can_turn_in(19) end
+function can_turn_in_20() return can_turn_in(20) end
+function can_turn_in_21() return can_turn_in(21) end
+function can_turn_in_22() return can_turn_in(22) end
+function can_turn_in_25() return can_turn_in(25) end
+function can_turn_in_26() return can_turn_in(26) end
+function can_turn_in_27() return can_turn_in(27) end
+function turn_in_17(a, b) turn_in_stage(17, a, b) end
+function turn_in_18(a, b) turn_in_stage(18, a, b) end
+function turn_in_19(a, b) turn_in_stage(19, a, b) end
+function turn_in_20(a, b) turn_in_stage(20, a, b) end
+function turn_in_21(a, b) turn_in_stage(21, a, b) end
+function turn_in_22(a, b) turn_in_stage(22, a, b) end
+function turn_in_25(a, b) turn_in_stage(25, a, b) end
+function turn_in_26(a, b) turn_in_stage(26, a, b) end
+function turn_in_27(a, b) turn_in_stage(27, a, b) end
 
 -- Act IV: Kamerton to Cold / Sid / Wolf
-local END_ICONS = { cold = "ui_inGame2_cold", sid = "ui_inGame2_sid", wolf = "ui_inGame2_wolf" }
 local function choose(key, first_speaker, second_speaker)
 	local c = CHOICES[key]
 	local npc = dialogs.who_is_npc(first_speaker, second_speaker)
 	itms_manager.relocate_item_from_actor(db.actor, npc, "szm_kamerton", 1)
-	give_items(c.rewards)
-	if c.money then
-		dialogs.relocate_money_to_actor(first_speaker, second_speaker, c.money)
+	give_plan(take_plan(key, c.rewards), first_speaker, second_speaker)
+	local money = c.money or (reward_mode() ~= "full" and c.hardcore_money)
+	if money then
+		dialogs.relocate_money_to_actor(first_speaker, second_speaker, round_money(money * money_mult()))
 	end
 	for _, g in ipairs(c.goodwill or {}) do
 		xr_effects.inc_faction_goodwill_to_actor(db.actor, nil, { g[1], g[2] })
@@ -1042,6 +1756,7 @@ local function choose(key, first_speaker, second_speaker)
 	clear_choice_spots()
 	save_var(db.actor, VAR_END_TIME, utils_data.CTime_to_table(game.get_game_time()))
 	task_manager.get_task_manager():set_task_completed(STAGES[16].task)
+	schedule_stage(ACT5_FIRST[key], true)
 	-- after the dialog window closes, so it isn't hidden behind it
 	CreateTimeEvent("szm_ending", key, 3, function()
 		db.actor:give_game_news(tr("szm_story_end_title"), tr("szm_story_end_" .. key), END_ICONS[key], 0, 25000, 0)
@@ -1050,9 +1765,30 @@ local function choose(key, first_speaker, second_speaker)
 	end)
 	printf("[SZM] ending: %s", key)
 end
+function can_turn_in_16_sid() return can_turn_in(16) and sid_choice_allowed() end
 function turn_in_16_cold(a, b) choose("cold", a, b) end
 function turn_in_16_sid(a, b)  choose("sid",  a, b) end
 function turn_in_16_wolf(a, b) choose("wolf", a, b) end
+
+-- Report dialogs: the NPC's reward line, or first a line about the gear reward: money instead
+-- (szm_swap_<who>_<category>) or a better but worn gun (szm_worn_<who>_weapon). The preconditions
+-- are exclusive, the first note of the plan wins.
+function reward_not_swapped(a, b)   return reward_note(a, b) == nil end
+function reward_swap_weapon(a, b)   return reward_note(a, b) == "swap_weapon" end
+function reward_swap_outfit(a, b)   return reward_note(a, b) == "swap_outfit" end
+function reward_swap_backpack(a, b) return reward_note(a, b) == "swap_backpack" end
+function reward_worn_weapon(a, b)   return reward_note(a, b) == "worn_weapon" end
+
+-- Phrases with a "_csky" text (szm_gen_dialogs.py): the Clear Sky actor's version or the usual one
+function actor_csky()     return actor_is_csky() end
+function actor_not_csky() return not actor_is_csky() end
+
+-- Phrases with "_nogear" / "_money" texts: which one the reward mode says
+function mode_full()      return reward_mode() == "full" end
+function mode_hardcore()  return reward_mode() ~= "full" end
+function mode_no_gear()   return reward_mode() == "no_gear" end
+function mode_money()     return reward_mode() == "money_only" end
+function mode_not_money() return reward_mode() ~= "money_only" end
 
 ---------------------------< Task functors >---------------------------
 -- Marker for a squad stage: the body holding the item once its carrier is dead and the item
@@ -1128,16 +1864,16 @@ for n = 1, #STAGES do
 		return to and get_story_object_id(to) or tsk.task_giver_id
 	end
 
-	-- PDA description per phase (string ids from st_szm.xml)
+	-- PDA description per phase (string ids from st_szm.xml, the Clear Sky actor's version if there is one)
 	task_functor["szm_descr_" .. n] = function(task_id, field, p, tsk)
 		if tsk and tsk.stage == 1 then
-			return "szm_task_" .. n .. "_descr_return"
+			return text_id("szm_task_" .. n .. "_descr_return")
 		end
 		local state = STAGES[n].strike and get_strike(n)
 		if state and state.phase == "fight" then
-			return "szm_task_" .. n .. "_descr_fight"
+			return text_id("szm_task_" .. n .. "_descr_fight")
 		end
-		return "szm_task_" .. n .. "_descr"
+		return text_id("szm_task_" .. n .. "_descr")
 	end
 
 	-- Called every few seconds by the task manager
@@ -1183,6 +1919,15 @@ for n = 1, #STAGES do
 		if st.talk_to then return end
 		tsk.stage = objective_done(n) and 1 or 0
 
+		if st.auto_complete and tsk.stage == 1 then
+			-- no report dialog: complete now, the next stage comes over the radio later
+			if not turned_in[n] then
+				turned_in[n] = true
+				act5_after(n)
+			end
+			return "complete"
+		end
+
 		if st.auto_next and tsk.stage == 1 then
 			-- no turn-in dialog: complete now, the next stage starts right away
 			CreateTimeEvent("szm_auto_next", tostring(n), 1, function()
@@ -1223,6 +1968,14 @@ xr_effects.szm_cleanup = function(actor, npc, p)
 	if st.medusa then save_var(db.actor, VAR_MEDUSA, nil) end
 end
 
+-- =szm_reward_money(min:max): reward_random_money scaled by the actor's gear level
+xr_effects.szm_reward_money = function(actor, npc, p)
+	local mn = tonumber(p and p[1]) or 0
+	local mx = tonumber(p and p[2]) or mn
+	local m = money_mult()
+	xr_effects.reward_random_money(actor, npc, { round_money(mn * m), round_money(mx * m) })
+end
+
 ---------------------------< Prologue / epilogue >---------------------------
 -- Checked every few seconds (not only on load), so the prologue also starts after arriving in Cordon.
 -- The info is given when the task actually starts, so a save during the delay doesn't lose it.
@@ -1238,7 +1991,7 @@ end
 local function try_prologue()
 	if prologue_scheduled or has_alife_info(INFO_STARTED) then return end
 	local comm = character_community(db.actor)
-	if comm ~= "actor_stalker" then return prologue_wait("actor community is " .. tostring(comm) .. ", needs actor_stalker") end
+	if not ALLOWED_COMMUNITIES[comm] then return prologue_wait("actor community is " .. tostring(comm) .. ", not in ALLOWED_COMMUNITIES") end
 	if level.name() ~= "l01_escape" then return prologue_wait("actor is on " .. level.name() .. ", needs l01_escape") end
 	local sid = get_story_se_object(SID)
 	if not sid then return prologue_wait("Sidorovich not found") end
@@ -1259,18 +2012,6 @@ local function try_prologue()
 		return true
 	end)
 	printf("[SZM] prologue scheduled")
-end
-
-local function check_epilogue()
-	if has_alife_info(INFO_EPILOGUE) then return end
-	local t = load_var(db.actor, VAR_END_TIME)
-	if not t then return end
-	local since = game.get_game_time():diffSec(utils_data.CTime_from_table(t))
-	if since < EPILOGUE_DELAY_H * 3600 then return end
-
-	give_info(INFO_EPILOGUE)
-	local ending = has_alife_info("szm_end_cold") and "cold" or has_alife_info("szm_end_sid") and "sid" or "wolf"
-	play_hum("szm_epilogue_" .. ending)
 end
 
 ---------------------------< Callbacks >---------------------------
@@ -1296,7 +2037,8 @@ local function actor_on_update()
 	if tg < tg_epilogue then return end
 	tg_epilogue = tg + 5000
 	try_prologue()
-	check_epilogue()
+	check_next_stage()
+	safe_call("best_gear", best_gear)   -- remember the best gear as it is equipped, not only at the reports
 end
 
 local function actor_on_first_update()

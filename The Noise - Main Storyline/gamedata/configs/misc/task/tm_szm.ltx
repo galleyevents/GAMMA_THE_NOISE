@@ -1,7 +1,7 @@
 ; The Noise - main storyline (working title "Szum", hence the szm_ prefix)
 ; Auto-included by task_manager.ltx (#include "tm_*.ltx"). Names avoid the <npc>_task_* patterns.
 ; Stage 0: objective, stage 1: report (completed from the turn-in dialog; 15 completes itself).
-; Item rewards come from szm_main.script; money and goodwill from here. storyline = true: main story marker.
+; Item rewards come from szm_main.script; money and goodwill from here (szm_reward_money: scaled by gear level). storyline = true: main story marker.
 
 [szm_task_1]
 icon                = ui_inGame2_PD_Torgovets_informatsiey
@@ -22,7 +22,7 @@ descr_functor       = szm_descr_2
 stage_complete      = 1
 target_functor      = szm_target_2
 status_functor      = szm_status_2
-on_complete         = %+szm_stage_2_done =reward_random_money(1500:2500) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(2)%
+on_complete         = %+szm_stage_2_done =szm_reward_money(1500:2500) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(2)%
 on_fail             = %=szm_cleanup(2)%
 
 [szm_task_3]
@@ -33,7 +33,7 @@ descr_functor       = szm_descr_3
 stage_complete      = 1
 target_functor      = szm_target_3
 status_functor      = szm_status_3
-on_complete         = %+szm_stage_3_done =reward_random_money(1000:2000) =complete_task_inc_goodwill(50:stalker) =szm_cleanup(3)%
+on_complete         = %+szm_stage_3_done =szm_reward_money(1000:2000) =complete_task_inc_goodwill(50:stalker) =szm_cleanup(3)%
 on_fail             = %=szm_cleanup(3)%
 
 [szm_task_4]
@@ -44,7 +44,7 @@ descr_functor       = szm_descr_4
 stage_complete      = 1
 target_functor      = szm_target_4
 status_functor      = szm_status_4
-on_complete         = %+szm_stage_4_done =reward_random_money(1500:2500) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(4)%
+on_complete         = %+szm_stage_4_done =szm_reward_money(1500:2500) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(4)%
 on_fail             = %=szm_cleanup(4)%
 
 [szm_task_5]
@@ -55,7 +55,7 @@ descr_functor       = szm_descr_5
 stage_complete      = 1
 target_functor      = szm_target_5
 status_functor      = szm_status_5
-on_complete         = %+szm_stage_5_done =reward_random_money(2000:3000) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(5)%
+on_complete         = %+szm_stage_5_done =szm_reward_money(2000:3000) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(5)%
 on_fail             = %=szm_cleanup(5)%
 
 [szm_task_6]
@@ -77,7 +77,7 @@ descr_functor       = szm_descr_7
 stage_complete      = 1
 target_functor      = szm_target_7
 status_functor      = szm_status_7
-on_complete         = %+szm_stage_7_done =reward_random_money(3000:4000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(7)%
+on_complete         = %+szm_stage_7_done =szm_reward_money(3000:4000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(7)%
 on_fail             = %=szm_cleanup(7)%
 
 [szm_task_8]
@@ -88,7 +88,7 @@ descr_functor       = szm_descr_8
 stage_complete      = 1
 target_functor      = szm_target_8
 status_functor      = szm_status_8
-on_complete         = %+szm_stage_8_done =reward_random_money(4000:5000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(8)%
+on_complete         = %+szm_stage_8_done =szm_reward_money(4000:5000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(8)%
 on_fail             = %=szm_cleanup(8)%
 
 [szm_task_9]
@@ -99,7 +99,7 @@ descr_functor       = szm_descr_9
 stage_complete      = 1
 target_functor      = szm_target_9
 status_functor      = szm_status_9
-on_complete         = %+szm_stage_9_done =reward_random_money(6000:8000) =complete_task_inc_goodwill(75:csky) =szm_cleanup(9)%
+on_complete         = %+szm_stage_9_done =szm_reward_money(6000:8000) =complete_task_inc_goodwill(75:csky) =szm_cleanup(9)%
 on_fail             = %=szm_cleanup(9)%
 
 [szm_task_10]
@@ -110,7 +110,7 @@ descr_functor       = szm_descr_10
 stage_complete      = 1
 target_functor      = szm_target_10
 status_functor      = szm_status_10
-on_complete         = %+szm_stage_10_done =reward_random_money(8000:10000) =complete_task_inc_goodwill(100:csky) =szm_cleanup(10)%
+on_complete         = %+szm_stage_10_done =szm_reward_money(8000:10000) =complete_task_inc_goodwill(100:csky) =szm_cleanup(10)%
 on_fail             = %=szm_cleanup(10)%
 
 [szm_task_11]
@@ -132,7 +132,7 @@ descr_functor       = szm_descr_12
 stage_complete      = 1
 target_functor      = szm_target_12
 status_functor      = szm_status_12
-on_complete         = %+szm_stage_12_done =reward_random_money(6000:8000) =complete_task_inc_goodwill(75:csky) =szm_cleanup(12)%
+on_complete         = %+szm_stage_12_done =szm_reward_money(6000:8000) =complete_task_inc_goodwill(75:csky) =szm_cleanup(12)%
 on_fail             = %=szm_cleanup(12)%
 
 [szm_task_13]
@@ -154,7 +154,7 @@ descr_functor       = szm_descr_14
 stage_complete      = 1
 target_functor      = szm_target_14
 status_functor      = szm_status_14
-on_complete         = %+szm_stage_14_done =reward_random_money(7000:9000) =complete_task_inc_goodwill(50:stalker) =szm_cleanup(14)%
+on_complete         = %+szm_stage_14_done =szm_reward_money(7000:9000) =complete_task_inc_goodwill(50:stalker) =szm_cleanup(14)%
 on_fail             = %=szm_cleanup(14)%
 
 [szm_task_15]
@@ -165,7 +165,7 @@ descr_functor       = szm_descr_15
 stage_complete      = 1
 target_functor      = szm_target_15
 status_functor      = szm_status_15
-on_complete         = %+szm_stage_15_done =reward_random_money(5000:7000) =szm_cleanup(15)%
+on_complete         = %+szm_stage_15_done =szm_reward_money(5000:7000) =szm_cleanup(15)%
 on_fail             = %=szm_cleanup(15)%
 
 [szm_task_16]
@@ -178,3 +178,126 @@ target_functor      = szm_target_16
 status_functor      = szm_status_16
 on_complete         = %+szm_stage_16_done =szm_cleanup(16)%
 on_fail             = %=szm_cleanup(16)%
+
+; ===== Act V: stages come over the radio (szm_main.script), 23-24 complete themselves =====
+
+[szm_task_17]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = szm_task_17_name
+descr_functor       = szm_descr_17
+stage_complete      = 1
+target_functor      = szm_target_17
+status_functor      = szm_status_17
+on_complete         = %+szm_stage_17_done =szm_reward_money(3000:4000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(17)%
+on_fail             = %=szm_cleanup(17)%
+
+[szm_task_18]
+icon                = ui_inGame2_PD_Torgovets_informatsiey
+storyline           = true
+title               = szm_task_18_name
+descr_functor       = szm_descr_18
+stage_complete      = 1
+target_functor      = szm_target_18
+status_functor      = szm_status_18
+on_complete         = %+szm_stage_18_done =szm_reward_money(4000:5000) =complete_task_inc_goodwill(50:csky) =szm_cleanup(18)%
+on_fail             = %=szm_cleanup(18)%
+
+[szm_task_19]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = szm_task_19_name
+descr_functor       = szm_descr_19
+stage_complete      = 1
+target_functor      = szm_target_19
+status_functor      = szm_status_19
+on_complete         = %+szm_stage_19_done =szm_reward_money(3000:4000) =szm_cleanup(19)%
+on_fail             = %=szm_cleanup(19)%
+
+[szm_task_20]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = szm_task_20_name
+descr_functor       = szm_descr_20
+stage_complete      = 1
+target_functor      = szm_target_20
+status_functor      = szm_status_20
+on_complete         = %+szm_stage_20_done =szm_reward_money(4000:5000) =szm_cleanup(20)%
+on_fail             = %=szm_cleanup(20)%
+
+[szm_task_21]
+icon                = ui_iconsTotal_artefact
+storyline           = true
+title               = szm_task_21_name
+descr_functor       = szm_descr_21
+stage_complete      = 1
+target_functor      = szm_target_21
+status_functor      = szm_status_21
+on_complete         = %+szm_stage_21_done =szm_reward_money(2000:3000) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(21)%
+on_fail             = %=szm_cleanup(21)%
+
+[szm_task_22]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = szm_task_22_name
+descr_functor       = szm_descr_22
+stage_complete      = 1
+target_functor      = szm_target_22
+status_functor      = szm_status_22
+on_complete         = %+szm_stage_22_done =szm_reward_money(3000:4000) =complete_task_inc_goodwill(25:stalker) =szm_cleanup(22)%
+on_fail             = %=szm_cleanup(22)%
+
+[szm_task_23]
+icon                = ui_inGame2_PD_Torgovets_informatsiey
+storyline           = true
+title               = szm_task_23_name
+descr_functor       = szm_descr_23
+stage_complete      = 1
+target_functor      = szm_target_23
+status_functor      = szm_status_23
+on_complete         = %+szm_stage_23_done =szm_reward_money(5000:6000) =szm_cleanup(23)%
+on_fail             = %=szm_cleanup(23)%
+
+[szm_task_24]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = szm_task_24_name
+descr_functor       = szm_descr_24
+stage_complete      = 1
+target_functor      = szm_target_24
+status_functor      = szm_status_24
+on_complete         = %+szm_stage_24_done =szm_reward_money(6000:8000) =szm_cleanup(24)%
+on_fail             = %=szm_cleanup(24)%
+
+[szm_task_25]
+icon                = ui_inGame2_PD_Lider
+storyline           = true
+title               = szm_task_25_name
+descr_functor       = szm_descr_25
+stage_complete      = 1
+target_functor      = szm_target_25
+status_functor      = szm_status_25
+on_complete         = %+szm_stage_25_done =szm_reward_money(8000:10000) =complete_task_inc_goodwill(150:csky) =szm_cleanup(25)%
+on_fail             = %=szm_cleanup(25)%
+
+[szm_task_26]
+icon                = ui_inGame2_PD_Lider
+storyline           = true
+title               = szm_task_26_name
+descr_functor       = szm_descr_26
+stage_complete      = 1
+target_functor      = szm_target_26
+status_functor      = szm_status_26
+on_complete         = %+szm_stage_26_done =szm_reward_money(15000:18000) =szm_cleanup(26)%
+on_fail             = %=szm_cleanup(26)%
+
+[szm_task_27]
+icon                = ui_inGame2_PD_Lider
+storyline           = true
+title               = szm_task_27_name
+descr_functor       = szm_descr_27
+stage_complete      = 1
+target_functor      = szm_target_27
+status_functor      = szm_status_27
+on_complete         = %+szm_stage_27_done =szm_reward_money(8000:10000) =complete_task_inc_goodwill(100:stalker) =szm_cleanup(27)%
+on_fail             = %=szm_cleanup(27)%

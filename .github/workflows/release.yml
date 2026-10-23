@@ -1,4 +1,5 @@
-# Push a tag like v1.0 or 1.0 -> builds an MO2-ready zip (gamedata/ at the archive root) and attaches it to the release.
+# Push a tag like v1.0 or 1.0 -> builds an MO2-ready zip (gamedata/ and the FOMOD installer at the archive root)
+# and attaches it to the release.
 # For a release that already exists, run it by hand (Actions -> Release -> Run workflow) with its tag.
 name: Release
 
@@ -27,8 +28,12 @@ jobs:
       - name: Build zip
         run: |
           ZIP="The_Noise_Main_Storyline_${TAG}.zip"
-          cd "The Noise - Main Storyline"
-          zip -r -X "../$ZIP" gamedata
+          # gamedata/ plus the MO2 installer (fomod/, options/) at the archive root
+          mkdir -p build
+          cp -r "The Noise - Main Storyline/gamedata" build/
+          cp -r installer/fomod installer/options build/
+          cd build
+          zip -r -X "../$ZIP" gamedata fomod options
           cd ..
           unzip -l "$ZIP"
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
