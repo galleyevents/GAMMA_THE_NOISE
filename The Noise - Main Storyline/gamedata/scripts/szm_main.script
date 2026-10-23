@@ -419,6 +419,13 @@ MEDUSA_SPAWN = { pos = {-249.45230102539, -13.491371154785, -29.858497619629}, l
 
 DETECTORS = { "detector_simple", "detector_advanced", "detector_elite", "detector_scientific", "detector_grizzly" }
 
+-- Factions the story is for. Every hostile story squad has relationship = enemy (squad_descr_szm.ltx),
+-- so it fights the actor whatever the actor's faction thinks of it. A Clear Sky actor can't sell the
+-- Kamerton to Sid (no dialog, radio message or map spot from him) and gets the "_csky" texts.
+ALLOWED_COMMUNITIES = {
+	actor_stalker = true, actor_dolg = true, actor_freedom = true, actor_ecolog = true, actor_csky = true,
+}
+
 -- Prologue starts this many seconds after a loner is in Cordon (new game, loaded save or arrival),
 -- so Sid's call doesn't get lost while the player is still sorting the inventory
 PROLOGUE_DELAY = 60
@@ -467,7 +474,20 @@ local function has_fetch(n)
 	return count_items(fetch[1]) >= fetch[2]
 end
 
-local function tr(id) return game.translate_string(id) end
+local function actor_is_csky()
+	return db.actor ~= nil and character_community(db.actor) == "actor_csky"
+end
+
+-- String id, or its Clear Sky actor version (<id>_csky) when there is one
+local function text_id(id)
+	if actor_is_csky() then
+		local alt = id .. "_csky"
+		if game.translate_string(alt) ~= alt then return alt end
+	end
+	return id
+end
+
+local function tr(id) return game.translate_string(text_id(id)) end
 
 -- The side chosen in Act IV: "cold", "sid", "wolf" or nil
 local function ending()
@@ -792,10 +812,19 @@ local CHOICE_SPOTS = {
 	{ story_id = WOLF, hint = "szm_choice_hint_wolf" },
 }
 
+-- A Clear Sky actor can't sell the Kamerton to Sid
+local function sid_choice_allowed()
+	return not actor_is_csky()
+end
+
 local function mark_choice_spots()
 	for _, c in ipairs(CHOICE_SPOTS) do
 		local id = get_story_object_id(c.story_id)
 		remove_spot(id, OLD_OFFER_SPOT)
+		if c.story_id == SID and not sid_choice_allowed() then
+			remove_spot(id, OFFER_SPOT)
+			id = nil
+		end
 		if id and level.map_has_object_spot(id, OFFER_SPOT) == 0 then
 			level.map_add_object_spot_ser(id, OFFER_SPOT, tr(c.hint))
 		end
@@ -817,7 +846,9 @@ end
 
 local function send_choice_messages()
 	for _, m in ipairs(CHOICE_MSGS) do
-		radio_msg(m.name, m.text, m.icon, m.delay)
+		if m.name ~= "szm_name_sid" or sid_choice_allowed() then
+			radio_msg(m.name, m.text, m.icon, m.delay)
+		end
 	end
 	CreateTimeEvent("szm_choice_msgs", "snd", 0, function()
 		xr_sound.set_sound_play(AC_ID, "pda_tips")
@@ -1666,6 +1697,7 @@ local function choose(key, first_speaker, second_speaker)
 	end)
 	printf("[SZM] ending: %s", key)
 end
+function can_turn_in_16_sid() return can_turn_in(16) and sid_choice_allowed() end
 function turn_in_16_cold(a, b) choose("cold", a, b) end
 function turn_in_16_sid(a, b)  choose("sid",  a, b) end
 function turn_in_16_wolf(a, b) choose("wolf", a, b) end
@@ -1678,6 +1710,10 @@ function reward_swap_weapon(a, b)   return reward_note(a, b) == "swap_weapon" en
 function reward_swap_outfit(a, b)   return reward_note(a, b) == "swap_outfit" end
 function reward_swap_backpack(a, b) return reward_note(a, b) == "swap_backpack" end
 function reward_worn_weapon(a, b)   return reward_note(a, b) == "worn_weapon" end
+
+-- Phrases with a "_csky" text (szm_gen_dialogs.py): the Clear Sky actor's version or the usual one
+function actor_csky()     return actor_is_csky() end
+function actor_not_csky() return not actor_is_csky() end
 
 ---------------------------< Task functors >---------------------------
 -- Marker for a squad stage: the body holding the item once its carrier is dead and the item
@@ -1753,16 +1789,16 @@ for n = 1, #STAGES do
 		return to and get_story_object_id(to) or tsk.task_giver_id
 	end
 
-	-- PDA description per phase (string ids from st_szm.xml)
+	-- PDA description per phase (string ids from st_szm.xml, the Clear Sky actor's version if there is one)
 	task_functor["szm_descr_" .. n] = function(task_id, field, p, tsk)
 		if tsk and tsk.stage == 1 then
-			return "szm_task_" .. n .. "_descr_return"
+			return text_id("szm_task_" .. n .. "_descr_return")
 		end
 		local state = STAGES[n].strike and get_strike(n)
 		if state and state.phase == "fight" then
-			return "szm_task_" .. n .. "_descr_fight"
+			return text_id("szm_task_" .. n .. "_descr_fight")
 		end
-		return "szm_task_" .. n .. "_descr"
+		return text_id("szm_task_" .. n .. "_descr")
 	end
 
 	-- Called every few seconds by the task manager
@@ -1880,7 +1916,7 @@ end
 local function try_prologue()
 	if prologue_scheduled or has_alife_info(INFO_STARTED) then return end
 	local comm = character_community(db.actor)
-	if comm ~= "actor_stalker" then return prologue_wait("actor community is " .. tostring(comm) .. ", needs actor_stalker") end
+	if not ALLOWED_COMMUNITIES[comm] then return prologue_wait("actor community is " .. tostring(comm) .. ", not in ALLOWED_COMMUNITIES") end
 	if level.name() ~= "l01_escape" then return prologue_wait("actor is on " .. level.name() .. ", needs l01_escape") end
 	local sid = get_story_se_object(SID)
 	if not sid then return prologue_wait("Sidorovich not found") end

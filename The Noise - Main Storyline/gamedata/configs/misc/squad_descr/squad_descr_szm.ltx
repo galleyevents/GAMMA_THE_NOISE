@@ -1,12 +1,14 @@
 ; Szum - main storyline
 ; Auto-included by squad_descr.ltx (#include "squad_descr_*.ltx").
 ; No "common = true", so the simulation never spawns these squads on its own.
+; relationship = enemy: the squads fight the actor of any faction (see ALLOWED_COMMUNITIES in szm_main.script).
 
 ; Stage 2: the bandit who robbed Sid's courier (carries the cylinder)
 [szm_bandit_squad]:online_offline_group
 faction             = bandit
 npc_random          = sim_default_bandit_0, sim_default_bandit_1, sim_default_bandit_2
 npc_in_squad        = 1, 1
+relationship        = enemy
 
 ; Stage 3: two weak boars (each guaranteed BOAR_LEGS_PER_BOAR legs)
 [szm_boar_squad]:online_offline_group
@@ -19,6 +21,7 @@ npc_in_squad        = 2, 2
 faction             = renegade
 npc_random          = sim_default_renegade_0, sim_default_renegade_0, sim_default_renegade_1, sim_default_renegade_2
 npc_in_squad        = 2, 3
+relationship        = enemy
 
 ; Stage 9: one weak bloodsucker
 [szm_bloodsucker_squad]:online_offline_group
@@ -39,18 +42,21 @@ relationship        = friend
 faction             = army
 npc_random          = sim_default_military_0, sim_default_military_1, sim_default_military_1, sim_default_military_2
 npc_in_squad        = 3, 3
+relationship        = enemy
 
 ; Stage 14: bandits in the Garbage with Sid's package
 [szm_garbage_bandit_squad]:online_offline_group
 faction             = bandit
 npc_random          = sim_default_bandit_1, sim_default_bandit_2, sim_default_bandit_2, sim_default_bandit_3
 npc_in_squad        = 3, 4
+relationship        = enemy
 
 ; Stage 15: mercenaries who took the Kamerton
 [szm_merc_squad]:online_offline_group
 faction             = killer
 npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
 npc_in_squad        = 4, 5
+relationship        = enemy
 
 ; ===== Act V =====
 ; Stage 18: an army signal team in Agroprom (carries the frequency log)
@@ -58,12 +64,14 @@ npc_in_squad        = 4, 5
 faction             = army
 npc_random          = sim_default_military_1, sim_default_military_2
 npc_in_squad        = 3, 3
+relationship        = enemy
 
 ; Stage 19: the buyer's men in the Garbage (the buyer carries his PDA)
 [szm_buyer_squad]:online_offline_group
 faction             = killer
 npc_random          = sim_default_killer_1, sim_default_killer_2
 npc_in_squad        = 3, 3
+relationship        = enemy
 
 ; Stage 20: Clear Sky hit squad sent after the actor (always hostile)
 [szm_csky_hit_squad]:online_offline_group
@@ -77,15 +85,18 @@ relationship        = enemy
 faction             = killer
 npc_random          = sim_default_killer_1, sim_default_killer_2
 npc_in_squad        = 2, 3
+relationship        = enemy
 
 ; Stage 23: mercenaries in Agroprom's underground
 [szm_agr_u_merc_squad]:online_offline_group
 faction             = killer
 npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
 npc_in_squad        = 3, 4
+relationship        = enemy
 
 ; Stage 24: the transmitter's guards (the commander carries the resonator)
 [szm_agr_u_guard_squad]:online_offline_group
 faction             = killer
 npc_random          = sim_default_killer_2, sim_default_killer_3, sim_default_killer_3
 npc_in_squad        = 4, 4
+relationship        = enemy

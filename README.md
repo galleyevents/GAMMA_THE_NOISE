@@ -77,12 +77,16 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
    (for G.A.M.M.A.: `<GAMMA>\mods\`).
 2. Refresh MO2 (F5) and enable the mod. Load order doesn't matter much: it adds its own files and uses
    DXML/DLTX instead of overwriting shared configs.
-3. Start a new game as a loner in Cordon, or load an existing loner save. Sid's radio call comes about
+3. Start a new game, or load an existing save, as a Loner, Duty, Freedom, Ecologist or Clear Sky character. Sid's radio call comes about
    a minute after you are in Cordon (an existing save elsewhere gets it after arriving in Cordon).
 
 ## Notes
 
-- The story starts for a loner (new game or existing save) once they are in Cordon. It disables Fanatic's "Training Day".
+- The story starts for a Loner, Duty, Freedom, Ecologist or Clear Sky character (new game or existing save)
+  once they are in Cordon (`ALLOWED_COMMUNITIES` in `szm_main.script`). It disables Fanatic's "Training Day".
+  Every squad the story sends against the player is hostile to any faction. A Clear Sky player can't sell
+  the Kamerton to Sid (only Cold or Wolf), and Sid, Spore and Cold talk to them as one of Clear Sky
+  (`<id>_csky` texts in `st_szm.xml`; the dialog generator picks them up on its own).
 - Internal ids use the `szm_` prefix (from the working title "Szum"). Don't rename them: saves depend on them.
 - Uninstalling mid-story leaves the quest items and task entries orphaned in your save.
 - `dialogs_szm.xml` is generated: edit `tools/szm_gen_dialogs.py` (stage givers, chaining) and the texts,

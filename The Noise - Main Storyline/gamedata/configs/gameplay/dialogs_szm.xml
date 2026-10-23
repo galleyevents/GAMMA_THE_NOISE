@@ -4,6 +4,7 @@
 	szm_n_offer: 0 actor ask, 1 npc briefing, 2 accept, 3 decline, 4 npc gives the task, 5 npc after decline
 	szm_n_done : report and rewards, then (same NPC) the next offer right away or "later"
 	szm_16_<who>: the Act IV choice (Cold / Sid / Wolf). Who says what is set in modxml_szm.script.
+	500+: the Clear Sky actor's version of a phrase (text id + _csky)
 	200+ / 250+ / 300: gear reward given as money or as a worn gun - the NPC's line, the actor's answer, the reward line
 -->
 <game_dialogs>
@@ -151,9 +152,10 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_5_done_0</text><next>200</next><next>201</next><next>202</next><next>203</next><next>1</next></phrase>
 			<phrase id="1"><precondition>szm_main.reward_not_swapped</precondition><text>szm_5_done_1</text><action>szm_main.turn_in_5</action><next>2</next><next>3</next></phrase>
-			<phrase id="2"><text>szm_6_offer_0</text><next>4</next></phrase>
+			<phrase id="2"><text>szm_6_offer_0</text><next>4</next><next>504</next></phrase>
 			<phrase id="3"><text>szm_later</text><next>5</next></phrase>
-			<phrase id="4"><text>szm_6_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="4"><precondition>szm_main.actor_not_csky</precondition><text>szm_6_offer_1</text><next>6</next><next>7</next></phrase>
+			<phrase id="504"><precondition>szm_main.actor_csky</precondition><text>szm_6_offer_1_csky</text><next>6</next><next>7</next></phrase>
 			<phrase id="5"><text>szm_later_sid</text></phrase>
 			<phrase id="6"><text>szm_6_offer_2</text><next>8</next></phrase>
 			<phrase id="7"><text>szm_offer_decline</text><next>9</next></phrase>
@@ -172,8 +174,9 @@
 	<dialog id="szm_6_offer">
 		<precondition>szm_main.can_offer_6</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_6_offer_0</text><next>1</next></phrase>
-			<phrase id="1"><text>szm_6_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="0"><text>szm_6_offer_0</text><next>1</next><next>501</next></phrase>
+			<phrase id="1"><precondition>szm_main.actor_not_csky</precondition><text>szm_6_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="501"><precondition>szm_main.actor_csky</precondition><text>szm_6_offer_1_csky</text><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_6_offer_2</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
 			<phrase id="4"><text>szm_6_offer_4</text><action>szm_main.give_6</action></phrase>
@@ -186,8 +189,9 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_6_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_6_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_6_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
-			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
+			<phrase id="2"><text>szm_6_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next><next>503</next></phrase>
+			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_not_csky</precondition><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
+			<phrase id="503"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_csky</precondition><text>szm_6_done_3_csky</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_7_offer_0</text><next>6</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
 			<phrase id="6"><text>szm_7_offer_1</text><next>8</next><next>9</next></phrase>
@@ -200,9 +204,10 @@
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_spore_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_spore_backpack</text><next>250</next></phrase>
 			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_spore_weapon</text><next>251</next></phrase>
-			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
-			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
-			<phrase id="300"><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
+			<phrase id="250"><text>szm_swap_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="300"><precondition>szm_main.actor_not_csky</precondition><text>szm_6_done_3</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
+			<phrase id="800"><precondition>szm_main.actor_csky</precondition><text>szm_6_done_3_csky</text><action>szm_main.turn_in_6</action><next>4</next><next>5</next></phrase>
 		</phrase_list>
 	</dialog>
 
@@ -330,9 +335,10 @@
 			<phrase id="1"><text>szm_10_done_1</text><next>2</next></phrase>
 			<phrase id="2"><text>szm_10_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_10_done_3</text><action>szm_main.turn_in_10</action><next>4</next><next>5</next></phrase>
-			<phrase id="4"><text>szm_11_offer_0</text><next>6</next></phrase>
+			<phrase id="4"><text>szm_11_offer_0</text><next>6</next><next>506</next></phrase>
 			<phrase id="5"><text>szm_later</text><next>7</next></phrase>
-			<phrase id="6"><text>szm_11_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="6"><precondition>szm_main.actor_not_csky</precondition><text>szm_11_offer_1</text><next>8</next><next>9</next></phrase>
+			<phrase id="506"><precondition>szm_main.actor_csky</precondition><text>szm_11_offer_1_csky</text><next>8</next><next>9</next></phrase>
 			<phrase id="7"><text>szm_later_spore</text></phrase>
 			<phrase id="8"><text>szm_11_offer_2</text><next>10</next></phrase>
 			<phrase id="9"><text>szm_offer_decline</text><next>11</next></phrase>
@@ -351,8 +357,9 @@
 	<dialog id="szm_11_offer">
 		<precondition>szm_main.can_offer_11</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_11_offer_0</text><next>1</next></phrase>
-			<phrase id="1"><text>szm_11_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="0"><text>szm_11_offer_0</text><next>1</next><next>501</next></phrase>
+			<phrase id="1"><precondition>szm_main.actor_not_csky</precondition><text>szm_11_offer_1</text><next>2</next><next>3</next></phrase>
+			<phrase id="501"><precondition>szm_main.actor_csky</precondition><text>szm_11_offer_1_csky</text><next>2</next><next>3</next></phrase>
 			<phrase id="2"><text>szm_11_offer_2</text><next>4</next></phrase>
 			<phrase id="3"><text>szm_offer_decline</text><next>5</next></phrase>
 			<phrase id="4"><text>szm_11_offer_4</text><action>szm_main.give_11</action></phrase>
@@ -363,8 +370,9 @@
 	<dialog id="szm_11_done">
 		<precondition>szm_main.can_turn_in_11</precondition>
 		<phrase_list>
-			<phrase id="0"><text>szm_11_done_0</text><next>1</next></phrase>
-			<phrase id="1"><text>szm_11_done_1</text><next>2</next></phrase>
+			<phrase id="0"><text>szm_11_done_0</text><next>1</next><next>501</next></phrase>
+			<phrase id="1"><precondition>szm_main.actor_not_csky</precondition><text>szm_11_done_1</text><next>2</next></phrase>
+			<phrase id="501"><precondition>szm_main.actor_csky</precondition><text>szm_11_done_1_csky</text><next>2</next></phrase>
 			<phrase id="2"><text>szm_11_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
 			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_11_done_3</text><action>szm_main.turn_in_11</action><next>4</next><next>5</next></phrase>
 			<phrase id="4"><text>szm_12_offer_0</text><next>6</next></phrase>
@@ -731,15 +739,17 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_25_done_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_25_done_1</text><next>2</next></phrase>
-			<phrase id="2"><text>szm_25_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next></phrase>
-			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
+			<phrase id="2"><text>szm_25_done_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>3</next><next>503</next></phrase>
+			<phrase id="3"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_not_csky</precondition><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
+			<phrase id="503"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_csky</precondition><text>szm_25_done_3_csky</text><action>szm_main.turn_in_25</action></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
 			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
-			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
-			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
-			<phrase id="300"><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
+			<phrase id="250"><text>szm_swap_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="300"><precondition>szm_main.actor_not_csky</precondition><text>szm_25_done_3</text><action>szm_main.turn_in_25</action></phrase>
+			<phrase id="800"><precondition>szm_main.actor_csky</precondition><text>szm_25_done_3_csky</text><action>szm_main.turn_in_25</action></phrase>
 		</phrase_list>
 	</dialog>
 
@@ -782,22 +792,24 @@
 		<phrase_list>
 			<phrase id="0"><text>szm_16_cold_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_16_cold_1</text><next>2</next><next>3</next></phrase>
-			<phrase id="2"><text>szm_16_cold_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>4</next></phrase>
+			<phrase id="2"><text>szm_16_cold_2</text><next>200</next><next>201</next><next>202</next><next>203</next><next>4</next><next>504</next></phrase>
 			<phrase id="3"><text>szm_16_think</text><next>5</next></phrase>
-			<phrase id="4"><precondition>szm_main.reward_not_swapped</precondition><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
+			<phrase id="4"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_not_csky</precondition><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
+			<phrase id="504"><precondition>szm_main.reward_not_swapped</precondition><precondition>szm_main.actor_csky</precondition><text>szm_16_cold_4_csky</text><action>szm_main.turn_in_16_cold</action></phrase>
 			<phrase id="5"><text>szm_16_cold_5</text></phrase>
 			<phrase id="200"><precondition>szm_main.reward_swap_weapon</precondition><text>szm_swap_cold_weapon</text><next>250</next></phrase>
 			<phrase id="201"><precondition>szm_main.reward_swap_outfit</precondition><text>szm_swap_cold_outfit</text><next>250</next></phrase>
 			<phrase id="202"><precondition>szm_main.reward_swap_backpack</precondition><text>szm_swap_cold_backpack</text><next>250</next></phrase>
 			<phrase id="203"><precondition>szm_main.reward_worn_weapon</precondition><text>szm_worn_cold_weapon</text><next>251</next></phrase>
-			<phrase id="250"><text>szm_swap_ok</text><next>300</next></phrase>
-			<phrase id="251"><text>szm_worn_ok</text><next>300</next></phrase>
-			<phrase id="300"><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
+			<phrase id="250"><text>szm_swap_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="251"><text>szm_worn_ok</text><next>300</next><next>800</next></phrase>
+			<phrase id="300"><precondition>szm_main.actor_not_csky</precondition><text>szm_16_cold_4</text><action>szm_main.turn_in_16_cold</action></phrase>
+			<phrase id="800"><precondition>szm_main.actor_csky</precondition><text>szm_16_cold_4_csky</text><action>szm_main.turn_in_16_cold</action></phrase>
 		</phrase_list>
 	</dialog>
 
 	<dialog id="szm_16_sid">
-		<precondition>szm_main.can_turn_in_16</precondition>
+		<precondition>szm_main.can_turn_in_16_sid</precondition>
 		<phrase_list>
 			<phrase id="0"><text>szm_16_sid_0</text><next>1</next></phrase>
 			<phrase id="1"><text>szm_16_sid_1</text><next>2</next><next>3</next></phrase>

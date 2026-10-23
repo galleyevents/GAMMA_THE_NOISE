@@ -14,7 +14,8 @@ Kwoty podane niżej są dla gracza w słabym sprzęcie.
 PROLOG - KORDON
 ---------------
 1. A Job Offer
-   Minutę po wejściu do Kordonu (nowa gra jako samotnik) Sidorowicz woła przez
+   Minutę po wejściu do Kordonu (samotnik, Powinność, Swoboda, Ekolog albo Czyste
+   Niebo, nowa gra lub stary zapis) Sidorowicz woła przez
    radio: słyszał, że jesteś nowy, i szuka ludzi do roboty. Idziesz do bunkra.
    Sid mówi wprost: "ja daję robotę, ty robisz, ja płacę".
 
@@ -100,7 +101,9 @@ AKT IV - WYBÓR
 --------------
 16. Kamerton
    Cold, Sid i Wilk odzywają się przez radio i każdy chce Kamertonu. Wszyscy trzej
-   mają znaczniki na mapie, a wygrywa ten, komu oddasz pierwszemu:
+   mają znaczniki na mapie, a wygrywa ten, komu oddasz pierwszemu. Gracz z Czystego
+   Nieba nie może sprzedać Kamertonu Sidowi (Sid nie dzwoni i nie ma znacznika),
+   zostają mu Cold i Wilk; Spore i Cold mówią do niego jak do swojego.
    - Cold: pancerz CS-2a lub lepszy (albo pieniądze), apteczki, +200 u Czystego Nieba
    - Sid:  SKS lub lepsza broń w idealnym stanie (albo lepsza, ale zużyta), amunicja, 15 000 RU, -300 u Czystego Nieba
    - Wilk: niszczycie Kamerton; artefakt Dusza, apteczki, +150 u samotników

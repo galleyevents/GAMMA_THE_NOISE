@@ -123,6 +123,7 @@
 	<!-- ===================== 6: to Spore ===================== -->
 	<string id="szm_6_offer_0"><text>Who might have answers?</text></string>
 	<string id="szm_6_offer_1"><text>Grisha was coming from Spore, the Clear Sky trader in the Great Swamps. Clear Sky have been listening to the Swamps for years - if anyone knows what this noise is, it's them. Take Spore the cylinder, he'll know what it is and who it was meant for. Tell him I sent you. Will you go?</text></string>
+	<string id="szm_6_offer_1_csky"><text>Grisha was coming from Spore - your own trader, in the Swamps. You Clear Sky lot have been listening to the Swamps for years: if anyone knows what this noise is, it's your people. Take Spore the cylinder, he'll know what it is and who it was meant for. Tell him I sent you. Will you go?</text></string>
 	<string id="szm_prologue_msg"><text>Hey, you - the new face in the village. Sidorovich here, the trader in the bunker. Word travels fast: you're fresh in the Zone and short on everything. I'm always looking for people who can work. Drop by my bunker and we'll talk.</text></string>
 	<string id="szm_hum_bandit"><text>The moment you lift the cylinder, the PDA earpiece crackles: a strange, pulsing noise, like a heartbeat under static. A few seconds later, silence.</text></string>
 	<string id="szm_hum_medusa"><text>The detector went crazy. The PDA earpiece carries the same pulsing noise as by the bandit's body, only louder, as if it were right next to you. A few seconds later, silence.</text></string>
@@ -132,6 +133,7 @@
 	<string id="szm_6_done_1"><text>Grisha... so he didn't make it. Show me.</text></string>
 	<string id="szm_6_done_2"><text>A metal cylinder. The bandits had it.</text></string>
 	<string id="szm_6_done_3"><text>Hmm. I don't know what this is, and I don't like it. Leave it with me, I'll have our techs look at it. Look, I don't know you, and in this base we don't discuss things like this with strangers. But I could use a hand. Help us out, and we'll talk as friends.</text></string>
+	<string id="szm_6_done_3_csky"><text>Hmm. I don't know what this is, and I don't like it. Leave it with me, I'll have our techs look at it. Good thing it ended up with one of ours and not with some stranger. And since you're here - the base could use another pair of hands right now. Help me out.</text></string>
 	<string id="szm_task_6_name"><text>The Noise: The Road to the Swamps</text></string>
 	<string id="szm_task_6_descr"><text>Sid is sending me with the cylinder to Spore, the trader at the Clear Sky base in the Great Swamps. Grisha the courier was coming from him.</text></string>
 	<string id="szm_task_6_descr_return"><text>Take the cylinder to Spore at the Clear Sky base.</text></string>
@@ -187,10 +189,12 @@
 	<!-- ===================== 11: Cold ===================== -->
 	<string id="szm_11_offer_0"><text>I'm ready to talk to Cold.</text></string>
 	<string id="szm_11_offer_1"><text>Cold leads Clear Sky. Tell him everything: the cylinder, Viktor, Kostya and the Kamerton. He'll decide what comes next. And don't let him brush you off - you know more about this than anyone in the base.</text></string>
+	<string id="szm_11_offer_1_csky"><text>Go to Cold. Tell him everything: the cylinder, Viktor, Kostya and the Kamerton. He'll decide what comes next. And don't let him brush you off - you know more about this than anyone else in the base.</text></string>
 	<string id="szm_11_offer_2"><text>I'm going to Cold.</text></string>
 	<string id="szm_11_offer_4"><text>He's marked on your PDA. Tell him I sent you.</text></string>
 	<string id="szm_11_done_0"><text>Spore sent me. It's about the Kamerton.</text></string>
 	<string id="szm_11_done_1"><text>Spore told me about you. The Kamerton... Do you even know what it is?</text></string>
+	<string id="szm_11_done_1_csky"><text>Spore told me. Good that it was one of ours who dug this up. The Kamerton... Do you even know what it is?</text></string>
 	<string id="szm_11_done_2"><text>Only that the army is looking for it and that people die because of it.</text></string>
 	<string id="szm_11_done_3"><text>A military prototype. It's meant to trigger and measure emissions. The noise you keep hearing is the echo of its tests. If it works, emissions become a weapon. The cylinder you brought is a part of it. And now I need your help.</text></string>
 	<string id="szm_task_11_name"><text>The Noise: Cold</text></string>
@@ -248,12 +252,14 @@
 	<!-- ===================== 16: the choice ===================== -->
 	<string id="szm_task_16_name"><text>The Noise: Kamerton</text></string>
 	<string id="szm_task_16_descr"><text>I have the Kamerton. I can give it to Cold and Clear Sky (Great Swamps), sell it to Sidorovich, or destroy it with Wolf's help (both in Cordon). All three are marked on my PDA map. The choice is mine.</text></string>
+	<string id="szm_task_16_descr_csky"><text>I have the Kamerton. I can give it to Cold, so that Clear Sky can study it (Great Swamps), or destroy it with Wolf's help (Cordon). Both are marked on my PDA map. The choice is mine.</text></string>
 	<string id="szm_task_16_descr_return"><text>Decide who gets the Kamerton.</text></string>
 
 	<string id="szm_16_cold_0"><text>Cold, I have the Kamerton.</text></string>
 	<string id="szm_16_cold_1"><text>By the Zone... You really have it. Give it to us, and we'll make sure nobody ever uses it. Kostya, Viktor and the others deserve that much.</text></string>
 	<string id="szm_16_cold_2"><text>Take it. Let Clear Sky deal with the Noise.</text></string>
 	<string id="szm_16_cold_4"><text>Thank you, stalker. Kostya didn't die for nothing. Take this, you've earned it - and know that in this base you'll always be one of us.</text></string>
+	<string id="szm_16_cold_4_csky"><text>Thank you. Kostya didn't die for nothing. Take this, you've earned it. Clear Sky won't forget what you did for us.</text></string>
 	<string id="szm_16_cold_5"><text>I understand. But don't wait too long, the army is looking for it too.</text></string>
 
 	<string id="szm_16_sid_0"><text>Sid, I have the Kamerton.</text></string>
@@ -273,10 +279,12 @@
 	<string id="szm_name_sid"><text>Sidorovich</text></string>
 	<string id="szm_name_wolf"><text>Wolf</text></string>
 	<string id="szm_choice_msg_cold"><text>Stalker, Cold here. We heard about the convoy in Agroprom. If you have the Kamerton, bring it to the Swamps. Clear Sky will study it and find out what the Noise really is. Don't give it to anyone else.</text></string>
+	<string id="szm_choice_msg_cold_csky"><text>Cold here. We heard about the convoy in Agroprom. If you have the Kamerton, bring it home to the Swamps. Clear Sky will study it and find out what the Noise really is.</text></string>
 	<string id="szm_choice_msg_sid"><text>Hey, rookie, Sidorovich here. I know what you carried out of Agroprom. Bring that box to my bunker in Cordon and I'll pay you enough to stay out of the Zone for a month. Don't listen to those idealists from the Swamps.</text></string>
 	<string id="szm_choice_msg_wolf"><text>Wolf here. I heard what you've got. That thing has killed too many already. Come see me in the Cordon village and we'll destroy it together. Nobody should have it.</text></string>
 	<string id="szm_story_end_title"><text>The Noise - storyline complete</text></string>
 	<string id="szm_story_end_cold"><text>The Kamerton went to Clear Sky. Cold and his techs will study the Noise, and you have allies in the Swamps. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
+	<string id="szm_story_end_cold_csky"><text>The Kamerton went to Clear Sky. Cold and the techs will study the Noise, and the whole base knows who brought it home. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 	<string id="szm_story_end_sid"><text>The Kamerton went to Sidorovich, and your pockets are full of rubles. Clear Sky won't forget this betrayal. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 	<string id="szm_story_end_wolf"><text>You and Wolf destroyed the Kamerton. Nobody profits from it, and nobody else dies because of it. The main storyline "The Noise" is complete - the rest of the Zone is yours.</text></string>
 
@@ -392,6 +400,7 @@
 	<string id="szm_25_done_1"><text>...Without this, nobody will be playing with emissions again. Not the army, not the colonel. Kostya, Viktor, all of them - this is what they died for.</text></string>
 	<string id="szm_25_done_2"><text>Is it over?</text></string>
 	<string id="szm_25_done_3"><text>The Noise is over. The Zone never is. But today Clear Sky owes you, stalker, and we pay our debts.</text></string>
+	<string id="szm_25_done_3_csky"><text>The Noise is over. The Zone never is. But today the whole base owes you, and Clear Sky pays its debts.</text></string>
 
 	<string id="szm_task_26_name"><text>The Noise: Silence</text></string>
 	<string id="szm_task_26_radio"><text>Rookie, my radio has gone quiet - I take it that was you. Bring that thing here, we'll talk.</text></string>
