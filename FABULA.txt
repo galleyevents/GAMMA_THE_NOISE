@@ -12,6 +12,8 @@ Kwoty podane niżej są dla gracza w słabym sprzęcie.
 Tryby nagród (instalator MO2, potem MCM): pełne / bez sprzętu (pieniądze, amunicja,
 apteczki, artefakty; bez TOZ-a od Sida, kurtki i maski) / same pieniądze (i artefakty).
 W trybach hardcore Cold płaci za Kamerton 5 000 RU zamiast pancerza.
+Oddziały do zabicia są zawsze wrogie graczowi, niezależnie od jego frakcji. Te, które idą
+po gracza (etapy 10, 12, 20, 23), polują na niego zamiast stać w miejscu.
 
 
 PROLOG - KORDON
@@ -151,8 +153,10 @@ Część wspólna - podziemia Agropromu
    dziennika atakują najemnicy (co najmniej 40 m od ciebie). Etap kończy się sam.
 24. The Transmitter
    Przychodzi od razu przez radio, jeszcze w tunelach. Strażnicy nadajnika
-   pojawiają się co najmniej 80 m od ciebie, a ich dowódca ma Rezonator R-7B.
-   Etap kończy się sam.
+   pojawiają się co najmniej 80 m od ciebie i pilnują polowej radiostacji: agregat,
+   radio i dwa urządzenia z antenami, iskrzące wyładowaniami i grające Szum. Po zabiciu
+   strażników stajesz przy stacji i klawiszem "użyj" wyjmujesz Rezonator R-7B - stacja
+   gaśnie i milknie, a znika, gdy wyjdziesz z podziemi. Etap kończy się sam.
 
 Finał
 25/26/27. Silence

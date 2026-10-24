@@ -57,6 +57,16 @@ radio call) and `ACT5_TEST_DELAY` (real seconds, overrides it for testing; **set
   player gets a clearly better gun from `GEAR_OVERFLOW`, worn (only the barrel pristine, the other parts
   40-80%), and money only when even that list is outgrown. The same gear level scales the
   money of every stage and the medkit type. The leather jacket and gas mask of stage 4 stay fixed (tutorial).
+  Armor is compared by class first (light < medium < scientific/heavy), then by price.
+- Story targets are always hostile: squads the player has to kill get a personal goodwill of -10000
+  towards the player, set again during the stage, so no faction relation (G.A.M.M.A.'s dynamic ones
+  included) makes them neutral.
+- Squads that come for the player hunt them instead of holding their spot: the army patrol (stage 10),
+  the looters at the wreck (12), the Clear Sky squad (20) and the mercenaries in the tunnels (23).
+- Spawn spots without other squads are preferred, then ones the last stages didn't use.
+- The transmitter under Agroprom (stage 24) is a field radio station (generator, radio, two antenna
+  devices) crackling with electric anomaly effects and playing the Noise. Once its guards are dead,
+  stand next to it and press the use key to pull out the resonator; it goes silent and dark.
 - All tasks are main-story tasks (gold markers); the next quest giver gets a gold map marker too.
 - Turning in a stage leads straight into the next offer in the same conversation (or "later").
 - Targets, corpses and squads are spawned for each stage, away from anomalies and from locations used
