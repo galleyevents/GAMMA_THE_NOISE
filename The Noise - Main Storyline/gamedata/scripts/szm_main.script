@@ -369,22 +369,22 @@ SELF_DEFENSE_RADIUS = 20
 HOSTILE_GOODWILL = -10000
 
 -- Stage 24's transmitter: a field radio station - TRANSMITTER_PROP (the generator, the part that is used)
--- and TRANSMITTER_PARTS around it, { section, x, z offset in m, looping particle }. While its module is
--- in and the actor is within TRANSMITTER_FX_DIST: looping electric effects at every part, and each second a
--- TRANSMITTER_FLASH_CHANCE of a flash at a random part. TRANSMITTER_LEVEL is where it stands (it goes
--- away when the actor leaves with the module).
--- Particle names must exist in particles.xr: a missing one is a fatal engine error. All of these are in
--- both particles.xr files of G.A.M.M.A. (Particles Cinematic VFX, Boomsticks and Sharpsticks).
+-- and TRANSMITTER_PARTS around it, { section, x, z offset in m }. While its module is in and the actor is
+-- within TRANSMITTER_FX_DIST, looping effects play at the generator (TRANSMITTER_PARTICLES), at every part
+-- (all of TRANSMITTER_PART_PARTICLES) and at TRANSMITTER_FX_SPOTS around the generator (TRANSMITTER_SPOT_PARTICLES).
+-- TRANSMITTER_LEVEL is where it stands (it goes away when the actor leaves with the module).
+-- Particle names must exist in particles.xr: a missing one is a fatal engine error. These are in both
+-- particles.xr files of G.A.M.M.A. (Particles Cinematic VFX, Boomsticks and Sharpsticks).
 TRANSMITTER_PROP      = "szm_transmitter_station"   -- (szm_transmitter: the old antenna, kept for saves)
-TRANSMITTER_PARTICLES = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
 TRANSMITTER_PARTS     = {
-	{ "szm_transmitter_radio",     1.3,  0.4, "anomaly2\\effects\\anomaly_electra_idle_sparks" },
-	{ "szm_transmitter_scanner_1", -1.3, 0.8, "anomaly2\\effects\\electra2_trails" },
-	{ "szm_transmitter_scanner_2", -1.2, -0.9, "amik\\anomaly\\electra\\electra2_sparks" },
+	{ "szm_transmitter_radio",      1.3,  0.4 },
+	{ "szm_transmitter_scanner_1", -1.3,  0.8 },
+	{ "szm_transmitter_scanner_2", -1.2, -0.9 },
 }
-TRANSMITTER_FLASHES   = { "anomaly2\\effects\\electra2_flash", "amik\\anomaly\\electra\\electra_flash",
-                          "anomaly2\\effects\\electra2_sparks", "amik\\anomaly\\electra\\sparks_emiter_glow" }
-TRANSMITTER_FLASH_CHANCE = 0.6
+TRANSMITTER_PARTICLES      = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
+TRANSMITTER_PART_PARTICLES = { "anomaly2\\electra_idle" }
+TRANSMITTER_SPOT_PARTICLES = { "anomaly2\\electra_idle" }
+TRANSMITTER_FX_SPOTS  = { { 1.6, -0.6 }, { -1.6, -0.2 }, { 0.3, 1.9 }, { -0.2, -1.9 } }
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
 -- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
@@ -1261,8 +1261,7 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 end
 
 ---------------------------< Transmitter (stage 24) >---------------------------
-local transmitter_fx = {}       -- looping particle objects, by key (not saved)
-local transmitter_flashes = {}  -- the last few one-shot flashes, kept so they play to the end
+local transmitter_fx = {}   -- looping particle objects, by key (not saved)
 
 local function transmitter_state()
 	return load_var(db.actor, VAR_TRANSMITTER)
@@ -1381,24 +1380,22 @@ local function update_transmitter()
 	if dist <= TRANSMITTER_USE_DIST then
 		actor_menu.set_msg(1, "szm_transmitter_hint", 2)   -- SetTextST: $$ACTION_USE$$ becomes the key
 	end
-	local spots = { obj:position() }
+	local pos = obj:position()
 	for i, name in ipairs(TRANSMITTER_PARTICLES) do
-		play_loop("main" .. i, name, obj:position())
+		play_loop("main" .. i, name, pos)
 	end
 	for i, id in ipairs(t.parts or {}) do
 		local part = level.object_by_id(id)
-		local cfg = TRANSMITTER_PARTS[i]
-		if part and cfg then
-			play_loop("part" .. i, cfg[4], part:position())
-			spots[#spots + 1] = part:position()
+		if part then
+			for j, name in ipairs(TRANSMITTER_PART_PARTICLES) do
+				play_loop("part" .. i .. "_" .. j, name, part:position())
+			end
 		end
 	end
-	if math.random() < TRANSMITTER_FLASH_CHANCE then
-		local at = spots[math.random(#spots)]
-		local flash = particles_object(TRANSMITTER_FLASHES[math.random(#TRANSMITTER_FLASHES)])
-		flash:play_at_pos(vector():set(at.x, at.y + 0.5, at.z))
-		table.insert(transmitter_flashes, 1, flash)
-		transmitter_flashes[7] = nil
+	for i, off in ipairs(TRANSMITTER_FX_SPOTS) do
+		for j, name in ipairs(TRANSMITTER_SPOT_PARTICLES) do
+			play_loop("spot" .. i .. "_" .. j, name, vector():set(pos.x + off[1], pos.y, pos.z + off[2]))
+		end
 	end
 end
 
