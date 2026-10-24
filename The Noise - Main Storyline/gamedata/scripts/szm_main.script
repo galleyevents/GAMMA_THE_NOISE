@@ -385,6 +385,9 @@ TRANSMITTER_PARTICLES      = { "anomaly2\\electra_idle", "anomaly2\\generatory" 
 TRANSMITTER_PART_PARTICLES = { "anomaly2\\electra_idle" }
 TRANSMITTER_SPOT_PARTICLES = { "anomaly2\\electra_idle" }
 TRANSMITTER_FX_SPOTS  = { { 1.6, -0.6 }, { -1.6, -0.2 }, { 0.3, 1.9 }, { -0.2, -1.9 } }
+-- Looping 3D psy sounds at the generator, same rules as the effects (X16's psy emitter, the psy antenna voices)
+TRANSMITTER_SOUNDS    = { "ambient\\x16\\x16_psy", "anomaly\\psy_antenna_voices_1_l" }
+TRANSMITTER_SOUND_DIST = { 3, 45 }   -- full volume within the first, silent beyond the second (m)
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
 -- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
@@ -1281,6 +1284,19 @@ local function play_loop(key, name, pos)
 	end
 end
 
+-- sound_object has the same playing / stop as particles_object, so it lives in transmitter_fx too
+local function play_sound_loop(key, path, obj)
+	if not transmitter_fx[key] then
+		local snd = sound_object(path)
+		snd.min_distance = TRANSMITTER_SOUND_DIST[1]
+		snd.max_distance = TRANSMITTER_SOUND_DIST[2]
+		transmitter_fx[key] = snd
+	end
+	if not transmitter_fx[key]:playing() then
+		transmitter_fx[key]:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
+	end
+end
+
 local function remove_transmitter()
 	stop_transmitter_fx()
 	local t = transmitter_state()
@@ -1383,6 +1399,9 @@ local function update_transmitter()
 	local pos = obj:position()
 	for i, name in ipairs(TRANSMITTER_PARTICLES) do
 		play_loop("main" .. i, name, pos)
+	end
+	for i, path in ipairs(TRANSMITTER_SOUNDS) do
+		play_sound_loop("snd" .. i, path, obj)
 	end
 	for i, id in ipairs(t.parts or {}) do
 		local part = level.object_by_id(id)
