@@ -59,6 +59,12 @@ SNORK_SMARTS = { "ros_smart_snork1", "ros_smart_monster4", "ros_smart_monster5",
 -- squad holds its smart. Not found: a smart of ROS_SMARTS as before.
 EXCHANGE_CAMPFIRE = "ros_smart_snork1_campfire_1"
 EXCHANGE_SMART    = "ros_smart_snork1"
+ROS_LEVEL         = "l06_rostok"   -- they spawn once the actor is here, so a spot next to the fire can be found
+EXCHANGE_FIRE_DIST = { 2, 2.5, 3, 1.5 }   -- how far from the fire (m)
+-- While they wait for the talk: Lis sits by the fire, his men stand guard (configs\scripts\dch_lis_wait.ltx)
+WAIT_LOGIC   = "scripts\\dch_lis_wait.ltx"
+WAIT_LIS     = "remark@dch_lis_wait"
+WAIT_GUARD   = "remark@dch_guard_wait"
 
 ---------------------------< Tuning >---------------------------
 CALL_DELAY_H     = 1        -- in-game hours from the PDA report to the Barman's call
@@ -540,11 +546,38 @@ local function object_by_name(name)
 	end
 end
 
+-- Lis and his men by the campfire: a spot a few metres from it, found on the actor's level
+local function spawn_at_fire(fire)
+	local pos, lvid, gvid = point_near(fire, EXCHANGE_FIRE_DIST)
+	return spawn_squad_at("lis", "dch_lis_squad", pos, lvid, gvid, EXCHANGE_SMART)
+end
+
+local function lis_ready()
+	-- remembered by id: a dead NPC leaves its squad, and his body carries the crate (siding with the mercs)
+	local lis = member_by_section("lis", "dch_lis")
+	set_entry(VAR_OBJECTS, "lis", lis and lis.id)
+	save_var(db.actor, VAR_REL, { lis = "friend", guards = "friend" })
+	save_var(db.actor, VAR_PHASE, "talk")
+end
+
+-- They show up when the actor comes to the Wild Territory ("pending" until then: the marker is on the fire)
+local function update_pending()
+	if level.name() ~= ROS_LEVEL then return end
+	local id = load_table(VAR_OBJECTS).fire
+	local fire = id and alife_object(id)
+	if fire and spawn_at_fire(fire) then lis_ready() end
+end
+
 local function start_exchange()
 	local fire = object_by_name(EXCHANGE_CAMPFIRE)
 	if fire and SIMBOARD.smarts_by_names[EXCHANGE_SMART] then
-		if not spawn_squad_at("lis", "dch_lis_squad", fire.position, fire.m_level_vertex_id, fire.m_game_vertex_id, EXCHANGE_SMART) then
-			return false
+		set_entry(VAR_OBJECTS, "fire", fire.id)
+		if level.name() == ROS_LEVEL then
+			if not spawn_at_fire(fire) then return false end
+		else
+			save_var(db.actor, VAR_PHASE, "pending")
+			printf("[DCH] stage 5: waiting for the actor in %s", ROS_LEVEL)
+			return true
 		end
 	else
 		printf("[DCH] stage 5: campfire %s not found, using a smart", EXCHANGE_CAMPFIRE)
@@ -552,12 +585,29 @@ local function start_exchange()
 		local smart = pick_spawn_smart(ROS_SMARTS, origin, 0, ANYWHERE)
 		if not spawn_squad("lis", "dch_lis_squad", smart) then return false end
 	end
-	-- remembered by id: a dead NPC leaves its squad, and his body carries the crate (siding with the mercs)
-	local lis = member_by_section("lis", "dch_lis")
-	set_entry(VAR_OBJECTS, "lis", lis and lis.id)
-	save_var(db.actor, VAR_REL, { lis = "friend", guards = "friend" })
-	save_var(db.actor, VAR_PHASE, "talk")
+	lis_ready()
 	return true
+end
+
+-- While they wait: Lis sits, his men stand guard - their smart would walk them around. Anyone with an enemy
+-- is left to the combat scheme. (Same as G.A.M.M.A.'s logic_enforcer.)
+local function keep_waiting()
+	local squad = get_squad("lis")
+	if not squad then return end
+	for k in squad:squad_members() do
+		local npc = online(k.id)
+		local st = db.storage[k.id]
+		if npc and st and npc:alive() and not npc:best_enemy() then
+			local want = npc:section() == "dch_lis" and WAIT_LIS or WAIT_GUARD
+			if st.active_section ~= want then
+				st.ini_filename = WAIT_LOGIC
+				st.ini = ini_file(WAIT_LOGIC)
+				st.section_logic = "logic"
+				xr_logic.switch_to_section(npc, st.ini, want)
+				st.overrides = xr_logic.cfg_get_overrides(st.ini, want, npc)
+			end
+		end
+	end
 end
 
 local function lis_squad_smart()
@@ -653,6 +703,10 @@ end
 
 local function update_exchange()
 	local phase = load_var(db.actor, VAR_PHASE)
+	if phase == "pending" then
+		update_pending()
+		return
+	end
 	if load_table(VAR_OBJECTS).lis and not lis_alive() and not has_alife_info(INFO_LIS_DIED) then
 		give_info(INFO_LIS_DIED)
 		if phase == "talk" then
@@ -901,7 +955,9 @@ local TARGETS = {
 	end,
 	[5] = function()
 		local phase = load_var(db.actor, VAR_PHASE)
-		if phase == "talk" then
+		if phase == "pending" then
+			return load_table(VAR_OBJECTS).fire
+		elseif phase == "talk" then
 			return load_table(VAR_OBJECTS).lis
 		elseif phase == "snorks" then
 			return nearest_member("snorks")
@@ -930,7 +986,7 @@ local function descr_id(n, tsk)
 				or has_alife_info(INFO_LIS_DIED) and "dead" or "barman"
 			return "dch_task_5_descr_fight_" .. why
 		end
-		return "dch_task_5_descr_" .. phase
+		return "dch_task_5_descr_" .. (phase == "pending" and "talk" or phase)
 	end
 	return "dch_task_" .. n .. "_descr"
 end
@@ -1006,6 +1062,7 @@ xr_effects.dch_cleanup = function(actor, npc, p)
 		save_var(db.actor, VAR_PHASE, nil)
 		set_entry(VAR_OBJECTS, "lis", nil)
 		set_entry(VAR_OBJECTS, "crate", nil)
+		set_entry(VAR_OBJECTS, "fire", nil)
 	end
 end
 
@@ -1038,6 +1095,7 @@ local function actor_on_update()
 		tg_rel = tg + 1000
 		local n = active_stage()
 		if n == 3 or n == 5 then update_relations() end
+		if n == 5 and load_var(db.actor, VAR_PHASE) == "talk" then keep_waiting() end
 	end
 	if tg < tg_tick then return end
 	tg_tick = tg + 5000

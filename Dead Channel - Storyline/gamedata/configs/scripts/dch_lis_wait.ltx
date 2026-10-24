@@ -1,0 +1,14 @@
+; Dead Channel - stage 5: Lis and his men waiting at the campfire for the talk. Applied by dch_main.script
+; (like G.A.M.M.A.'s logic_enforcer) only while they wait; combat overrides it, the choice ends it.
+; remark: stay at the current position with an animation state (state_lib).
+
+[logic]
+active = remark@dch_lis_wait
+
+; Lis sits by the fire
+[remark@dch_lis_wait]
+anim = sit_ass
+
+; his men stand guard
+[remark@dch_guard_wait]
+anim = guard
