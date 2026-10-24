@@ -59,6 +59,7 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- squad        = squad section spawned for the task (must be killed); carry = item put on its commander
 -- corpse       = NPC section spawned dead, carrying the fetch item
 -- strike       = multi-phase: dead team at a meeting point -> picking up the fetch item spawns a squad
+--                (strike.hunt = true: that squad goes after the actor instead of holding its smart)
 -- escort       = { squad, smart }: task companions spawned at the smart, they follow the actor until the turn-in
 -- fetch        = { section, amount } to bring back
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
@@ -289,6 +290,7 @@ STAGES = {
 			reveal      = "szm_lab_journal",
 			squad       = "szm_agr_u_merc_squad",
 			squad_area  = { AGR_U_SMARTS, 0, ANYWHERE },
+			hunt        = true,    -- they spawn far off in the tunnels and come looking for the actor
 		},
 		far_from_actor = 40,    -- the mercenaries come when the journal is picked up: give the actor a moment
 		auto_complete = true,
@@ -1412,7 +1414,11 @@ local function update_strike(n)
 		local cfg = STAGES[n].strike
 		local meet = SIMBOARD.smarts_by_names[state.meet]
 		local origin = meet and meet.position or db.actor:position()
-		if spawn_squad(n, origin, cfg.squad, cfg.squad_area, state.meet, cfg.squad_carry) then
+		local squad = spawn_squad(n, origin, cfg.squad, cfg.squad_area, state.meet, cfg.squad_carry)
+		if squad then
+			if cfg.hunt then
+				squad.scripted_target = "actor"   -- sim_squad_scripted: target id 0, the actor (saved)
+			end
 			state.phase = "fight"
 			save_var(db.actor, var_strike(n), state)
 			story_msg("szm_task_" .. n .. "_reveal_news")
@@ -1960,6 +1966,10 @@ for n = 1, #STAGES do
 		if st.squad or st.strike then
 			local squad = get_squad(n)
 			if squad then
+				if st.strike and st.strike.hunt then
+					squad.scripted_target = "actor"   -- also squads spawned before hunt existed
+					clear_leash(n)                    -- set_leash keeps no smart for them from now on
+				end
 				squad.force_online = true
 				sim_offline_combat.task_squads[squad.id] = true
 				set_leash(n, squad)
