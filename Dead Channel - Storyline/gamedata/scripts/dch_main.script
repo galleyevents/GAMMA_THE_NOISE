@@ -61,10 +61,9 @@ EXCHANGE_CAMPFIRE = "ros_smart_snork1_campfire_1"
 EXCHANGE_SMART    = "ros_smart_snork1"
 ROS_LEVEL         = "l06_rostok"   -- they spawn once the actor is here, so a spot next to the fire can be found
 EXCHANGE_FIRE_DIST = { 2, 2.5, 3, 1.5 }   -- how far from the fire (m)
--- While they wait for the talk: Lis sits by the fire, his men stand guard (configs\scripts\dch_lis_wait.ltx)
+-- They spawn by the fire and walk around their smart while they wait. In 1.0.0-beta.1 a waiting logic
+-- held them at the fire (configs\scripts\dch_lis_wait.ltx); saves still in it get the squad spawned again
 WAIT_LOGIC   = "scripts\\dch_lis_wait.ltx"
-WAIT_LIS     = "remark@dch_lis_wait"
-WAIT_GUARD   = "remark@dch_guard_wait"
 
 ---------------------------< Tuning >---------------------------
 CALL_DELAY_H     = 1        -- in-game hours from the PDA report to the Barman's call
@@ -607,23 +606,21 @@ local function start_exchange()
 	return true
 end
 
--- While they wait: Lis sits, his men stand guard - their smart would walk them around. Anyone with an enemy
--- is left to the combat scheme. (Same as G.A.M.M.A.'s logic_enforcer.)
-local function keep_waiting()
+-- Saves from 1.0.0-beta.1: the waiting logic kept Lis and his men at the fire, so they couldn't run when the
+-- talk went wrong. A squad still in it is spawned again by the fire, free to walk around.
+local function drop_old_waiting()
 	local squad = get_squad("lis")
 	if not squad then return end
 	for k in squad:squad_members() do
-		local npc = online(k.id)
 		local st = db.storage[k.id]
-		if npc and st and npc:alive() and not npc:best_enemy() then
-			local want = npc:section() == "dch_lis" and WAIT_LIS or WAIT_GUARD
-			if st.active_section ~= want then
-				st.ini_filename = WAIT_LOGIC
-				st.ini = ini_file(WAIT_LOGIC)
-				st.section_logic = "logic"
-				xr_logic.switch_to_section(npc, st.ini, want)
-				st.overrides = xr_logic.cfg_get_overrides(st.ini, want, npc)
-			end
+		if st and st.ini_filename == WAIT_LOGIC then
+			local id = load_table(VAR_OBJECTS).fire
+			local fire = id and alife_object(id)
+			if not fire then return end
+			remove_squad("lis")
+			if spawn_at_fire(fire) then lis_ready() end
+			printf("[DCH] stage 5: Lis's squad spawned again, without the old waiting logic")
+			return
 		end
 	end
 end
@@ -927,11 +924,6 @@ function decide_refuse(a, b)
 	if squad and to then
 		squad.scripted_target = to:name()
 		squad.rush_to_target = true   -- run, not walk (xr_reach_task)
-		-- drop the waiting logic, so nothing holds them by the fire
-		for k in squad:squad_members() do
-			local npc, st = online(k.id), db.storage[k.id]
-			if npc and st and st.ini then xr_logic.switch_to_section(npc, st.ini, "nil") end
-		end
 	end
 	set_entry(VAR_OBJECTS, "flee_t", utils_data.CTime_to_table(game.get_game_time()))
 	save_var(db.actor, VAR_PHASE, "flee")
@@ -1210,7 +1202,7 @@ local function actor_on_update()
 		local n = active_stage()
 		if n == 3 or n == 5 then update_relations() end
 		local phase = n == 5 and load_var(db.actor, VAR_PHASE)
-		if phase == "talk" then keep_waiting() end
+		if phase == "talk" then drop_old_waiting() end
 		if phase == "flee" then update_flee() end   -- every second: the turn comes on time
 	end
 	if tg < tg_tick then return end
