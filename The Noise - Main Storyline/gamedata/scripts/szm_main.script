@@ -44,7 +44,9 @@ AGROPROM_SMARTS = {
 	"agr_smart_terrain_6_4", "agr_smart_terrain_7_5",
 }
 -- Agroprom underground (l03u_agr_underground); agr_u_bandits has residents and is left out
-AGR_U_SMARTS = { "agr_u_soldiers", "agr_u_monsters", "agr_u_bloodsucker_1" }
+-- All of them have residents (soldiers, controllers, poltergeists, bloodsuckers): pick_spawn_smart prefers
+-- the ones nobody is at right now.
+AGR_U_SMARTS = { "agr_u_soldiers", "agr_u_monsters", "agr_u_bloodsucker", "agr_u_bloodsucker_2" }
 ANYWHERE = 1000000   -- max distance meaning "any smart of the list" (giver on another level)
 
 ---------------------------< NPCs >---------------------------
@@ -59,6 +61,12 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- squad        = squad section spawned for the task (must be killed); carry = item put on its commander
 -- corpse       = NPC section spawned dead, carrying the fetch item
 -- strike       = multi-phase: dead team at a meeting point -> picking up the fetch item spawns a squad
+--                (strike.hunt = true: that squad goes after the actor instead of holding its smart)
+-- hunt         = true: the stage's squad goes after the actor instead of holding its smart
+-- transmitter  = item section: a transmitter (TRANSMITTER_PROP) near the squad's smart, with anomaly effects;
+--                the squad guards it. Once they are dead, using it gives that item (its module) and turns
+--                it off. It is removed when the actor leaves the level with the item, or the stage fails.
+--                Squads and bodies go preferably to smarts nobody else is at; hunting squads to the nearest one.
 -- escort       = { squad, smart }: task companions spawned at the smart, they follow the actor until the turn-in
 -- fetch        = { section, amount } to bring back
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
@@ -156,6 +164,7 @@ STAGES = {
 			corpse_area = { MARSH_SMARTS, 250, 550 },
 			squad       = "szm_army_squad",
 			squad_area  = { MARSH_SMARTS, 150, 400 },
+			hunt        = true,    -- "Patrol on our trail": they come back for the actor
 		},
 		rewards = { {"@medkit", 3}, {"@ammo", 3} },
 	},
@@ -173,6 +182,7 @@ STAGES = {
 			prop        = "szm_heli_wreck",          -- spawned next to the pilot, removed when the stage is turned in
 			squad       = "szm_renegade_squad",
 			squad_area  = { MARSH_SMARTS, 60, 250 },
+			hunt        = true,    -- looters heading for the crash site
 		},
 		rewards = { {"itm_basickit", 1}, {"@medkit", 2}, {"@ammo", 2} },   -- basic tools only here
 	},
@@ -250,6 +260,7 @@ STAGES = {
 		giver   = SID,
 		squad   = "szm_csky_hit_squad",
 		area    = { CORDON_SMARTS, 150, 500 },
+		hunt    = true,    -- "a Clear Sky squad is in Cordon looking for me"
 		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 		next    = 23,
 	},
@@ -289,6 +300,7 @@ STAGES = {
 			reveal      = "szm_lab_journal",
 			squad       = "szm_agr_u_merc_squad",
 			squad_area  = { AGR_U_SMARTS, 0, ANYWHERE },
+			hunt        = true,    -- they spawn far off in the tunnels and come looking for the actor
 		},
 		far_from_actor = 40,    -- the mercenaries come when the journal is picked up: give the actor a moment
 		auto_complete = true,
@@ -298,7 +310,7 @@ STAGES = {
 		task    = "szm_task_24",
 		giver   = "@end",
 		squad   = "szm_agr_u_guard_squad",
-		carry   = "szm_resonator",
+		transmitter = "szm_resonator",   -- the transmitter stands at the guards' smart, its module on the ground
 		area    = { AGR_U_SMARTS, 0, ANYWHERE },
 		far_from_actor = 80,    -- starts while the actor is still in the tunnels, right after stage 23
 		fetch   = { "szm_resonator", 1 },
@@ -349,6 +361,40 @@ RECENT_SMARTS = 6
 LEASH_RADIUS        = 60
 SELF_DEFENSE_RADIUS = 20
 
+-- Story squads with relationship = enemy must fight the actor of any faction. The squad script sets a
+-- personal goodwill of -1000 once, which a positive faction relation (the table, or GAMMA's dynamic one)
+-- plus rank and reputation can outweigh: an NPC is an enemy only at an attitude of -999 or less.
+-- So each member gets HOSTILE_GOODWILL at spawn, and the status functor sets it again on any member
+-- that doesn't treat the actor as an enemy.
+HOSTILE_GOODWILL = -10000
+
+-- Stage 24's transmitter: a field radio station - TRANSMITTER_PROP (the generator, the part that is used)
+-- and TRANSMITTER_PARTS around it, { section, x, z offset in m }. While its module is in and the actor is
+-- within TRANSMITTER_FX_DIST, looping effects play at the generator (TRANSMITTER_PARTICLES), at every part
+-- (all of TRANSMITTER_PART_PARTICLES) and at TRANSMITTER_FX_SPOTS around the generator (TRANSMITTER_SPOT_PARTICLES).
+-- TRANSMITTER_LEVEL is where it stands (it goes away when the actor leaves with the module).
+-- Particle names must exist in particles.xr: a missing one is a fatal engine error. These are in both
+-- particles.xr files of G.A.M.M.A. (Particles Cinematic VFX, Boomsticks and Sharpsticks).
+TRANSMITTER_PROP      = "szm_transmitter_station"   -- (szm_transmitter: the old antenna, kept for saves)
+TRANSMITTER_PARTS     = {
+	{ "szm_transmitter_radio",      1.3,  0.4 },
+	{ "szm_transmitter_scanner_1", -1.3,  0.8 },
+	{ "szm_transmitter_scanner_2", -1.2, -0.9 },
+}
+TRANSMITTER_PARTICLES      = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
+TRANSMITTER_PART_PARTICLES = { "anomaly2\\electra_idle" }
+TRANSMITTER_SPOT_PARTICLES = { "anomaly2\\electra_idle" }
+TRANSMITTER_FX_SPOTS  = { { 1.6, -0.6 }, { -1.6, -0.2 }, { 0.3, 1.9 }, { -0.2, -1.9 } }
+-- Looping 3D sound at the generator, same rules as the effects: the Noise itself (snd_hum's file)
+TRANSMITTER_SOUNDS    = { "radio\\white_noise\\white_noise_heavy" }
+TRANSMITTER_SOUND_DIST = { 3, 45 }   -- full volume within the first, silent beyond the second (m)
+TRANSMITTER_SOUND_VOLUME = 1.0
+TRANSMITTER_FX_DIST   = 150
+TRANSMITTER_LEVEL     = "l03u_agr_underground"
+-- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
+-- pressing the use key (a hint shows there); aiming at it and using it works too
+TRANSMITTER_USE_DIST  = 5
+
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
 	cold = { info = "szm_end_cold", rewards = { {"@gear", "outfit"}, {"@medkit", 3} },   -- CS-2a or better
@@ -367,10 +413,13 @@ CHOICES = {
 -- if even the cap isn't, money instead: CASH_SWAP_RATIO x the cap's cost.
 GEAR_TIERS = {
 	weapon   = { "wpn_sks_b", "wpn_ak74", "wpn_abakan" },
-	outfit   = { "cs_light_outfit", "cs_medium_outfit", "cs_heavy_outfit" },
+	outfit   = { "cs_light_outfit", "cs_medium_outfit" },   -- CS-2a (light), CS-3a (medium); no CS-3b: endgame heavy
 	backpack = { "itm_backpack" },
 }
 UPGRADE_MARGIN  = 1.2
+-- Outfits are compared by class first ("kind"; in GAMMA a medium suit can cost less than a light one),
+-- then by cost within the class
+OUTFIT_CLASS = { o_light = 1, o_medium = 2, o_sci = 3, o_heavy = 3 }
 CASH_SWAP_RATIO = 0.6
 
 -- Weapons only: an actor who has outgrown GEAR_TIERS.weapon still gets a clearly better gun, from this
@@ -458,6 +507,7 @@ local VAR_NEXT     = "szm_next_stage"   -- Act V: { n, t = game time it was sche
 local VAR_USED     = "szm_used_smarts"  -- names of recently used spawn smarts
 local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offer" map spot
 local VAR_GEAR     = "szm_best_gear"    -- { weapon = cost, outfit = cost, backpack = cost }: best ever equipped
+local VAR_TRANSMITTER = "szm_transmitter" -- { prop = id, parts = { ids }, n = stage, taken = true once the module is out }
 
 local function done_info(n)  return "szm_stage_" .. n .. "_done" end
 local INFO_STARTED  = "szm_started"
@@ -647,7 +697,13 @@ local function item_cost(sec)
 	return ini_sys:r_float_ex(sec, "cost") or 0
 end
 
--- GEAR_TIERS[cat] (or GEAR_OVERFLOW[cat]) that exist in this game, cheapest first (cached)
+-- Outfit class (OUTFIT_CLASS), 0 for other categories
+local function item_rank(cat, sec)
+	if cat ~= "outfit" then return 0 end
+	return OUTFIT_CLASS[ini_sys:r_string_ex(sec, "kind") or ""] or 0
+end
+
+-- GEAR_TIERS[cat] (or GEAR_OVERFLOW[cat]) that exist in this game, weakest first (cached)
 local tiers_cache = {}
 local function gear_tiers(cat, overflow)
 	local key = (overflow and "+" or "") .. cat
@@ -660,15 +716,26 @@ local function gear_tiers(cat, overflow)
 			printf("[SZM] %s.%s: no section %s, skipped", overflow and "GEAR_OVERFLOW" or "GEAR_TIERS", cat, sec)
 		end
 	end
-	table.sort(list, function(a, b) return item_cost(a) < item_cost(b) end)
+	table.sort(list, function(a, b)
+		local ra, rb = item_rank(cat, a), item_rank(cat, b)
+		if ra ~= rb then return ra < rb end
+		return item_cost(a) < item_cost(b)
+	end)
 	tiers_cache[key] = list
 	return list
 end
 
--- The first of the list worth more than UPGRADE_MARGIN x the actor's best of that category
-local function first_upgrade(list, best)
+-- Clearly better than the actor's best of the category (its class and cost): a higher class, or the same
+-- class and more than UPGRADE_MARGIN x the cost
+local function is_upgrade(cat, sec, rank, cost)
+	local r = item_rank(cat, sec)
+	if r ~= rank then return r > rank end
+	return item_cost(sec) > cost * UPGRADE_MARGIN
+end
+
+local function first_upgrade(cat, list, rank, cost)
 	for _, sec in ipairs(list) do
-		if item_cost(sec) > best * UPGRADE_MARGIN then
+		if is_upgrade(cat, sec, rank, cost) then
 			return sec
 		end
 	end
@@ -688,14 +755,17 @@ end
 -- before a report doesn't lower the rewards.
 local function best_gear()
 	local best = load_var(db.actor, VAR_GEAR) or { weapon = 0, outfit = 0, backpack = 0 }
+	best.ranks = best.ranks or {}   -- outfit class of the best outfit (saves from 2.1.0 and older: none)
 	local changed = false
 	for slot = 1, 16 do
 		local obj = db.actor:item_in_slot(slot)
 		local cat = obj and gear_category(obj)
 		if cat then
-			local cost = item_cost(obj:section())
-			if cost > (best[cat] or 0) then
-				best[cat] = cost
+			local sec = obj:section()
+			local r, cost = item_rank(cat, sec), item_cost(sec)
+			local br, bc = best.ranks[cat] or 0, best[cat] or 0
+			if r > br or (r == br and cost > bc) then
+				best[cat], best.ranks[cat] = cost, r
 				changed = true
 			end
 		end
@@ -709,8 +779,10 @@ end
 local function gear_level()
 	local best, lvl = best_gear(), 0
 	for _, cat in ipairs({ "weapon", "outfit" }) do
+		local br, bc = best.ranks[cat] or 0, best[cat] or 0
 		for i, sec in ipairs(gear_tiers(cat)) do
-			if (best[cat] or 0) >= item_cost(sec) then
+			local r = item_rank(cat, sec)
+			if br > r or (br == r and bc >= item_cost(sec)) then
 				lvl = math.max(lvl, i)
 			end
 		end
@@ -735,9 +807,9 @@ local function plan_rewards_scaled(list)
 	for _, it in ipairs(list or {}) do
 		if it[1] == "@gear" then
 			local cat = it[2]
-			local tiers, mine = gear_tiers(cat), best[cat] or 0
-			local pick = first_upgrade(tiers, mine)
-			local worn = not pick and first_upgrade(gear_tiers(cat, true), mine)
+			local tiers, rank, mine = gear_tiers(cat), best.ranks[cat] or 0, best[cat] or 0
+			local pick = first_upgrade(cat, tiers, rank, mine)
+			local worn = not pick and first_upgrade(cat, gear_tiers(cat, true), rank, mine)
 			if pick then
 				plan.items[#plan.items + 1] = { pick, 1, pristine = (cat == "weapon") or nil, ammo = it.ammo }
 			elseif worn then
@@ -974,29 +1046,70 @@ local function farthest_from_actor(smarts, exclude)
 	return best
 end
 
+-- Squads other than the story's own that the sim board has at (or heading to) the smart
+local function smart_population(smart)
+	local info = SIMBOARD.smarts[smart.id]
+	if not (info and info.squads) then return 0 end
+	local own = {}
+	for i = 1, #STAGES do
+		for _, var in ipairs({ var_squad(i), var_escort(i) }) do
+			local id = load_var(db.actor, var)
+			if id then own[id] = true end
+		end
+	end
+	local cnt = 0
+	for id in pairs(info.squads) do
+		if not own[id] then cnt = cnt + 1 end
+	end
+	return cnt
+end
+
+-- Does stage n's squad hunt the actor (area tells the strike squad from the strike's bodies)
+local function hunting_area(n, area)
+	local st = STAGES[n]
+	return (st.hunt and area == nil) or (st.strike and st.strike.hunt and area == st.strike.squad_area)
+end
+
 -- A smart in the [min_dist, max_dist] ring around origin; if none, the nearest one not closer than min_dist.
--- Recently used smarts are skipped unless nothing else qualifies.
-local function pick_spawn_smart(n, origin, area, exclude, allow_recent)
+-- Preferred: nobody else at the smart, then not used by the last stages. Hunting squads take the nearest
+-- of the preferred ones, the rest a random one.
+local function pick_spawn_smart(n, origin, area, exclude)
+	local nearest = hunting_area(n, area)
 	local smarts, min_dist, max_dist = unpack(area or STAGES[n].area)
-	local ring, fallback, fallback_dist = {}, nil, math.huge
+	local ring, ring_key, fallback, fallback_key, fallback_dist = {}, nil, nil, nil, math.huge
 	for _, name in ipairs(smarts) do
-		local smart = name ~= exclude and (allow_recent or not is_recent(name)) and SIMBOARD.smarts_by_names[name]
+		local smart = name ~= exclude and SIMBOARD.smarts_by_names[name]
 		if smart and too_close_to_actor(n, smart) then
 			smart = nil
 		end
 		if smart then
 			local dist = smart.position:distance_to(origin)
+			local key = (smart_population(smart) > 0 and 2 or 0) + (is_recent(name) and 1 or 0)
 			if dist >= min_dist and dist <= max_dist then
-				ring[#ring + 1] = smart
+				if not ring_key or key < ring_key then
+					ring, ring_key = { smart }, key
+				elseif key == ring_key then
+					ring[#ring + 1] = smart
+				end
 			end
-			if dist >= min_dist and dist < fallback_dist then
-				fallback, fallback_dist = smart, dist
+			if dist >= min_dist and (not fallback_key or key < fallback_key or (key == fallback_key and dist < fallback_dist)) then
+				fallback, fallback_key, fallback_dist = smart, key, dist
 			end
 		end
 	end
-	local smart = #ring > 0 and ring[math.random(#ring)] or fallback
-	if not smart and not allow_recent then
-		return pick_spawn_smart(n, origin, area, exclude, true)
+	local smart
+	if #ring > 0 then
+		if nearest then
+			table.sort(ring, function(a, b) return a.position:distance_to(origin) < b.position:distance_to(origin) end)
+			smart = ring[1]
+		else
+			smart = ring[math.random(#ring)]
+		end
+	else
+		smart = fallback
+	end
+	if smart and smart_population(smart) > 0 then
+		printf("[SZM] stage %s: every spawn smart has someone at it, using %s", n, smart:name())
 	end
 	if not smart and STAGES[n].far_from_actor then
 		smart = farthest_from_actor(smarts, exclude)
@@ -1092,6 +1205,35 @@ end
 
 ---------------------------< Spawning >---------------------------
 -- section/area default to STAGES[n].squad / .area; carry = item put on the commander
+---------------------------< Hostility >---------------------------
+local function squad_is_hostile(squad)
+	return ini_sys:r_string_ex(squad:section_name(), "relationship") == "enemy"
+end
+
+-- npc id -> true once logged (not saved: only for the log)
+local hostile_logged = {}
+
+-- HOSTILE_GOODWILL towards the actor on every member: online ones that don't see the actor as an enemy,
+-- and (all = true, at spawn) offline ones on the server side
+local function force_hostile(squad, all)
+	if not squad_is_hostile(squad) then return end
+	for k in squad:squad_members() do
+		local npc = db.storage[k.id] and db.storage[k.id].object
+		if npc then
+			if npc:alive() and npc:relation(db.actor) ~= game_object.enemy then
+				npc:force_set_goodwill(HOSTILE_GOODWILL, db.actor)
+				if not hostile_logged[k.id] then
+					hostile_logged[k.id] = true
+					printf("[SZM] %s (%s, squad %s) was not hostile to the actor: goodwill set to %s",
+						npc:name(), npc:character_community(), squad:section_name(), HOSTILE_GOODWILL)
+				end
+			end
+		elseif all and k.object then
+			k.object:force_set_goodwill(HOSTILE_GOODWILL, AC_ID)
+		end
+	end
+end
+
 local function spawn_squad(n, origin, section, area, exclude, carry)
 	section = section or STAGES[n].squad
 	local smart = pick_spawn_smart(n, origin, area, exclude)
@@ -1102,6 +1244,7 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 		printf("[SZM] stage %s: failed to create squad %s", n, section)
 		return
 	end
+	force_hostile(squad, true)
 	-- keep it at its smart, out of offline combat, and online at any hour (night predators otherwise
 	-- stay offline 6:00-18:00); force_online is not saved, the status functor sets it again
 	squad.scripted_target = smart:name()
@@ -1119,6 +1262,187 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 	end
 	printf("[SZM] stage %s: spawned %s (id %s) at %s%s", n, section, squad.id, smart:name(), carry and (" carrying " .. carry) or "")
 	return squad
+end
+
+---------------------------< Transmitter (stage 24) >---------------------------
+local transmitter_fx = {}   -- looping particle objects, by key (not saved)
+local transmitter_status    -- last state written to the log
+
+local function transmitter_state()
+	return load_var(db.actor, VAR_TRANSMITTER)
+end
+
+local function stop_transmitter_fx()
+	for k, p in pairs(transmitter_fx) do
+		if p:playing() then p:stop() end
+		transmitter_fx[k] = nil
+	end
+end
+
+local function play_loop(key, name, pos)
+	transmitter_fx[key] = transmitter_fx[key] or particles_object(name)
+	if not transmitter_fx[key]:playing() then
+		transmitter_fx[key]:play_at_pos(pos)
+	end
+end
+
+-- sound_object has the same playing / stop as particles_object, so it lives in transmitter_fx too
+-- Range and volume apply to the playing sound, so they are set after play (before it they are lost and
+-- the file's own params stay)
+local function play_sound_loop(key, path, obj)
+	transmitter_fx[key] = transmitter_fx[key] or sound_object(path)
+	local snd = transmitter_fx[key]
+	if not snd:playing() then
+		snd:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
+		snd.min_distance = TRANSMITTER_SOUND_DIST[1]
+		snd.max_distance = TRANSMITTER_SOUND_DIST[2]
+		snd.volume = TRANSMITTER_SOUND_VOLUME
+		printf("[SZM] transmitter sound %s: started, playing = %s, %s m from the actor", path,
+			tostring(snd:playing()), math.floor(obj:position():distance_to(db.actor:position())))
+	end
+end
+
+local function remove_transmitter()
+	stop_transmitter_fx()
+	local t = transmitter_state()
+	for _, id in ipairs(t and { t.prop, unpack(t.parts or {}) } or {}) do
+		if alife_object(id) then
+			alife_release_id(id)
+		end
+	end
+	save_var(db.actor, VAR_TRANSMITTER, nil)
+	printf("[SZM] transmitter removed")
+end
+
+-- A few metres from the squad's smart, so the guards don't spawn inside it
+local function spawn_transmitter(n, squad)
+	local smart = squad.scripted_target and SIMBOARD.smarts_by_names[squad.scripted_target]
+	if not smart then return end
+	local pos, lvid = smart.position, smart.m_level_vertex_id
+	if level_of(smart.m_game_vertex_id) == actor_level() then
+		local p, v = find_safe_point(smart.position, { 6, 8, 10, 12, 4 }, collect_anomalies(actor_level()))
+		if p then pos, lvid = p, v end
+	end
+	local se = alife_create(TRANSMITTER_PROP, pos, lvid, smart.m_game_vertex_id)
+	if not se then
+		printf("[SZM] stage %s: failed to create %s", n, TRANSMITTER_PROP)
+		return
+	end
+	-- the other parts around it, on the ground where the AI grid has a point close below them
+	local parts = {}
+	for _, part in ipairs(TRANSMITTER_PARTS) do
+		local p, v = vector():set(pos.x + part[2], pos.y, pos.z + part[3]), lvid
+		local pv = level_of(smart.m_game_vertex_id) == actor_level() and level.vertex_id(p)
+		if pv and pv < INVALID_LVID then
+			local vp = level.vertex_position(pv)
+			if math.abs(vp.y - pos.y) < 1.5 then
+				p, v = vector():set(p.x, vp.y, p.z), pv
+			end
+		end
+		local se_part = alife_create(part[1], p, v, smart.m_game_vertex_id)
+		if se_part then parts[#parts + 1] = se_part.id end
+	end
+	save_var(db.actor, VAR_TRANSMITTER, { prop = se.id, parts = parts, n = n })
+	printf("[SZM] stage %s: transmitter (id %s, %s parts) near %s", n, se.id, #parts, smart:name())
+end
+
+-- Pull the module out (the guards must be dead)
+local function use_transmitter(t, obj)
+	if get_squad(t.n) then
+		news_manager.send_tip(db.actor, tr("szm_transmitter_guarded"), nil, nil, 6000)
+		return
+	end
+	t.taken = true
+	save_var(db.actor, VAR_TRANSMITTER, t)
+	stop_transmitter_fx()
+	obj:set_tip_text("")
+	obj:set_nonscript_usable(false)
+	local sec = STAGES[t.n].transmitter
+	alife_create_item(sec, db.actor)
+	news_manager.relocate_item(db.actor, "in", sec, 1)
+	printf("[SZM] stage %s: %s taken from the transmitter", t.n, sec)
+end
+
+-- The transmitter when the actor stands next to it with the module still in, else nil
+local function transmitter_in_reach()
+	local t = transmitter_state()
+	if not t or t.taken then return end
+	local obj = t.prop and level.object_by_id(t.prop)
+	if obj and obj:position():distance_to(db.actor:position()) <= TRANSMITTER_USE_DIST then
+		return t, obj
+	end
+end
+
+-- Every second: effects while the module is in and the actor is near; off once it is out; gone when the
+-- actor has left the level with the module
+local function update_transmitter()
+	local t = transmitter_state()
+	if not t then return end
+	if level.name() ~= TRANSMITTER_LEVEL then
+		stop_transmitter_fx()
+		if t.taken then remove_transmitter() end
+		return
+	end
+	local obj = t.prop and level.object_by_id(t.prop)
+	local status = not obj and "offline" or t.taken and "off (module out)" or "on"
+	if status ~= transmitter_status then
+		transmitter_status = status
+		printf("[SZM] transmitter %s: %s", tostring(t.prop), status)
+	end
+	if not obj then
+		stop_transmitter_fx()
+		return
+	end
+	if t.taken then
+		obj:set_tip_text("")
+		obj:set_nonscript_usable(false)
+		return
+	end
+	local dist = obj:position():distance_to(db.actor:position())
+	if dist > TRANSMITTER_FX_DIST then
+		stop_transmitter_fx()
+		return
+	end
+	if dist <= TRANSMITTER_USE_DIST then
+		actor_menu.set_msg(1, "szm_transmitter_hint", 2)   -- SetTextST: $$ACTION_USE$$ becomes the key
+	end
+	local pos = obj:position()
+	for i, name in ipairs(TRANSMITTER_PARTICLES) do
+		play_loop("main" .. i, name, pos)
+	end
+	for i, path in ipairs(TRANSMITTER_SOUNDS) do
+		play_sound_loop("snd" .. i, path, obj)
+	end
+	for i, id in ipairs(t.parts or {}) do
+		local part = level.object_by_id(id)
+		if part then
+			for j, name in ipairs(TRANSMITTER_PART_PARTICLES) do
+				play_loop("part" .. i .. "_" .. j, name, part:position())
+			end
+		end
+	end
+	for i, off in ipairs(TRANSMITTER_FX_SPOTS) do
+		for j, name in ipairs(TRANSMITTER_SPOT_PARTICLES) do
+			play_loop("spot" .. i .. "_" .. j, name, vector():set(pos.x + off[1], pos.y, pos.z + off[2]))
+		end
+	end
+end
+
+-- Aiming at the transmitter and using it (its logic, configs\scripts\szm_transmitter.ltx, makes it usable)
+local function physic_object_on_use_callback(obj, who)
+	local t = transmitter_state()
+	if t and t.prop == obj:id() and not t.taken then
+		use_transmitter(t, obj)
+	end
+end
+
+-- The use key next to the transmitter, wherever the actor looks
+local function on_key_press(key)
+	if dik_to_bind(key) ~= key_bindings.kUSE or not db.actor then return end
+	local t, obj = transmitter_in_reach()
+	if t then
+		use_transmitter(t, obj)
+	end
 end
 
 ---------------------------< Leash >---------------------------
@@ -1350,7 +1674,11 @@ local function update_strike(n)
 		local cfg = STAGES[n].strike
 		local meet = SIMBOARD.smarts_by_names[state.meet]
 		local origin = meet and meet.position or db.actor:position()
-		if spawn_squad(n, origin, cfg.squad, cfg.squad_area, state.meet, cfg.squad_carry) then
+		local squad = spawn_squad(n, origin, cfg.squad, cfg.squad_area, state.meet, cfg.squad_carry)
+		if squad then
+			if cfg.hunt then
+				squad.scripted_target = "actor"   -- sim_squad_scripted: target id 0, the actor (saved)
+			end
 			state.phase = "fight"
 			save_var(db.actor, var_strike(n), state)
 			story_msg("szm_task_" .. n .. "_reveal_news")
@@ -1370,6 +1698,7 @@ local function start_stage_at(n, origin, giver_id)
 	if st.squad then
 		local squad = spawn_squad(n, origin, nil, nil, nil, st.carry)
 		if not squad then return end
+		if st.transmitter then spawn_transmitter(n, squad) end
 		if n == BOAR_STAGE then
 			local ids = {}
 			for k in squad:squad_members() do
@@ -1840,6 +2169,10 @@ local function objective_target(n)
 		if state.phase == "goto" then return state.reveal_corpse end
 		return squad_target(n)
 	elseif st.squad then
+		local t = st.transmitter and not has_fetch(n) and transmitter_state()
+		if t and t.prop and alife_object(t.prop) then
+			return t.prop
+		end
 		return squad_target(n)
 	elseif st.corpse then
 		return load_var(db.actor, var_corpse(n))
@@ -1898,9 +2231,14 @@ for n = 1, #STAGES do
 		if st.squad or st.strike then
 			local squad = get_squad(n)
 			if squad then
+				if st.hunt or (st.strike and st.strike.hunt) then
+					squad.scripted_target = "actor"   -- also squads spawned before hunt existed
+					clear_leash(n)                    -- set_leash keeps no smart for them from now on
+				end
 				squad.force_online = true
 				sim_offline_combat.task_squads[squad.id] = true
 				set_leash(n, squad)
+				force_hostile(squad)
 			end
 		end
 		if st.hum_on_fetch and not has_alife_info("szm_hum_heard_" .. n) and has_fetch(n) then
@@ -1966,6 +2304,10 @@ xr_effects.szm_cleanup = function(actor, npc, p)
 	if st.corpse then save_var(db.actor, var_corpse(n), nil) end
 	if n == BOAR_STAGE then save_var(db.actor, VAR_BOARS, nil) end
 	if st.medusa then save_var(db.actor, VAR_MEDUSA, nil) end
+	if st.transmitter then
+		local t = transmitter_state()
+		if t and not t.taken then remove_transmitter() end
+	end
 end
 
 -- =szm_reward_money(min:max): reward_random_money scaled by the actor's gear level
@@ -2031,9 +2373,13 @@ local function monster_on_loot_init(victim, loot_table)
 	end
 end
 
-local tg_epilogue = 0
+local tg_epilogue, tg_transmitter = 0, 0
 local function actor_on_update()
 	local tg = time_global()
+	if tg >= tg_transmitter then
+		tg_transmitter = tg + 1000
+		update_transmitter()
+	end
 	if tg < tg_epilogue then return end
 	tg_epilogue = tg + 5000
 	try_prologue()
@@ -2081,6 +2427,8 @@ function on_game_start()
 	RegisterScriptCallback("actor_on_first_update", actor_on_first_update)
 	RegisterScriptCallback("actor_on_update", actor_on_update)
 	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
+	RegisterScriptCallback("physic_object_on_use_callback", physic_object_on_use_callback)
+	RegisterScriptCallback("on_key_press", on_key_press)
 	if rax_icon_layers and rax_icon_layers.register then
 		rax_icon_layers.register("szm_story_item_icon", story_item_icon)
 	end
