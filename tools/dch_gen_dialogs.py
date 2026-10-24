@@ -1,0 +1,163 @@
+# Generates configs/gameplay/dialogs_dch.xml (Dead Channel) from the dialog trees below and the texts in
+# st_dch.xml. Usage: python tools/dch_gen_dialogs.py "Dead Channel - Storyline/gamedata"
+import os, re, sys
+gd = sys.argv[1]
+st = open(os.path.join(gd, "configs", "text", "eng", "st_dch.xml"), encoding="cp1251").read()
+ids = set(re.findall(r'string id="([^"]+)"', st))
+
+M = "dch_main."
+
+# A phrase: (id, text id, next ids, action, preconditions). Actor and NPC alternate by depth.
+def P(i, text, nexts=(), action=None, pre=()):
+    return (i, text, list(nexts), action and M + action, tuple(M + p for p in pre))
+
+DIALOGS = []
+def dialog(did, precond, phrases):
+    DIALOGS.append((did, M + precond, phrases))
+
+# ---- Stage 1: the Barman's job (after his radio call) ----
+dialog("dch_1_talk", "can_talk_1", [
+    P(0, "dch_1_0", [1]),
+    P(1, "dch_1_1", [2]),
+    P(2, "dch_1_2", [3]),
+    P(3, "dch_1_3", [4, 5]),
+    P(4, "dch_1_4", [6]),
+    P(5, "dch_offer_decline", [7]),
+    P(6, "dch_1_6", action="turn_in_1"),
+    P(7, "dch_1_7"),
+])
+
+# ---- Stage 2: asking around Rostok ----
+for key in ("petrenko", "guide", "medic"):
+    dialog("dch_clue_" + key, "can_clue_" + key, [
+        P(0, "dch_clue_ask", [1]),
+        P(1, "dch_clue_%s_1" % key, [2]),
+        P(2, "dch_clue_%s_2" % key, [3]),
+        P(3, "dch_clue_%s_3" % key, action="clue_" + key),
+    ])
+
+# ---- Stage 3: the PDA to the Barman ----
+dialog("dch_3_done", "can_turn_in_3", [
+    P(0, "dch_3_0", [1]),
+    P(1, "dch_3_1", [2]),
+    P(2, "dch_3_2", [3]),
+    P(3, "dch_3_3", action="turn_in_3"),
+])
+
+# ---- Stage 4: the Barman's call - the Dead City ----
+dialog("dch_4_offer", "can_offer_4", [
+    P(0, "dch_4_0", [1]),
+    P(1, "dch_4_1", [2, 3]),
+    P(2, "dch_4_2", [4]),
+    P(3, "dch_offer_decline", [5]),
+    P(4, "dch_4_4", action="give_4"),
+    P(5, "dch_4_5"),
+])
+
+# ---- Stage 4: Grek - pay him off (A) or go as security (B) ----
+dialog("dch_grek_talk", "can_talk_grek", [
+    P(0, "dch_grek_0", [1]),
+    P(1, "dch_grek_1", [2, 3, 4]),
+    P(2, "dch_grek_2", [5]),
+    P(3, "dch_grek_3", [10]),
+    P(4, "dch_grek_4", [11]),
+    P(5, "dch_grek_5", [6, 7]),
+    P(6, "dch_grek_6", [8], pre=("grek_can_pay",)),
+    P(7, "dch_grek_7", [9]),
+    P(8, "dch_grek_8", action="grek_pay"),
+    P(9, "dch_grek_9"),
+    P(10, "dch_grek_10", action="grek_guard"),
+    P(11, "dch_grek_11"),
+])
+
+# ---- Stage 5: Lis - the choice ----
+dialog("dch_lis_talk", "can_talk_lis", [
+    P(0, "dch_lis_0", [1]),
+    P(1, "dch_lis_1", [2]),
+    P(2, "dch_lis_2", [3]),
+    P(3, "dch_lis_3", [4, 5, 6]),
+    P(4, "dch_lis_4", [12]),
+    # the crate isn't free: buy it back, or he runs with it
+    P(12, "dch_lis_12", [13, 14]),
+    P(13, "dch_lis_13", [7, 11], pre=("lis_can_sell",)),
+    P(14, "dch_lis_14", [15]),
+    P(15, "dch_lis_15", action="decide_refuse"),
+    P(5, "dch_lis_5", [8, 10]),
+    P(6, "dch_lis_6", [9], pre=("lis_can_side_mercs",)),
+    # what follows depends on whether Grek's men come to the exchange: Lis says so
+    P(7, "dch_lis_7", action="decide_buy", pre=("lis_mercs_coming",)),
+    P(11, "dch_lis_11", action="decide_buy", pre=("lis_mercs_not_coming",)),
+    P(8, "dch_lis_8", action="decide_lis", pre=("lis_mercs_coming",)),
+    P(10, "dch_lis_10", action="decide_lis", pre=("lis_mercs_not_coming",)),
+    P(9, "dch_lis_9", action="decide_mercs"),
+])
+
+# ---- Stage 6: the reckoning ----
+dialog("dch_6_barman", "can_end_barman", [
+    P(0, "dch_6b_0", [1]),
+    P(1, "dch_6b_1", [2]),
+    P(2, "dch_6b_2", [3]),
+    P(3, "dch_6b_3", action="end_barman"),
+])
+dialog("dch_6_barman_dead", "can_end_barman_dead", [
+    P(0, "dch_6d_0", [1]),
+    P(1, "dch_6d_1", [2]),
+    P(2, "dch_6d_2", [3]),
+    P(3, "dch_6d_3", action="end_barman_dead"),
+])
+dialog("dch_6_partner", "can_end_partner", [
+    P(0, "dch_6p_0", [1, 2]),
+    P(1, "dch_6p_1", action="end_partner", pre=("partner_not_suspicious",)),
+    P(2, "dch_6p_1_sus", action="end_partner", pre=("partner_suspicious",)),
+])
+dialog("dch_6_mercs", "can_end_mercs", [
+    P(0, "dch_6m_0", [1]),
+    P(1, "dch_6m_1", action="end_mercs"),
+])
+
+# Duty actor: a phrase whose text has a <text>_dolg version gets a twin with it (id + 500, same nexts and
+# action); actor_dolg / actor_not_dolg pick one (text_id in dch_main.script does the same for PDA texts)
+def dolg_variants(phrases):
+    twins = {q[0]: q[0] + 500 for q in phrases if q[1] + "_dolg" in ids}
+    out = []
+    for i, text, nexts, action, pre in phrases:
+        nexts = [x for n in nexts for x in ([n, twins[n]] if n in twins else [n])]
+        if i in twins:
+            out.append((i, text, nexts, action, pre + (M + "actor_not_dolg",)))
+            out.append((twins[i], text + "_dolg", nexts, action, pre + (M + "actor_dolg",)))
+        else:
+            out.append((i, text, nexts, action, pre))
+    return out
+
+def ph(i, text, nexts, action, pre):
+    s = '<phrase id="%d">' % i
+    for p in pre:
+        s += "<precondition>%s</precondition>" % p
+    s += "<text>%s</text>" % text
+    if action:
+        s += "<action>%s</action>" % action
+    for n in nexts:
+        s += "<next>%d</next>" % n
+    return s + "</phrase>"
+
+blocks = []
+for did, pre, phrases in DIALOGS:
+    out = ['\t<dialog id="%s">' % did, "\t\t<precondition>%s</precondition>" % pre, "\t\t<phrase_list>"]
+    out += ["\t\t\t" + ph(*q) for q in dolg_variants(phrases)]
+    out += ["\t\t</phrase_list>", "\t</dialog>"]
+    blocks.append("\n".join(out))
+
+xml = '''<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	Dead Channel. Generated by tools/dch_gen_dialogs.py - edit the generator, not this file.
+	500+: a phrase's version for a Duty actor (text id + _dolg)
+-->
+<game_dialogs>
+
+''' + "\n\n".join(blocks) + "\n\n</game_dialogs>\n"
+
+used = re.findall(r"<text>([^<]+)</text>", xml)
+missing = sorted({t for t in used if t not in ids})
+assert not missing, missing
+open(os.path.join(gd, "configs", "gameplay", "dialogs_dch.xml"), "w", encoding="cp1251", newline="").write(xml)
+print("dialogs:", xml.count("<dialog id="))

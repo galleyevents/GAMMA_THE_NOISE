@@ -1,0 +1,14 @@
+; Dead Channel - stage 5: Lis and his men waiting at the campfire for the talk. Used in 1.0.0-beta.1 only;
+; kept because saves from that version load it (dch_main.script then spawns the squad again without it).
+; remark: stay at the current position with an animation state (state_lib).
+
+[logic]
+active = remark@dch_lis_wait
+
+; Lis sits by the fire
+[remark@dch_lis_wait]
+anim = sit_ass
+
+; his men stand guard
+[remark@dch_guard_wait]
+anim = guard

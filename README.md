@@ -8,6 +8,9 @@ turn into the search for his missing courier - and the first time you hear the N
 on the radio that leads from Cordon to the Great Swamps, Garbage and Agroprom, and to the military
 prototype behind it.
 
+This repository also holds a second, separate story mod, **Dead Channel** (Rostok and beyond): see
+[Dead Channel - Storyline/README.md](Dead%20Channel%20-%20Storyline/README.md). Its releases are tagged `dch-v*`.
+
 ## Story outline
 
 | # | Stage | Giver | Reward |
