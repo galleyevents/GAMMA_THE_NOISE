@@ -49,7 +49,6 @@ SNORK_SMARTS = { "ros_smart_snork1", "ros_smart_monster4", "ros_smart_monster5",
 
 ---------------------------< Tuning >---------------------------
 CALL_DELAY_H     = 1        -- in-game hours from the PDA report to the Barman's call
-PDA_FIELD_DIST   = 150      -- stage 3: the PDA lies in the radiation field this close to the bandits (m)
 GREK_PRICE       = 15000    -- path A
 LIS_CUT          = 10000    -- partner with Lis: his advance
 GREK_PAY         = 15000    -- side with the mercenaries
@@ -427,43 +426,15 @@ local function hostile_left(key, filter)
 end
 
 ---------------------------< Stage 3: the cemetery >---------------------------
--- The radiation field (server object, so also on another level) nearest to the smart, within max_dist
-local function nearest_radiation(smart, max_dist)
-	local sim, gg = alife(), game_graph()
-	local lvl = level_of(smart.m_game_vertex_id)
-	local best, best_d
-	for id = 1, 65534 do
-		local se = sim:object(id)
-		if se then
-			local cls = se:clsid()
-			if (cls == clsid.zone_radioactive or cls == clsid.zone_radio_s)
-				and gg:vertex(se.m_game_vertex_id):level_id() == lvl then
-				local d = se.position:distance_to(smart.position)
-				if d <= max_dist and (not best_d or d < best_d) then
-					best, best_d = se, d
-				end
-			end
-		end
-	end
-	return best
-end
-
 local function start_cemetery()
 	local origin = get_story_se_object(BARMAN).position
 	local smart = pick_spawn_smart(TRC_SMARTS, origin, 0, ANYWHERE)
 	if not spawn_squad("cemetery", "dch_cemetery_bandits", smart) then return false end
-	-- the PDA lies among the wrecks: in the radiation field nearest to them (the cemetery's wreck piles
-	-- are irradiated), else next to the bandits
+	-- the PDA lies near them: fallen out of a truck
 	local pos, lvid, gvid = point_near(smart, { 6, 9, 12, 4, 0 })
-	local field = nearest_radiation(smart, PDA_FIELD_DIST)
-	if field then
-		pos, lvid, gvid = field.position, field.m_level_vertex_id, field.m_game_vertex_id
-	end
 	local se = alife_create("dch_lis_pda", pos, lvid, gvid)
 	if se then set_entry(VAR_OBJECTS, "pda", se.id) end
-	printf("[DCH] stage 3: PDA (id %s) %s", se and se.id or "?",
-		field and string.format("in radiation field %s, %s m from %s", field.id, math.floor(field.position:distance_to(smart.position)), smart:name())
-		or ("near " .. smart:name() .. " (no radiation field within reach)"))
+	printf("[DCH] stage 3: PDA (id %s) near %s", se and se.id or "?", smart:name())
 	return true
 end
 
