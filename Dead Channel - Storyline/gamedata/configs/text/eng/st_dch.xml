@@ -50,7 +50,7 @@
 	<string id="dch_task_4_descr_hostile"><text>According to the PDA, mercenaries took the crate to the Dead City - and the mercenaries won't talk to me. One of their couriers lies dead outside the base. Whatever he carried may tell me where the crate went.</text></string>
 	<string id="dch_task_5_name"><text>Dead Channel: Exchange on the Tracks</text></string>
 	<string id="dch_task_5_descr_talk"><text>The seller of the crate is Lis himself. The exchange is at the railway depot in the Wild Territory. I should talk to him before anyone starts shooting.</text></string>
-	<string id="dch_task_5_descr_fight_barman"><text>Lis gave up the crate. His hired guns won't let me walk away with it, and if Grek's men come, they'll want it too. I need to get out of this alive - with the crate.</text></string>
+	<string id="dch_task_5_descr_fight_barman"><text>Lis gave up the crate and told his men to stand down. Grek's mercenaries came for it anyway - I need to get out of this alive, with the crate.</text></string>
 	<string id="dch_task_5_descr_fight_lis"><text>Lis and I split the deal. Grek's mercenaries are coming for the crate, with orders to take it off Lis's corpse - we hit them first. Lis and his men are on my side.</text></string>
 	<string id="dch_task_5_descr_fight_mercs"><text>I sided with Grek's men. Lis and his guards have to die, and the crate is on Lis - I need to take it from his body.</text></string>
 	<string id="dch_task_5_descr_fight_dead"><text>Lis died before we could talk. The crate must be with him, and his men won't let me take it quietly.</text></string>
@@ -115,8 +115,8 @@
 	<string id="dch_lis_4"><text>You're coming back to Rostok. The Barman gets his crate.</text></string>
 	<string id="dch_lis_5"><text>Forget the Barman. We split it - half for me.</text></string>
 	<string id="dch_lis_6"><text>Sorry, Lis. Grek pays better.</text></string>
-	<string id="dch_lis_7"><text>Fine. Take the damn crate - I'm not dying for it. But Grek's men are on their way for it, and my boys were promised money. Nobody here is going to let you walk off with it quietly.</text></string>
-	<string id="dch_lis_11"><text>Fine. Take the damn crate - I'm not dying for it. But my boys were promised money, and they won't like this.</text></string>
+	<string id="dch_lis_7"><text>Fine. Take the damn crate - I'm not dying for it. Boys, it's over, lower your guns. But Grek's men are on their way for that crate, and they won't take no for an answer. If you want to keep it, get ready.</text></string>
+	<string id="dch_lis_11"><text>Fine. Take the damn crate - I'm not dying for it. Boys, it's over, lower your guns. Tell the Barman I'll come and face him myself.</text></string>
 	<string id="dch_lis_8"><text>Half... fine, deal. But listen: Grek's men will be here any minute. They bring money for half the crate and orders to take the rest off my corpse - I know how Grek does business. So we hit them first, and we keep their money and the crate. Here's your advance. Get to cover.</text></string>
 	<string id="dch_lis_10"><text>Half... fine. Nobody's coming anyway - you paid Grek to stay home, didn't you? Then it's done: here's your share of what he paid me up front. I'll sell the disks far away from Rostok. Watch the shadows on your way out - the depot isn't empty at dusk.</text></string>
 	<string id="dch_lis_9"><text>You son of a... Boys, he's with them!</text></string>

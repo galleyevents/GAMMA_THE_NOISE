@@ -859,7 +859,8 @@ local function mercs_come() return has_alife_info(INFO_PATH_B) or has_alife_info
 
 function decide_barman(a, b)
 	give_info(INFO_CHOICE.barman)
-	save_var(db.actor, VAR_REL, { lis = "friend", guards = "enemy" })
+	-- Lis gives up and tells his men to stand down: the fight, if any, is with Grek's men
+	save_var(db.actor, VAR_REL, { lis = "friend", guards = "friend" })
 	itms_manager.relocate_item_to_actor(db.actor, nil, "dch_crate", 1)
 	if mercs_come() then bring_mercs("enemy") end
 	save_var(db.actor, VAR_PHASE, "fight")
