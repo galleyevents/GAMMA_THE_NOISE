@@ -55,6 +55,10 @@ ROS_SMARTS = {
 	"ros_smart_poltergeist2", "ros_smart_snork1", "ros_smart_killers1", "ros_smart_stalker_killers1",
 }
 SNORK_SMARTS = { "ros_smart_snork1", "ros_smart_monster4", "ros_smart_monster5", "ros_smart_monster7" }
+-- Stage 5: Lis waits at this campfire, in the house near the wrecked helicopter (chosen in the game); his
+-- squad holds its smart. Not found: a smart of ROS_SMARTS as before.
+EXCHANGE_CAMPFIRE = "ros_smart_snork1_campfire_1"
+EXCHANGE_SMART    = "ros_smart_snork1"
 
 ---------------------------< Tuning >---------------------------
 CALL_DELAY_H     = 1        -- in-game hours from the PDA report to the Barman's call
@@ -336,8 +340,8 @@ local function spawn_squad(key, section, smart, opts)
 	return squad
 end
 
--- Spawn a story squad at a point instead of a smart, hunting the actor
-local function spawn_squad_at(key, section, pos, lvid, gvid)
+-- Spawn a story squad at a point instead of a smart: it hunts the actor, or holds the smart named by hold
+local function spawn_squad_at(key, section, pos, lvid, gvid, hold)
 	local squad = alife_create(section, pos, lvid, gvid)
 	if not squad then
 		printf("[DCH] failed to create squad %s", section)
@@ -352,12 +356,13 @@ local function spawn_squad_at(key, section, pos, lvid, gvid)
 		end
 	end
 	squad:set_squad_relation()
-	squad.scripted_target = "actor"
+	squad.scripted_target = hold or "actor"
 	squad.force_online = true
 	sim_offline_combat.task_squads[squad.id] = true
 	set_entry(VAR_SQUADS, key, squad.id)
-	printf("[DCH] spawned %s (%s, id %s) at a point %s m from the actor, hunting", key, section, squad.id,
-		math.floor(pos:distance_to(db.actor:position())))
+	if hold then remember_smart(hold) end
+	printf("[DCH] spawned %s (%s, id %s) at a point %s m from the actor, %s", key, section, squad.id,
+		math.floor(pos:distance_to(db.actor:position())), hold and ("holding " .. hold) or "hunting")
 	return squad
 end
 
@@ -526,10 +531,27 @@ local function start_dead_city()
 end
 
 ---------------------------< Stage 5: the exchange >---------------------------
+-- A server object by its name (alife():object takes only an id): once, at the stage's start
+local function object_by_name(name)
+	local sim = alife()
+	for id = 1, 65534 do
+		local se = sim:object(id)
+		if se and se:name() == name then return se end
+	end
+end
+
 local function start_exchange()
-	local origin = SIMBOARD.smarts_by_names[ROS_SMARTS[1]].position
-	local smart = pick_spawn_smart(ROS_SMARTS, origin, 0, ANYWHERE)
-	if not spawn_squad("lis", "dch_lis_squad", smart) then return false end
+	local fire = object_by_name(EXCHANGE_CAMPFIRE)
+	if fire and SIMBOARD.smarts_by_names[EXCHANGE_SMART] then
+		if not spawn_squad_at("lis", "dch_lis_squad", fire.position, fire.m_level_vertex_id, fire.m_game_vertex_id, EXCHANGE_SMART) then
+			return false
+		end
+	else
+		printf("[DCH] stage 5: campfire %s not found, using a smart", EXCHANGE_CAMPFIRE)
+		local origin = SIMBOARD.smarts_by_names[ROS_SMARTS[1]].position
+		local smart = pick_spawn_smart(ROS_SMARTS, origin, 0, ANYWHERE)
+		if not spawn_squad("lis", "dch_lis_squad", smart) then return false end
+	end
 	-- remembered by id: a dead NPC leaves its squad, and his body carries the crate (siding with the mercs)
 	local lis = member_by_section("lis", "dch_lis")
 	set_entry(VAR_OBJECTS, "lis", lis and lis.id)
