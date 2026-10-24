@@ -1168,6 +1168,32 @@ local function wanted_relation(se)
 end
 
 -- A story NPC coming online gets its attitude at once: until the next check it would act on its faction
+---------------------------< Loot claim >---------------------------
+-- G.A.M.M.A.'s NPC Loot Claim locks a body another NPC killed until the player kills that NPC. The
+-- story's own NPCs and monsters may carry what the story needs, so their bodies are never claimed.
+local story_npcs = {}   -- ids of the online members of the story's squads
+
+local function claim_on_net_spawn(obj, se)
+	local squad = se and se.group_id and se.group_id < 65535 and alife_object(se.group_id)
+	if squad and string.find(squad:section_name(), "^dch_") then story_npcs[obj:id()] = true end
+end
+
+local function unclaim(id)
+	local lc = grok_loot_claim
+	if lc then
+		if lc.claimed then lc.claimed[id] = nil end
+		if lc.looted then lc.looted[id] = nil end
+	end
+end
+
+local function claim_on_death(victim)
+	local id = victim and victim:id()
+	if not (id and story_npcs[id]) then return end
+	unclaim(id)
+	-- the claim mod's callback may run after this one: clear it again on the next update
+	CreateTimeEvent("dch_unclaim", tostring(id), 0, function() unclaim(id) return true end)
+end
+
 local function npc_on_net_spawn(npc, se)
 	local rel = se and wanted_relation(se)
 	local gw = goodwill_for(rel)
@@ -1206,6 +1232,10 @@ end
 function on_game_start()
 	RegisterScriptCallback("actor_on_update", actor_on_update)
 	RegisterScriptCallback("npc_on_net_spawn", npc_on_net_spawn)
+	RegisterScriptCallback("npc_on_net_spawn", claim_on_net_spawn)
+	RegisterScriptCallback("monster_on_net_spawn", claim_on_net_spawn)
+	RegisterScriptCallback("npc_on_death_callback", claim_on_death)
+	RegisterScriptCallback("monster_on_death_callback", claim_on_death)
 	if rax_icon_layers and rax_icon_layers.register then
 		rax_icon_layers.register("dch_story_item_icon", story_item_icon)
 	end
