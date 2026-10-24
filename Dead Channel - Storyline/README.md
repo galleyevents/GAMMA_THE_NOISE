@@ -15,8 +15,19 @@ faction relation, price or other G.A.M.M.A. system is changed.
 | 2 | Asking Around | Ask 2 of 3 people in Rostok about the courier (the Duty patrol, the guide, the Duty medic). |
 | 3 | Scrap and Radiation | Bandits at the Truck Cemetery, the courier's PDA near them. Report to the Barman; he calls an hour later. |
 | 4 | Guests in the Dead City | Talk to Grek (pay him off, or go as security) - or, if the mercenaries are hostile to you, find a dead courier's orders. |
-| 5 | Exchange on the Tracks | The seller at the Wild Territory depot. Choose a side, survive the shooting, then the snorks. |
+| 5 | Exchange on the Tracks | Lis waits at a campfire in the Wild Territory. Buy the crate back, take it by force, or choose a side - then survive what comes. |
 | 6 | Reckoning | Back to the Barman; the ending follows your choice (pay, items and marked caches when he gets his crate). |
+
+## Requirements
+
+G.A.M.M.A., or S.T.A.L.K.E.R. Anomaly 1.5.3 with the modded exes (DLTX and DXML). Play as a Loner, Duty,
+an Ecologist or Clear Sky.
+
+## Installation (Mod Organizer 2)
+
+1. In MO2: *Install a new mod from an archive* and pick the release zip (`gamedata/` is at its root).
+2. Enable the mod; its place in the load order doesn't matter.
+3. No new game needed: the Barman calls the next time you enter Rostok.
 
 ## Files
 
@@ -38,4 +49,4 @@ tools/dch_gen_dialogs.py                     dialog generator
 `dialogs_dch.xml` is generated: edit `tools/dch_gen_dialogs.py` and the texts, then run
 `python tools/dch_gen_dialogs.py "Dead Channel - Storyline/gamedata"`.
 
-Releases: tag `dch-vX.Y.Z` (the release workflow builds `Dead_Channel_Storyline_X.Y.Z.zip`).
+Releases: tag `dch-vX.Y.Z` (the release workflow builds `Dead_Channel_Storyline_vX.Y.Z.zip`).
