@@ -369,6 +369,7 @@ local function spawn_squad_at(key, section, pos, lvid, gvid, hold)
 	end
 	squad:set_squad_relation()
 	squad.scripted_target = hold or "actor"
+	squad.rush_to_target = (not hold) or nil   -- hunting squads run at the actor (xr_reach_task)
 	squad.force_online = true
 	sim_offline_combat.task_squads[squad.id] = true
 	set_entry(VAR_SQUADS, key, squad.id)
@@ -921,6 +922,7 @@ function decide_refuse(a, b)
 	local squad, to = get_squad("lis"), flee_smart()
 	if squad and to then
 		squad.scripted_target = to:name()
+		squad.rush_to_target = true   -- run, not walk (xr_reach_task)
 		-- drop the waiting logic, so nothing holds them by the fire
 		for k in squad:squad_members() do
 			local npc, st = online(k.id), db.storage[k.id]
@@ -1107,11 +1109,15 @@ for n = 1, #TASKS do
 		if not barman_alive() then return "fail" end
 		update_relations()
 		local squads = load_table(VAR_SQUADS)
+		local fleeing = load_var(db.actor, VAR_PHASE) == "flee"
 		for key, id in pairs(squads) do
 			local squad = alife_object(id)
 			if squad and squad.squad_members then
 				squad.force_online = true
 				sim_offline_combat.task_squads[id] = true
+				-- xr_reach_task runs instead of walking: squads going for the actor, and Lis's men on the run
+				-- (a Lua field, not saved: set again on every check)
+				squad.rush_to_target = (squad.scripted_target == "actor" or (key == "lis" and fleeing)) or nil
 			end
 		end
 		return STATUS[n] and STATUS[n](tsk)
