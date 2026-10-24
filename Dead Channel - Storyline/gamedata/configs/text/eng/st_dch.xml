@@ -39,7 +39,7 @@
 	<string id="dch_task_2_name"><text>Dead Channel: Asking Around</text></string>
 	<string id="dch_task_2_descr"><text>Lis, the Barman's courier, vanished three weeks ago on the way back with a sealed crate. I should ask around Rostok: the Duty patrol at the gate, the guide, the Duty medic. Two good leads should be enough.</text></string>
 	<string id="dch_task_3_name"><text>Dead Channel: Scrap and Radiation</text></string>
-	<string id="dch_task_3_descr"><text>The signal comes from the Truck Cemetery. Bandits have heard about the courier's "treasure" too. I need to deal with them and find Lis's PDA among the wrecks. Antirad will come in handy.</text></string>
+	<string id="dch_task_3_descr"><text>The signal comes from the Truck Cemetery. I need to find Lis's PDA among the wrecks. Bandits have heard about the courier's "treasure" too - they'll come for anyone who gets close to it. Antirad will come in handy.</text></string>
 	<string id="dch_task_3_descr_return"><text>I have Lis's PDA. I should take it to the Barman.</text></string>
 	<string id="dch_task_4_name"><text>Dead Channel: Guests in the Dead City</text></string>
 	<string id="dch_task_4_descr"><text>According to the PDA, mercenaries took the crate to the Dead City. A lieutenant called Grek should know more. I need to find him at the mercenaries' base.</text></string>

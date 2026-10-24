@@ -45,6 +45,7 @@ PDA_SPOTS = {
 	{ pos = { -78.10, 2.91, 151.09 },  lvid = 344006, gvid = 5147 },
 	{ pos = { -40.17, 2.96, 188.22 },  lvid = 388798, gvid = 5147 },
 }
+TRC_LEVEL = "k02_trucks_cemetery"   -- the bandits hunt the actor only while the actor is here
 GREK_SMART = "cit_killers"   -- the mercenaries' base in the Dead City
 -- Dead City outside the base: where the courier lies (mercenaries hostile to the actor)
 CIT_SMARTS = { "cit_killers_2", "cit_kanaliz1", "cit_kanaliz2", "cit_bandits", "cit_bandits_2" }
@@ -440,6 +441,7 @@ local function start_cemetery()
 	local origin = spot_pos or get_story_se_object(BARMAN).position
 	local smart = pick_spawn_smart(TRC_SMARTS, origin, 0, ANYWHERE, { nearest = spot ~= nil })
 	if not spawn_squad("cemetery", "dch_cemetery_bandits", smart) then return false end
+	set_entry(VAR_OBJECTS, "cemetery_smart", smart:name())
 	-- the PDA lies among the wrecks (a spot picked in the game), else next to the bandits
 	local pos, lvid, gvid = point_near(smart, { 6, 9, 12, 4, 0 })
 	if spot then
@@ -762,7 +764,7 @@ local TARGETS = {
 	end,
 	[3] = function(tsk)
 		if tsk.stage == 1 then return get_story_object_id(BARMAN) end
-		return item_on_ground(load_table(VAR_OBJECTS).pda) or nearest_member("cemetery")
+		return item_on_ground(load_table(VAR_OBJECTS).pda)   -- the PDA only: the bandits get no marker
 	end,
 	[4] = function()
 		if has_alife_info(INFO_MERCS_HOSTILE) then return load_table(VAR_OBJECTS).courier end
@@ -797,7 +799,13 @@ end
 -- Objective of each stage, checked every few seconds
 local STATUS = {
 	[3] = function(tsk)
-		tsk.stage = (not squad_alive("cemetery") and count_items("dch_lis_pda") > 0) and 1 or 0
+		-- the bandits are in the way, not the objective: they hunt the actor while the actor is at the
+		-- cemetery (elsewhere they'd follow across levels) and hold their smart otherwise
+		local squad = get_squad("cemetery")
+		if squad then
+			squad.scripted_target = level.name() == TRC_LEVEL and "actor" or load_table(VAR_OBJECTS).cemetery_smart
+		end
+		tsk.stage = count_items("dch_lis_pda") > 0 and 1 or 0
 	end,
 	[4] = function(tsk)
 		if has_alife_info(INFO_MERCS_HOSTILE) and count_items("dch_merc_orders") > 0 then
@@ -843,10 +851,11 @@ end
 xr_effects.dch_cleanup = function(actor, npc, p)
 	local n = tonumber(p and p[1])
 	if n == 3 then
-		remove_squad("cemetery")
+		remove_squad_later("cemetery")
 		local pda = item_on_ground(load_table(VAR_OBJECTS).pda)
 		if pda then alife_release_id(pda) end
 		set_entry(VAR_OBJECTS, "pda", nil)
+		set_entry(VAR_OBJECTS, "cemetery_smart", nil)
 	elseif n == 4 then
 		remove_squad_later("grek")
 		set_entry(VAR_OBJECTS, "courier", nil)
