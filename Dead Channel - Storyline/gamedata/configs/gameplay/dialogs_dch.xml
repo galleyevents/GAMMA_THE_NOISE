@@ -97,11 +97,13 @@
 			<phrase id="1"><text>dch_lis_1</text><next>2</next></phrase>
 			<phrase id="2"><text>dch_lis_2</text><next>3</next></phrase>
 			<phrase id="3"><text>dch_lis_3</text><next>4</next><next>5</next><next>6</next></phrase>
-			<phrase id="4"><text>dch_lis_4</text><next>7</next></phrase>
-			<phrase id="5"><text>dch_lis_5</text><next>8</next></phrase>
+			<phrase id="4"><text>dch_lis_4</text><next>7</next><next>11</next></phrase>
+			<phrase id="5"><text>dch_lis_5</text><next>8</next><next>10</next></phrase>
 			<phrase id="6"><precondition>dch_main.lis_can_side_mercs</precondition><text>dch_lis_6</text><next>9</next></phrase>
-			<phrase id="7"><text>dch_lis_7</text><action>dch_main.decide_barman</action></phrase>
-			<phrase id="8"><text>dch_lis_8</text><action>dch_main.decide_lis</action></phrase>
+			<phrase id="7"><precondition>dch_main.lis_mercs_coming</precondition><text>dch_lis_7</text><action>dch_main.decide_barman</action></phrase>
+			<phrase id="11"><precondition>dch_main.lis_mercs_not_coming</precondition><text>dch_lis_11</text><action>dch_main.decide_barman</action></phrase>
+			<phrase id="8"><precondition>dch_main.lis_mercs_coming</precondition><text>dch_lis_8</text><action>dch_main.decide_lis</action></phrase>
+			<phrase id="10"><precondition>dch_main.lis_mercs_not_coming</precondition><text>dch_lis_10</text><action>dch_main.decide_lis</action></phrase>
 			<phrase id="9"><text>dch_lis_9</text><action>dch_main.decide_mercs</action></phrase>
 		</phrase_list>
 	</dialog>

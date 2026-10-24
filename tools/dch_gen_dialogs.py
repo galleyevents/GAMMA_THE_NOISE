@@ -76,11 +76,14 @@ dialog("dch_lis_talk", "can_talk_lis", [
     P(1, "dch_lis_1", [2]),
     P(2, "dch_lis_2", [3]),
     P(3, "dch_lis_3", [4, 5, 6]),
-    P(4, "dch_lis_4", [7]),
-    P(5, "dch_lis_5", [8]),
+    P(4, "dch_lis_4", [7, 11]),
+    P(5, "dch_lis_5", [8, 10]),
     P(6, "dch_lis_6", [9], pre=("lis_can_side_mercs",)),
-    P(7, "dch_lis_7", action="decide_barman"),
-    P(8, "dch_lis_8", action="decide_lis"),
+    # what follows depends on whether Grek's men come to the exchange: Lis says so
+    P(7, "dch_lis_7", action="decide_barman", pre=("lis_mercs_coming",)),
+    P(11, "dch_lis_11", action="decide_barman", pre=("lis_mercs_not_coming",)),
+    P(8, "dch_lis_8", action="decide_lis", pre=("lis_mercs_coming",)),
+    P(10, "dch_lis_10", action="decide_lis", pre=("lis_mercs_not_coming",)),
     P(9, "dch_lis_9", action="decide_mercs"),
 ])
 

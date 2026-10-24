@@ -72,6 +72,7 @@ REWARD_STASHES_DEAD = 2
 HOSTILE_GOODWILL = -10000   -- per NPC towards the actor; outweighs any faction relation
 FRIEND_GOODWILL  = 10000
 CLEANUP_DIST     = 80       -- the story's leftover NPCs go away once the actor is this far (or elsewhere)
+SNORK_DIST       = { 25, 35 }   -- stage 5: the snorks come out this far from the actor (m) - an ambush
 
 ---------------------------< Save vars / infos >---------------------------
 local VAR_SQUADS  = "dch_squads"   -- key -> squad id (cemetery, grek, lis, mercs, snorks)
@@ -335,6 +336,49 @@ local function spawn_squad(key, section, smart, opts)
 	return squad
 end
 
+-- Spawn a story squad at a point instead of a smart, hunting the actor
+local function spawn_squad_at(key, section, pos, lvid, gvid)
+	local squad = alife_create(section, pos, lvid, gvid)
+	if not squad then
+		printf("[DCH] failed to create squad %s", section)
+		return
+	end
+	squad:create_npc(nil, pos, lvid, gvid)
+	for k in squad:squad_members() do
+		local se = k.object or alife_object(k.id)
+		if se then
+			SIMBOARD:setup_squad_and_group(se)
+			SendScriptCallback("squad_on_npc_creation", squad, se)
+		end
+	end
+	squad:set_squad_relation()
+	squad.scripted_target = "actor"
+	squad.force_online = true
+	sim_offline_combat.task_squads[squad.id] = true
+	set_entry(VAR_SQUADS, key, squad.id)
+	printf("[DCH] spawned %s (%s, id %s) at a point %s m from the actor, hunting", key, section, squad.id,
+		math.floor(pos:distance_to(db.actor:position())))
+	return squad
+end
+
+-- A navigable point dist_min..dist_max from the actor in a random direction (actor's level), or nil
+local function point_around_actor(dist_min, dist_max)
+	local c = db.actor:position()
+	local start = math.random() * 2 * math.pi
+	for step = 0, 15 do
+		local a = start + step * (2 * math.pi / 16)
+		local r = dist_min + math.random() * (dist_max - dist_min)
+		local p = vector():set(c.x + r * math.cos(a), c.y, c.z + r * math.sin(a))
+		local lvid = level.vertex_id(p)
+		if lvid and lvid < INVALID_LVID then
+			local vp = level.vertex_position(lvid)
+			if vp:distance_to(p) < 4 then
+				return vp, lvid, db.actor:game_vertex_id()
+			end
+		end
+	end
+end
+
 local function remove_squad(key)
 	local squad = get_squad(key)
 	if squad then squad:remove_squad() end
@@ -506,12 +550,19 @@ local function bring_mercs(rel)
 	local smart = pick_spawn_smart(ROS_SMARTS, origin, 30, ANYWHERE, { nearest = true, exclude = at and at:name() })
 	if spawn_squad("mercs", "dch_exchange_mercs", smart, { hunt = true }) then
 		set_entry(VAR_REL, "mercs", rel)
+		news(rel == "friend" and "dch_mercs_arrive_friend_news" or "dch_mercs_arrive_enemy_news")
 	end
 end
 
+-- An ambush close to the actor; the snorks' lair smarts only if no point around the actor works
 local function start_snorks()
-	local smart = pick_spawn_smart(SNORK_SMARTS, db.actor:position(), 40, ANYWHERE, { nearest = true })
-	spawn_squad("snorks", "dch_snorks", smart, { hunt = true })
+	local pos, lvid, gvid = point_around_actor(SNORK_DIST[1], SNORK_DIST[2])
+	if pos then
+		spawn_squad_at("snorks", "dch_snorks", pos, lvid, gvid)
+	else
+		local smart = pick_spawn_smart(SNORK_SMARTS, db.actor:position(), 20, ANYWHERE, { nearest = true })
+		spawn_squad("snorks", "dch_snorks", smart, { hunt = true })
+	end
 	save_var(db.actor, VAR_PHASE, "snorks")
 	news("dch_snorks_news")
 end
@@ -715,6 +766,8 @@ function grek_guard(a, b) after_grek(INFO_PATH_B) end
 -- Stage 5: Lis
 function can_talk_lis() return get_task(5) ~= nil and load_var(db.actor, VAR_PHASE) == "talk" end
 function lis_can_side_mercs() return has_alife_info(INFO_PATH_B) end
+function lis_mercs_coming()     return has_alife_info(INFO_PATH_B) or has_alife_info(INFO_MERCS_HOSTILE) end
+function lis_mercs_not_coming() return not lis_mercs_coming() end
 local function mercs_come() return has_alife_info(INFO_PATH_B) or has_alife_info(INFO_MERCS_HOSTILE) end
 
 function decide_barman(a, b)
@@ -848,7 +901,15 @@ local TARGETS = {
 local function descr_id(n, tsk)
 	if n == 3 and tsk.stage == 1 then return "dch_task_3_descr_return" end
 	if n == 4 and has_alife_info(INFO_MERCS_HOSTILE) then return "dch_task_4_descr_hostile" end
-	if n == 5 then return "dch_task_5_descr_" .. (load_var(db.actor, VAR_PHASE) or "fight") end
+	if n == 5 then
+		local phase = load_var(db.actor, VAR_PHASE) or "fight"
+		if phase == "fight" then
+			local why = has_alife_info(INFO_CHOICE.mercs) and "mercs" or has_alife_info(INFO_CHOICE.lis) and "lis"
+				or has_alife_info(INFO_LIS_DIED) and "dead" or "barman"
+			return "dch_task_5_descr_fight_" .. why
+		end
+		return "dch_task_5_descr_" .. phase
+	end
 	return "dch_task_" .. n .. "_descr"
 end
 
