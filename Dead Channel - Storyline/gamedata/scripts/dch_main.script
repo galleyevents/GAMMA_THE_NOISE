@@ -37,6 +37,10 @@ TRC_SMARTS = {
 	"trc_sim_11", "trc_sim_12", "trc_sim_13", "trc_sim_14", "trc_sim_15", "trc_sim_16", "trc_sim_17",
 	"trc_sim_19", "trc_sim_21",
 }
+-- Stage 3: spots among the wrecks where Lis's PDA may lie (picked in the game: { pos = { x, y, z }, lvid, gvid });
+-- one at random, the bandits at the cemetery smart nearest to it. Empty: the PDA lies at the bandits' smart.
+PDA_SPOTS = {
+}
 GREK_SMART = "cit_killers"   -- the mercenaries' base in the Dead City
 -- Dead City outside the base: where the courier lies (mercenaries hostile to the actor)
 CIT_SMARTS = { "cit_killers_2", "cit_kanaliz1", "cit_kanaliz2", "cit_bandits", "cit_bandits_2" }
@@ -427,11 +431,16 @@ end
 
 ---------------------------< Stage 3: the cemetery >---------------------------
 local function start_cemetery()
-	local origin = get_story_se_object(BARMAN).position
-	local smart = pick_spawn_smart(TRC_SMARTS, origin, 0, ANYWHERE)
+	local spot = #PDA_SPOTS > 0 and PDA_SPOTS[math.random(#PDA_SPOTS)]
+	local spot_pos = spot and vector():set(spot.pos[1], spot.pos[2], spot.pos[3])
+	local origin = spot_pos or get_story_se_object(BARMAN).position
+	local smart = pick_spawn_smart(TRC_SMARTS, origin, 0, ANYWHERE, { nearest = spot ~= nil })
 	if not spawn_squad("cemetery", "dch_cemetery_bandits", smart) then return false end
-	-- the PDA lies near them: fallen out of a truck
+	-- the PDA lies among the wrecks (a spot picked in the game), else next to the bandits
 	local pos, lvid, gvid = point_near(smart, { 6, 9, 12, 4, 0 })
+	if spot then
+		pos, lvid, gvid = spot_pos, spot.lvid, spot.gvid
+	end
 	local se = alife_create("dch_lis_pda", pos, lvid, gvid)
 	if se then set_entry(VAR_OBJECTS, "pda", se.id) end
 	printf("[DCH] stage 3: PDA (id %s) near %s", se and se.id or "?", smart:name())
