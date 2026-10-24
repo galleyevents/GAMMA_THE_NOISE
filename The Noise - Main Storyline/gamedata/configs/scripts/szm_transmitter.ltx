@@ -1,0 +1,9 @@
+; The Noise - stage 24's transmitter (section szm_transmitter): usable, with a tip.
+; Using it is handled in szm_main.script (physic_object_on_use_callback).
+
+[logic]
+active = ph_idle@on
+
+[ph_idle@on]
+nonscript_usable = true
+tips = szm_transmitter_tip

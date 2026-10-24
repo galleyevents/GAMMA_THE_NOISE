@@ -192,3 +192,19 @@ inv_name                = szm_resonator_name
 inv_name_short          = szm_resonator_name
 description             = szm_resonator_descr
 inv_weight              = 4.0
+visual                  = dynamics\equipments\quest\memory_module.ogf
+
+; Stage 24: the transmitter under Agroprom - Monolith's psy antenna model from Pripyat (3.8 x 4.1 x 3.3 m),
+; every bone fixed so it stands still and doesn't break apart. Spawned like szm_heli_wreck; its logic
+; (configs\scripts\szm_transmitter.ltx) makes it usable, szm_main.script does the rest.
+[szm_transmitter]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_transmitter"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\scene_objects\pripyat\pri_a25_antenna_destroyable_barrier.ogf
+startup_animation       = idle
+fixed_bones             = link, base_bottom, base_bottom1, base_bottom2, base_bottom3, base_bottom4, base_bottom5, base_bottom6, base_bottom7, base_bottom8, base_middle, base_middle1, base_middle2, base_top, base_top1, base_top2
+custom_data             = scripts\szm_transmitter.ltx
