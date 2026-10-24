@@ -72,7 +72,7 @@ GREK_PRICE       = 15000    -- path A
 LIS_CUT          = 10000    -- partner with Lis: his advance
 LIS_PRICE        = 5000     -- "the Barman gets his crate": Lis sells it back for this
 FLEE_DIST        = 20       -- refusing to pay: Lis and his men run, and turn on the actor this far away (m)
-FLEE_TIMEOUT     = 40       -- ...or after this many seconds, if they get stuck
+FLEE_TIMEOUT     = 10       -- ...or after this many seconds at most; then they come back to fight
 GREK_PAY         = 15000    -- side with the mercenaries
 ADVANCE          = 3000     -- the Barman's advance, with ADVANCE_ITEMS
 ADVANCE_ITEMS    = { {"antirad", 2}, {"medkit", 1} }
@@ -744,6 +744,10 @@ local function update_flee()
 	if far or timed_out then
 		save_var(db.actor, VAR_REL, { lis = "enemy", guards = "enemy" })
 		save_var(db.actor, VAR_PHASE, "fight")
+		if squad then
+			squad.scripted_target = "actor"   -- they turn and come for the actor, running
+			squad.rush_to_target = true
+		end
 		news("dch_lis_fled_news")
 		printf("[DCH] stage 5: Lis and his men turn (%s)", far and "far enough" or "timeout")
 	end
@@ -1179,7 +1183,9 @@ local function actor_on_update()
 		tg_rel = tg + 1000
 		local n = active_stage()
 		if n == 3 or n == 5 then update_relations() end
-		if n == 5 and load_var(db.actor, VAR_PHASE) == "talk" then keep_waiting() end
+		local phase = n == 5 and load_var(db.actor, VAR_PHASE)
+		if phase == "talk" then keep_waiting() end
+		if phase == "flee" then update_flee() end   -- every second: the turn comes on time
 	end
 	if tg < tg_tick then return end
 	tg_tick = tg + 5000
