@@ -367,10 +367,13 @@ CHOICES = {
 -- if even the cap isn't, money instead: CASH_SWAP_RATIO x the cap's cost.
 GEAR_TIERS = {
 	weapon   = { "wpn_sks_b", "wpn_ak74", "wpn_abakan" },
-	outfit   = { "cs_light_outfit", "cs_medium_outfit" },   -- CS-2a, CS-3a (no CS-3b: endgame heavy armor)
+	outfit   = { "cs_light_outfit", "cs_medium_outfit" },   -- CS-2a (light), CS-3a (medium); no CS-3b: endgame heavy
 	backpack = { "itm_backpack" },
 }
 UPGRADE_MARGIN  = 1.2
+-- Outfits are compared by class first ("kind"; in GAMMA a medium suit can cost less than a light one),
+-- then by cost within the class
+OUTFIT_CLASS = { o_light = 1, o_medium = 2, o_sci = 3, o_heavy = 3 }
 CASH_SWAP_RATIO = 0.6
 
 -- Weapons only: an actor who has outgrown GEAR_TIERS.weapon still gets a clearly better gun, from this
@@ -647,7 +650,13 @@ local function item_cost(sec)
 	return ini_sys:r_float_ex(sec, "cost") or 0
 end
 
--- GEAR_TIERS[cat] (or GEAR_OVERFLOW[cat]) that exist in this game, cheapest first (cached)
+-- Outfit class (OUTFIT_CLASS), 0 for other categories
+local function item_rank(cat, sec)
+	if cat ~= "outfit" then return 0 end
+	return OUTFIT_CLASS[ini_sys:r_string_ex(sec, "kind") or ""] or 0
+end
+
+-- GEAR_TIERS[cat] (or GEAR_OVERFLOW[cat]) that exist in this game, weakest first (cached)
 local tiers_cache = {}
 local function gear_tiers(cat, overflow)
 	local key = (overflow and "+" or "") .. cat
@@ -660,15 +669,26 @@ local function gear_tiers(cat, overflow)
 			printf("[SZM] %s.%s: no section %s, skipped", overflow and "GEAR_OVERFLOW" or "GEAR_TIERS", cat, sec)
 		end
 	end
-	table.sort(list, function(a, b) return item_cost(a) < item_cost(b) end)
+	table.sort(list, function(a, b)
+		local ra, rb = item_rank(cat, a), item_rank(cat, b)
+		if ra ~= rb then return ra < rb end
+		return item_cost(a) < item_cost(b)
+	end)
 	tiers_cache[key] = list
 	return list
 end
 
--- The first of the list worth more than UPGRADE_MARGIN x the actor's best of that category
-local function first_upgrade(list, best)
+-- Clearly better than the actor's best of the category (its class and cost): a higher class, or the same
+-- class and more than UPGRADE_MARGIN x the cost
+local function is_upgrade(cat, sec, rank, cost)
+	local r = item_rank(cat, sec)
+	if r ~= rank then return r > rank end
+	return item_cost(sec) > cost * UPGRADE_MARGIN
+end
+
+local function first_upgrade(cat, list, rank, cost)
 	for _, sec in ipairs(list) do
-		if item_cost(sec) > best * UPGRADE_MARGIN then
+		if is_upgrade(cat, sec, rank, cost) then
 			return sec
 		end
 	end
@@ -688,14 +708,17 @@ end
 -- before a report doesn't lower the rewards.
 local function best_gear()
 	local best = load_var(db.actor, VAR_GEAR) or { weapon = 0, outfit = 0, backpack = 0 }
+	best.ranks = best.ranks or {}   -- outfit class of the best outfit (saves from 2.1.0 and older: none)
 	local changed = false
 	for slot = 1, 16 do
 		local obj = db.actor:item_in_slot(slot)
 		local cat = obj and gear_category(obj)
 		if cat then
-			local cost = item_cost(obj:section())
-			if cost > (best[cat] or 0) then
-				best[cat] = cost
+			local sec = obj:section()
+			local r, cost = item_rank(cat, sec), item_cost(sec)
+			local br, bc = best.ranks[cat] or 0, best[cat] or 0
+			if r > br or (r == br and cost > bc) then
+				best[cat], best.ranks[cat] = cost, r
 				changed = true
 			end
 		end
@@ -709,8 +732,10 @@ end
 local function gear_level()
 	local best, lvl = best_gear(), 0
 	for _, cat in ipairs({ "weapon", "outfit" }) do
+		local br, bc = best.ranks[cat] or 0, best[cat] or 0
 		for i, sec in ipairs(gear_tiers(cat)) do
-			if (best[cat] or 0) >= item_cost(sec) then
+			local r = item_rank(cat, sec)
+			if br > r or (br == r and bc >= item_cost(sec)) then
 				lvl = math.max(lvl, i)
 			end
 		end
@@ -735,9 +760,9 @@ local function plan_rewards_scaled(list)
 	for _, it in ipairs(list or {}) do
 		if it[1] == "@gear" then
 			local cat = it[2]
-			local tiers, mine = gear_tiers(cat), best[cat] or 0
-			local pick = first_upgrade(tiers, mine)
-			local worn = not pick and first_upgrade(gear_tiers(cat, true), mine)
+			local tiers, rank, mine = gear_tiers(cat), best.ranks[cat] or 0, best[cat] or 0
+			local pick = first_upgrade(cat, tiers, rank, mine)
+			local worn = not pick and first_upgrade(cat, gear_tiers(cat, true), rank, mine)
 			if pick then
 				plan.items[#plan.items + 1] = { pick, 1, pristine = (cat == "weapon") or nil, ammo = it.ammo }
 			elseif worn then
