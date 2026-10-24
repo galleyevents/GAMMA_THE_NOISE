@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<!-- Dead Channel: the story's own NPCs. Their dialogs are in dialogs_dch.xml; what they may say and do
+     is decided in dch_main.script. Visuals and icons are G.A.M.M.A.'s generic merc and stalker ones. -->
+<xml>
+	<!-- Grek, a mercenary lieutenant at the Dead City base -->
+	<specific_character id="dch_grek" team_default="1">
+		<name>dch_grek_name</name>
+		<icon>ui_inGame2_merc_2</icon>
+		<map_icon x="1" y="0"/>
+		<bio>dch_grek_bio</bio>
+		<class>dch_grek</class>
+		<community>killer</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human\killer_1\</snd_config>
+		<rank>14000</rank>
+		<reputation>-500</reputation>
+		<money min="2000" max="4000" infinitive="0"/>
+		<visual>actors\stalker_merc\stalker_merc_4</visual>
+		<supplies>
+		[spawn] \n
+		wpn_sig550 = 1 \n
+		ammo_5.56x45_ss190 = 1 \n
+		</supplies>
+#include "gameplay\character_criticals.xml"
+		<actor_dialog>dch_grek_talk</actor_dialog>
+		<actor_dialog>actor_break_dialog</actor_dialog>
+	</specific_character>
+
+	<!-- Lis, the courier everyone thought was dead -->
+	<specific_character id="dch_lis" team_default="1">
+		<name>dch_lis_name</name>
+		<icon>ui_inGame2_neutral_1</icon>
+		<map_icon x="1" y="0"/>
+		<bio>dch_lis_bio</bio>
+		<class>dch_lis</class>
+		<community>bandit</community>
+		<terrain_sect>stalker_terrain</terrain_sect>
+		<snd_config>characters_voice\human\stalker_1\</snd_config>
+		<rank>7000</rank>
+		<reputation>0</reputation>
+		<money min="1000" max="2000" infinitive="0"/>
+		<visual>actors\stalker_neutral\stalker_neutral_1</visual>
+		<supplies>
+		[spawn] \n
+		wpn_ak74 = 1 \n
+		ammo_5.45x39_fmj = 1 \n
+		</supplies>
+#include "gameplay\character_criticals.xml"
+		<actor_dialog>dch_lis_talk</actor_dialog>
+		<actor_dialog>actor_break_dialog</actor_dialog>
+	</specific_character>
+</xml>

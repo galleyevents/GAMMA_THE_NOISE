@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding="windows-1251"?>
+<!-- Dead Channel: profiles of the story's own NPCs (registered in mod_system_zzz_dch.ltx) -->
+<xml>
+	<character id="dch_grek">
+		<class>dch_grek</class>
+		<specific_character>dch_grek</specific_character>
+	</character>
+	<character id="dch_lis">
+		<class>dch_lis</class>
+		<specific_character>dch_lis</specific_character>
+	</character>
+</xml>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!-- Dead Channel - all texts. ASCII only: the game reads texts as windows-1251. -->
+<string_table>
+
+	<!-- ===================== shared ===================== -->
+	<string id="dch_name_barman"><text>Barman</text></string>
+	<string id="dch_offer_hint"><text>Dead Channel: the Barman wants to talk.</text></string>
+	<string id="dch_offer_decline"><text>Not now. I'll come back later.</text></string>
+	<string id="dch_grek_name"><text>Grek</text></string>
+	<string id="dch_grek_bio"><text>A mercenary lieutenant at the Dead City base. Buys and sells whatever turns a profit, and remembers who owes him.</text></string>
+	<string id="dch_lis_name"><text>Lis</text></string>
+	<string id="dch_lis_bio"><text>A courier the whole of Rostok buried three weeks ago. Very much alive.</text></string>
+
+	<!-- ===================== items ===================== -->
+	<string id="dch_lis_pda_name"><text>Lis's PDA</text></string>
+	<string id="dch_lis_pda_descr"><text>A scratched courier's PDA, found among the wrecks of the Truck Cemetery. It is still sending the same looped signal.</text></string>
+	<string id="dch_merc_orders_name"><text>Mercenary orders</text></string>
+	<string id="dch_merc_orders_descr"><text>Orders from a dead mercenary courier: an exchange at the railway depot in the Wild Territory. The seller signs himself "L."</text></string>
+	<string id="dch_crate_name"><text>Sealed crate</text></string>
+	<string id="dch_crate_descr"><text>A sealed military crate with data disks: coordinates of army caches from before the second disaster. Ammunition, parts, medical supplies. Worth a fortune to the right buyer.</text></string>
+
+	<!-- ===================== radio and news ===================== -->
+	<string id="dch_prologue_msg"><text>Barman here, from the 100 Rads. You're in Rostok - good. I have a job for someone who knows how to keep his mouth shut. Come to the bar.</text></string>
+	<string id="dch_prologue_msg_dolg"><text>Barman here, from the 100 Rads. Drop by when you're off duty - I have a job, and I'd rather your commanders didn't hear about it. Come to the bar.</text></string>
+	<string id="dch_clue_news"><text>Noted in the PDA: another lead on Lis.</text></string>
+	<string id="dch_task_3_start_news"><text>Two leads point the same way: Lis went towards the Truck Cemetery. Time to follow the signal.</text></string>
+	<string id="dch_4_call"><text>Barman here. My technicians went through that PDA, and I don't like what they found. Come to the bar.</text></string>
+	<string id="dch_snorks_news"><text>The shooting has drawn attention: something is coming out of the depot's shadows. Snorks.</text></string>
+	<string id="dch_grek_paid_news"><text>Grek's men take the crate. A transfer arrives on your PDA: Grek pays what he promised.</text></string>
+	<string id="dch_6_call"><text>Barman here. Word travels fast in the Zone - I hear the depot got loud. Come and tell me yourself.</text></string>
+	<string id="dch_story_end_title"><text>Dead Channel</text></string>
+	<string id="dch_story_end_barman"><text>The crate is back in the Barman's hands and Lis is on his way to Rostok to answer for it. The caches from the disks are marked on your PDA. The story "Dead Channel" is complete.</text></string>
+	<string id="dch_story_end_partner"><text>Lis got his way out of the Zone, and you got your share. The Barman will never know the whole story. The story "Dead Channel" is complete.</text></string>
+	<string id="dch_story_end_mercs"><text>The crate went to the Dead City, Lis stayed at the depot for good, and the Barman lost his disks. The story "Dead Channel" is complete.</text></string>
+
+	<!-- ===================== tasks ===================== -->
+	<string id="dch_task_1_name"><text>Dead Channel: The Signal</text></string>
+	<string id="dch_task_1_descr"><text>The Barman of the 100 Rads called me over the radio. He has a job for someone discreet. I should talk to him.</text></string>
+	<string id="dch_task_2_name"><text>Dead Channel: Asking Around</text></string>
+	<string id="dch_task_2_descr"><text>Lis, the Barman's courier, vanished three weeks ago on the way back with a sealed crate. I should ask around Rostok: the Duty patrol at the gate, the guide, the Duty medic. Two good leads should be enough.</text></string>
+	<string id="dch_task_3_name"><text>Dead Channel: Scrap and Radiation</text></string>
+	<string id="dch_task_3_descr"><text>The signal comes from the Truck Cemetery. Bandits have heard about the courier's "treasure" too. I need to deal with them and find Lis's PDA among the wrecks. Antirad will come in handy.</text></string>
+	<string id="dch_task_3_descr_return"><text>I have Lis's PDA. I should take it to the Barman.</text></string>
+	<string id="dch_task_4_name"><text>Dead Channel: Guests in the Dead City</text></string>
+	<string id="dch_task_4_descr"><text>According to the PDA, mercenaries took the crate to the Dead City. A lieutenant called Grek should know more. I need to find him at the mercenaries' base.</text></string>
+	<string id="dch_task_4_descr_hostile"><text>According to the PDA, mercenaries took the crate to the Dead City - and the mercenaries won't talk to me. One of their couriers lies dead outside the base. Whatever he carried may tell me where the crate went.</text></string>
+	<string id="dch_task_5_name"><text>Dead Channel: Exchange on the Tracks</text></string>
+	<string id="dch_task_5_descr_talk"><text>The seller of the crate is Lis himself. The exchange is at the railway depot in the Wild Territory. I should talk to him before anyone starts shooting.</text></string>
+	<string id="dch_task_5_descr_fight"><text>The deal at the depot has gone bad. I need to survive the shooting.</text></string>
+	<string id="dch_task_5_descr_snorks"><text>The shooting has drawn snorks out of the dark. I need to deal with them.</text></string>
+	<string id="dch_task_6_name"><text>Dead Channel: Reckoning</text></string>
+	<string id="dch_task_6_descr"><text>Whatever happened at the depot, the Barman is waiting for an answer. I should go back to the 100 Rads.</text></string>
+
+	<!-- ===================== stage 1 ===================== -->
+	<string id="dch_1_0"><text>You called, Barman?</text></string>
+	<string id="dch_1_1"><text>I did. Three weeks ago I paid for a run. Lis - a courier, a reliable one - was to bring me a sealed crate from a former army man. Disks, with coordinates of army caches from before the second disaster: ammunition, parts, medicine. Lis never came back. Somewhere around the Truck Cemetery he vanished, and we all drank to his memory.</text></string>
+	<string id="dch_1_2"><text>And now?</text></string>
+	<string id="dch_1_3"><text>Now my radio picks up his PDA every night. The same looped signal: static, a scrap of his voice, coordinates. I don't want Duty in on this - Voronin would take the disks before I said a word. I need someone from outside. I'll pay an advance. Ask around first, quietly: somebody must have seen him before he left.</text></string>
+	<string id="dch_1_3_dolg"><text>Now my radio picks up his PDA every night. The same looped signal: static, a scrap of his voice, coordinates. You wear the Duty patch, I know - but I've seen you, you're a man of your word. If Voronin hears of those disks, he'll take them before I say a word. So this stays between us. I'll pay an advance. Ask around first, quietly: somebody must have seen him before he left.</text></string>
+	<string id="dch_1_4"><text>I'll find out what happened to Lis.</text></string>
+	<string id="dch_1_6"><text>Here's the advance, and something against the radiation - you'll need it out there. Talk to the Duty patrol at the gate, to the guide, and to the Duty medic. Somebody saw something.</text></string>
+	<string id="dch_1_7"><text>Don't take too long. A signal like that draws more than just me.</text></string>
+
+	<!-- ===================== stage 2 ===================== -->
+	<string id="dch_clue_ask"><text>Do you remember a courier called Lis? He left about three weeks ago.</text></string>
+	<string id="dch_clue_petrenko_1"><text>Lis? I remember. He went out through this gate at dawn, towards the Truck Cemetery.</text></string>
+	<string id="dch_clue_petrenko_2"><text>Anything unusual about him?</text></string>
+	<string id="dch_clue_petrenko_3"><text>His backpack. Heavy as a sack of cement - he could barely walk straight. For a man going to pick something up, he was carrying a lot.</text></string>
+	<string id="dch_clue_guide_1"><text>Lis, sure. Strange one, that. Before he left he went round the whole bar and paid off every debt he had. To the last coupon.</text></string>
+	<string id="dch_clue_guide_2"><text>Why is that strange?</text></string>
+	<string id="dch_clue_guide_3"><text>Because he hadn't been paid yet - the money was to come when he got back. Who settles his debts before a job, unless he isn't planning to come back?</text></string>
+	<string id="dch_clue_medic_1"><text>Lis... he bought from me just before he left. Antirad, bandages, a lot of both.</text></string>
+	<string id="dch_clue_medic_2"><text>How much is a lot?</text></string>
+	<string id="dch_clue_medic_3"><text>Enough for a week out there, not a day trip. I asked him if he was moving out. He laughed.</text></string>
+
+	<!-- ===================== stage 3 ===================== -->
+	<string id="dch_3_0"><text>I found Lis's PDA at the Truck Cemetery. The bandits were all over the place.</text></string>
+	<string id="dch_3_1"><text>Let me see... The last entry: "Ambush. Mercenaries. They took the crate. Heading for the Dead City." So that's how it ended.</text></string>
+	<string id="dch_3_2"><text>So Lis is dead?</text></string>
+	<string id="dch_3_3"><text>Maybe. Something about this smells, though. I'll give the PDA to my technicians, let them go through everything on it. Here's your pay for now. Come back in an hour or so - I'll call you.</text></string>
+
+	<!-- ===================== stage 4 ===================== -->
+	<string id="dch_4_0"><text>You called. What did the technicians find?</text></string>
+	<string id="dch_4_1"><text>That last entry - about the mercenaries - was written after the signal started. After Lis was supposed to be dead. Somebody went back to that PDA. Either the mercenaries are playing with me, or Lis is. Go to the Dead City and find out where my crate is. Their lieutenant, Grek, handles their deals.</text></string>
+	<string id="dch_4_2"><text>I'll pay the Dead City a visit.</text></string>
+	<string id="dch_4_4"><text>Careful there. Mercenaries smile right up to the moment they shoot.</text></string>
+	<string id="dch_4_5"><text>Don't wait too long. Crates like that don't stay in one place.</text></string>
+
+	<!-- ===================== Grek ===================== -->
+	<string id="dch_grek_0"><text>I'm here about a crate. Sealed, with disks inside. It belongs to the Barman.</text></string>
+	<string id="dch_grek_1"><text>Belongs? We didn't take it in any ambush, friend. We bought it. Half paid; the seller wants the rest at the exchange. And the seller is a courier called Lis - alive and well, if you're wondering.</text></string>
+	<string id="dch_grek_2"><text>That crate was stolen from the Barman.</text></string>
+	<string id="dch_grek_3"><text>Need an extra gun at the exchange?</text></string>
+	<string id="dch_grek_4"><text>I'll think about it.</text></string>
+	<string id="dch_grek_5"><text>Stolen, bought - the Zone doesn't care. But I'm not greedy. Fifteen thousand and my boys stay home. Lis can wait at the depot for buyers who never come.</text></string>
+	<string id="dch_grek_6"><text>Deal. Here's the money.</text></string>
+	<string id="dch_grek_7"><text>That's too much.</text></string>
+	<string id="dch_grek_8"><text>Pleasure doing business. The exchange is at the railway depot in the Wild Territory. Lis will be there with the crate and his two hired guns - and nobody from us. What you do with him is your business.</text></string>
+	<string id="dch_grek_9"><text>Then come back when you've found the money. Or don't.</text></string>
+	<string id="dch_grek_10"><text>Security, eh? Fine. My squad goes to the railway depot in the Wild Territory - meet them there. You watch Lis's hands, they bring the money, you get a cut. Lis isn't the trusting kind, and neither am I.</text></string>
+	<string id="dch_grek_11"><text>Think fast. The exchange won't wait.</text></string>
+
+	<!-- ===================== Lis ===================== -->
+	<string id="dch_lis_0"><text>Lis. Everyone in Rostok thinks you're dead.</text></string>
+	<string id="dch_lis_1"><text>That was the idea. The PDA, the signal, the entry about the ambush - all so nobody would come looking. Should have smashed the thing instead. So, who sent you? The Barman?</text></string>
+	<string id="dch_lis_2"><text>Why did you do it?</text></string>
+	<string id="dch_lis_3"><text>Because the Barman would have paid me pennies for disks worth a fortune. Twelve years I've carried other people's crates through this place. One chance to get out of the Zone for good - that's all I wanted. So, what now?</text></string>
+	<string id="dch_lis_4"><text>You're coming back to Rostok. The Barman gets his crate.</text></string>
+	<string id="dch_lis_5"><text>Then let's make sure nobody cheats us. Half for me.</text></string>
+	<string id="dch_lis_6"><text>Sorry, Lis. Grek pays better.</text></string>
+	<string id="dch_lis_7"><text>Fine. Take the damn crate - I'm not dying for it. But my boys were promised money, and they won't like this.</text></string>
+	<string id="dch_lis_8"><text>Half it is. Here's an advance - and get ready, the buyers won't like the new terms.</text></string>
+	<string id="dch_lis_9"><text>You son of a... Boys, he's with them!</text></string>
+
+	<!-- ===================== stage 6 ===================== -->
+	<string id="dch_6b_0"><text>Here's your crate. Lis is alive - he's on his way to Rostok.</text></string>
+	<string id="dch_6b_1"><text>Alive... and he sold me out. Well, he'll answer for it here, in front of everyone. That's worse than a bullet for a man like him.</text></string>
+	<string id="dch_6b_2"><text>And the disks?</text></string>
+	<string id="dch_6b_3"><text>Some of them are mine now, some are yours - I'm not ungrateful. Here's your pay and a few things from my storeroom. And I've copied some of the coordinates to your PDA. Go and get those caches before somebody else does.</text></string>
+	<string id="dch_6b_3_dolg"><text>Some of them are mine now, some are yours - and not a word to Voronin, we agreed. Here's your pay and a few things from my storeroom. And I've copied some of the coordinates to your PDA. Go and get those caches before somebody else does.</text></string>
+	<string id="dch_6p_0"><text>Lis is gone. The crate too.</text></string>
+	<string id="dch_6p_1"><text>Gone... Well. At least now we know he isn't sending signals from the other side. Thanks for trying, stalker.</text></string>
+	<string id="dch_6p_1_sus"><text>Gone, is he? Funny - a man who paid off every debt and stocked up for a week before a one-day run. And now he's gone, and you come back with nothing. I'll remember this, stalker. Now drink your vodka and go.</text></string>
+	<string id="dch_6m_0"><text>The crate went to the mercenaries.</text></string>
+	<string id="dch_6m_1"><text>To the mercenaries. With your help, I'd bet. Then you've nothing more to do in my bar - not on this business. Get out.</text></string>
+
+</string_table>

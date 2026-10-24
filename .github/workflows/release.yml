@@ -1,15 +1,16 @@
-# Push a tag like v1.0 or 1.0 -> builds an MO2-ready zip (gamedata/ and the FOMOD installer at the archive root)
-# and attaches it to the release.
+# Push a tag -> builds an MO2-ready zip and attaches it to the release. The tag picks the mod:
+#   v2.5.0 / 2.5.0  -> The Noise (gamedata/ and the FOMOD installer at the archive root)
+#   dch-v1.0.0      -> Dead Channel (gamedata/ at the archive root)
 # For a release that already exists, run it by hand (Actions -> Release -> Run workflow) with its tag.
 name: Release
 
 on:
   push:
-    tags: ["v*", "[0-9]*"]
+    tags: ["v*", "[0-9]*", "dch-v*"]
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing tag to build the zip for (e.g. 1.0.2)"
+        description: "Existing tag to build the zip for (e.g. 1.0.2, dch-v1.0.0)"
         required: true
 
 permissions:
@@ -27,20 +28,31 @@ jobs:
 
       - name: Build zip
         run: |
-          ZIP="The_Noise_Main_Storyline_${TAG}.zip"
-          # gamedata/ plus the MO2 installer (fomod/, options/) at the archive root
           mkdir -p build
-          cp -r "The Noise - Main Storyline/gamedata" build/
-          cp -r installer/fomod installer/options build/
-          cd build
-          zip -r -X "../$ZIP" gamedata fomod options
-          cd ..
+          case "$TAG" in
+            dch-*)
+              VERSION="${TAG#dch-}"
+              ZIP="Dead_Channel_Storyline_${VERSION}.zip"
+              TITLE="Dead Channel $VERSION"
+              cp -r "Dead Channel - Storyline/gamedata" build/
+              (cd build && zip -r -X "../$ZIP" gamedata)
+              ;;
+            *)
+              ZIP="The_Noise_Main_Storyline_${TAG}.zip"
+              TITLE="The Noise $TAG"
+              # gamedata/ plus the MO2 installer (fomod/, options/) at the archive root
+              cp -r "The Noise - Main Storyline/gamedata" build/
+              cp -r installer/fomod installer/options build/
+              (cd build && zip -r -X "../$ZIP" gamedata fomod options)
+              ;;
+          esac
           unzip -l "$ZIP"
           echo "ZIP=$ZIP" >> "$GITHUB_ENV"
+          echo "TITLE=$TITLE" >> "$GITHUB_ENV"
 
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$TAG" "$ZIP" --title "The Noise $TAG" --generate-notes \
+          gh release create "$TAG" "$ZIP" --title "$TITLE" --generate-notes \
             || gh release upload "$TAG" "$ZIP" --clobber

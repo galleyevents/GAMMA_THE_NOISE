@@ -1,0 +1,34 @@
+; Dead Channel - the story's squads. Auto-included by squad_descr.ltx (#include "squad_descr_*.ltx").
+; No "common = true": the simulation never spawns them on its own. Who is hostile to the actor is set per
+; NPC by dch_main.script (personal goodwill), so no faction relation changes.
+
+; Stage 3: bandits at the Truck Cemetery, after the courier's "treasure"
+[dch_cemetery_bandits]:online_offline_group
+faction             = bandit
+npc_random          = sim_default_bandit_1, sim_default_bandit_2, sim_default_bandit_2, sim_default_bandit_3
+npc_in_squad        = 4, 5
+relationship        = enemy
+
+; Stage 4: Grek, alone at the mercenaries' base
+[dch_grek_squad]:online_offline_group
+faction             = killer
+npc                 = dch_grek
+invulnerability     = true
+
+; Stage 5: Lis and his two hired guns (one squad, one faction, so they don't fight each other)
+[dch_lis_squad]:online_offline_group
+faction             = bandit
+npc                 = dch_lis, sim_default_bandit_2, sim_default_bandit_2
+
+; Stage 5: the mercenaries who come to the exchange (ally or enemy, set by the actor's choice)
+[dch_exchange_mercs]:online_offline_group
+faction             = killer
+npc_random          = sim_default_killer_1, sim_default_killer_2, sim_default_killer_2, sim_default_killer_3
+npc_in_squad        = 3, 4
+
+; Stage 5: snorks drawn by the shooting
+[dch_snorks]:online_offline_group
+faction             = monster
+npc_random          = snork_weak, snork_normal, snork_normal
+npc_in_squad        = 3, 4
+relationship        = enemy

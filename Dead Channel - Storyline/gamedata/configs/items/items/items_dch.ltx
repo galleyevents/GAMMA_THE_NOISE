@@ -1,0 +1,48 @@
+; Dead Channel - quest items. Auto-included by items\items\base.ltx (#include "items_*.ltx").
+; quest_item = true keeps bodies carrying them from being cleaned up and stops NPC looting.
+; Icons are the vanilla ones of similar items (default ui_icon_equipment atlas).
+
+[dch_quest_base]:tch_quest
+kind                    = i_quest
+can_trade               = false
+quest_item              = true
+cost                    = 0
+
+; Stage 3: Lis's PDA, fallen out of a truck at the cemetery (icon and model: device_pda)
+[dch_lis_pda]:dch_quest_base
+$spawn                  = "quest_items\dch_lis_pda"
+visual                  = dynamics\devices\dev_pda\dev_pda.ogf
+inv_grid_x              = 7
+inv_grid_y              = 3
+inv_grid_width          = 1
+inv_grid_height         = 1
+inv_name                = dch_lis_pda_name
+inv_name_short          = dch_lis_pda_name
+description             = dch_lis_pda_descr
+inv_weight              = 0.3
+
+; Stage 4 (mercenaries hostile to the actor): the dead courier's orders (icon and model: a document case)
+[dch_merc_orders]:dch_quest_base
+$spawn                  = "quest_items\dch_merc_orders"
+visual                  = dynamics\equipments\quest\notes_document_case_2.ogf
+inv_grid_x              = 2
+inv_grid_y              = 15
+inv_grid_width          = 2
+inv_grid_height         = 1
+inv_name                = dch_merc_orders_name
+inv_name_short          = dch_merc_orders_name
+description             = dch_merc_orders_descr
+inv_weight              = 0.2
+
+; Stage 5-6: the sealed crate with the disks (icon and model: zat_b33_safe_container)
+[dch_crate]:dch_quest_base
+$spawn                  = "quest_items\dch_crate"
+visual                  = dynamics\equipments\quest\safe_container.ogf
+inv_grid_x              = 4
+inv_grid_y              = 11
+inv_grid_width          = 2
+inv_grid_height         = 2
+inv_name                = dch_crate_name
+inv_name_short          = dch_crate_name
+description             = dch_crate_descr
+inv_weight              = 6.0

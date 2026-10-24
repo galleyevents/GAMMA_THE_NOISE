@@ -1,0 +1,22 @@
+; Dead Channel - DLTX: the story's dialogs, character profiles and NPCs, without overwriting shared files.
+; "zzz" so it loads after mods that rewrite the whole [profiles] list (mod_system_storylines).
+
+![dialogs]
+>files                      = dialogs_dch
+
+![profiles]
+>files                      = npc_profile_dch
+>specific_characters_files  = character_desc_dch
+
+; The story's own NPCs, spawned in their squads by dch_main.script (squad_descr_dch.ltx)
+[dch_grek]:stalker
+$spawn                      = "respawn\dch_grek"
+character_profile           = dch_grek
+spec_rank                   = veteran
+community                   = killer
+
+[dch_lis]:stalker
+$spawn                      = "respawn\dch_lis"
+character_profile           = dch_lis
+spec_rank                   = experienced
+community                   = bandit

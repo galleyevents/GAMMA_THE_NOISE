@@ -1,0 +1,43 @@
+-- Dead Channel - DXML: the story's dialogs on the Rostok NPCs, without overwriting their character_desc
+-- file (several G.A.M.M.A. mods ship their own copies), and the gold map spot for "talk to" markers.
+-- Grek and Lis are the story's own NPCs: their dialogs are in character_desc_dch.xml.
+
+-- file -> { specific_character id -> dialogs }
+local INSERTS = {
+	[ [[gameplay\character_desc_bar.xml]] ] = {
+		bar_visitors_barman_stalker_trader = {
+			"dch_1_talk", "dch_3_done", "dch_4_offer", "dch_6_barman", "dch_6_partner", "dch_6_mercs",
+		},
+		bar_dolg_general_petrenko_stalker = { "dch_clue_petrenko" },
+		guid_bar_stalker_navigator        = { "dch_clue_guide" },
+		bar_dolg_medic                    = { "dch_clue_medic" },
+	},
+}
+
+function on_xml_read()
+	RegisterScriptCallback("on_xml_read", function(xml_file_name, xml_obj)
+		if xml_file_name == [[ui\map_spots.xml]] or xml_file_name == [[ui\map_spots_16.xml]]
+			or xml_file_name == [[ui\map_spots_21.xml]] then
+			-- gold "story" spot, the same look as storyline_task_location but its own type
+			xml_obj:insertFromXMLString([[
+<dch_story_location>
+	<level_map spot="storyline_task_spot" pointer="quest_pointer2"/>
+	<mini_map spot="storyline_task_spot_mini" pointer="quest_pointer2"/>
+</dch_story_location>]])
+			return
+		end
+		local chars = INSERTS[xml_file_name]
+		if not chars then return end
+
+		for char_id, dialogs in pairs(chars) do
+			if is_empty(xml_obj:query("specific_character[id=" .. char_id .. "]")) then
+				printf("[DCH] DXML: %s not found in %s", char_id, xml_file_name)
+			else
+				for _, dialog_id in ipairs(dialogs) do
+					local el = xml_obj:insertActorDialog(char_id, dialog_id)
+					printf("[DCH] DXML: insertActorDialog %s for %s -> %s", dialog_id, char_id, el and "OK" or "FAILED")
+				end
+			end
+		end
+	end)
+end

@@ -1,0 +1,863 @@
+-- Dead Channel - a story questline: Rostok, the Truck Cemetery, the Dead City and the Wild Territory.
+-- Prefix: dch_. The engine follows The Noise (szm_main.script): stages as tasks, offer/report dialogs,
+-- spawned squads and items, map markers.
+--
+-- 1 The Dead Channel     : the Barman calls on the radio once the actor is in Rostok; talk to him
+-- 2 Asking Around        : ask 2 of 3 people in Rostok about Lis (the Duty patrol, the guide, the medic)
+-- 3 Scrap and Radiation  : bandits at the Truck Cemetery, Lis's PDA near them; report to the Barman.
+--                          An hour later he calls: the PDA's last entry was added after the signal began
+-- 4 Guests in the Dead City: Grek, a mercenary lieutenant - path A: pay him off, path B: go as security.
+--                          Mercenaries hostile to the actor: a dead merc courier's orders instead.
+--                          Either way: the seller is Lis, the exchange is in the Wild Territory
+-- 5 Exchange on the Tracks: talk to Lis and choose - hand him to the Barman, partner with him, or (path B)
+--                          side with the mercenaries. Fight, then snorks
+-- 6 Reckoning            : back to the Barman; the ending follows the choice
+--
+-- Nothing in the world changes: only the story's own squads fight (per-NPC goodwill), no faction relation,
+-- price or other system is touched.
+
+---------------------------< Places and people >---------------------------
+BARMAN = "bar_visitors_barman_stalker_trader"
+INFORMANTS = {   -- clue key -> story_id (their dialogs are added by modxml_dch.script)
+	petrenko = "bar_dolg_general_petrenko_stalker",
+	guide    = "guid_bar_stalker_navigator",
+	medic    = "bar_dolg_medic",
+}
+CLUES_NEEDED = 2
+
+-- Who the story is for. Rostok is Duty's town: Freedom can't walk in; Duty gets its own lines (<id>_dolg).
+ALLOWED_COMMUNITIES = { actor_stalker = true, actor_dolg = true, actor_ecolog = true, actor_csky = true }
+START_LEVEL    = "l05_bar"
+PROLOGUE_DELAY = 60   -- seconds in Rostok before the Barman's call
+
+ANYWHERE = 1000000
+-- Truck Cemetery: its smarts without the bases (trc_sim_1, 2, 18, 20)
+TRC_SMARTS = {
+	"trc_sim_3", "trc_sim_4", "trc_sim_5", "trc_sim_6", "trc_sim_7", "trc_sim_8", "trc_sim_9", "trc_sim_10",
+	"trc_sim_11", "trc_sim_12", "trc_sim_13", "trc_sim_14", "trc_sim_15", "trc_sim_16", "trc_sim_17",
+	"trc_sim_19", "trc_sim_21",
+}
+GREK_SMART = "cit_killers"   -- the mercenaries' base in the Dead City
+-- Dead City outside the base: where the courier lies (mercenaries hostile to the actor)
+CIT_SMARTS = { "cit_killers_2", "cit_kanaliz1", "cit_kanaliz2", "cit_bandits", "cit_bandits_2" }
+-- Wild Territory: the exchange, the mercenaries' approach, the snorks' lair first
+ROS_SMARTS = {
+	"ros_smart_stalker1", "ros_smart_monster4", "ros_smart_monster5", "ros_smart_monster7",
+	"ros_smart_poltergeist2", "ros_smart_snork1", "ros_smart_killers1", "ros_smart_stalker_killers1",
+}
+SNORK_SMARTS = { "ros_smart_snork1", "ros_smart_monster4", "ros_smart_monster5", "ros_smart_monster7" }
+
+---------------------------< Tuning >---------------------------
+CALL_DELAY_H     = 1        -- in-game hours from the PDA report to the Barman's call
+GREK_PRICE       = 15000    -- path A
+LIS_CUT          = 10000    -- partner with Lis: his advance
+GREK_PAY         = 15000    -- side with the mercenaries
+ADVANCE          = 3000     -- the Barman's advance, with ADVANCE_ITEMS
+ADVANCE_ITEMS    = { {"antirad", 2}, {"medkit", 1} }
+REWARD_MONEY     = { 15000, 20000 }   -- handing Lis over: the Barman's pay
+REWARD_ITEMS     = { {"itm_repairkit_tier_1", 1}, {"gun_oil", 1}, {"glue_a", 1}, {"medkit", 2} }
+REWARD_STASHES   = 3        -- military caches from the disks: random stashes marked on the map (G.A.M.M.A.)
+HOSTILE_GOODWILL = -10000   -- per NPC towards the actor; outweighs any faction relation
+FRIEND_GOODWILL  = 10000
+CLEANUP_DIST     = 80       -- the story's leftover NPCs go away once the actor is this far (or elsewhere)
+
+---------------------------< Save vars / infos >---------------------------
+local VAR_SQUADS  = "dch_squads"   -- key -> squad id (cemetery, grek, lis, mercs, snorks)
+local VAR_OBJECTS = "dch_objects"  -- pda = item id, courier = corpse id
+local VAR_REL     = "dch_rel"      -- stage 5: { lis =, guards =, mercs = "friend"|"enemy", feud = mercs vs Lis's men }
+local VAR_PHASE   = "dch_phase"    -- stage 5: "talk" | "fight" | "snorks"
+local VAR_CALL    = "dch_call"     -- { t = game time, delay = seconds }: the Barman's call before stage 4
+local VAR_USED    = "dch_used"     -- recently used spawn smarts
+local VAR_SPOT    = "dch_spot"     -- id of the NPC with the gold "talk to" spot
+local VAR_LEAVE   = "dch_leave"    -- ids of squads to remove once the actor is away
+
+local function done_info(n) return "dch_stage_" .. n .. "_done" end
+local INFO_STARTED       = "dch_started"
+local INFO_CALLED        = "dch_called_4"
+local INFO_MERCS_HOSTILE = "dch_mercs_hostile"
+local INFO_PATH_A, INFO_PATH_B = "dch_path_a", "dch_path_b"
+local INFO_CHOICE = { barman = "dch_choice_barman", lis = "dch_choice_lis", mercs = "dch_choice_mercs" }
+local function clue_info(key) return "dch_clue_" .. key end
+
+local RECENT_SMARTS = 4
+local INVALID_LVID  = 4294967295
+local SPOT          = "dch_story_location"   -- gold spot, defined in modxml_dch.script
+
+---------------------------< Helpers >---------------------------
+local TASKS = { "dch_task_1", "dch_task_2", "dch_task_3", "dch_task_4", "dch_task_5", "dch_task_6" }
+
+local function get_task(n)
+	if db.actor:get_task(TASKS[n], true) == nil then return end
+	return task_manager.get_task_manager().task_info[TASKS[n]]
+end
+
+local function active_stage()
+	for n = 1, #TASKS do
+		if get_task(n) then return n end
+	end
+end
+
+local function count_items(section)
+	local cnt = 0
+	db.actor:iterate_inventory(function(owner, obj)
+		if obj:section() == section then cnt = cnt + 1 end
+	end, db.actor)
+	return cnt
+end
+
+local function actor_is_dolg()
+	return db.actor ~= nil and character_community(db.actor) == "actor_dolg"
+end
+
+-- String id, or its Duty version (<id>_dolg) for a Duty actor when there is one
+local function text_id(id)
+	if actor_is_dolg() then
+		local alt = id .. "_dolg"
+		if game.translate_string(alt) ~= alt then return alt end
+	end
+	return id
+end
+
+local function tr(id) return game.translate_string(text_id(id)) end
+
+local function level_of(gvid)
+	return game_graph():vertex(gvid):level_id()
+end
+
+local function actor_level()
+	return level_of(db.actor:game_vertex_id())
+end
+
+local function radio_msg(text, delay)
+	db.actor:give_game_news(tr("dch_name_barman"), tr(text), "ui_inGame2_barman", (delay or 0) * 1000, 15000, 0)
+	xr_sound.set_sound_play(AC_ID, "pda_tips")
+end
+
+local function news(text)
+	news_manager.send_tip(db.actor, tr(text), nil, nil, 8000)
+end
+
+local function give_items(list)
+	for _, it in ipairs(list or {}) do
+		itms_manager.relocate_item_to_actor(db.actor, nil, it[1], it[2])
+	end
+end
+
+local function give_money(amount)
+	dialogs.relocate_money(db.actor, amount, "in")
+end
+
+local function take_items(section, amount)
+	local n = math.min(amount or 1, count_items(section))
+	if n > 0 then
+		itms_manager.relocate_item_from_actor(db.actor, nil, section, n)
+	end
+end
+
+local function barman_alive()
+	local se = get_story_se_object(BARMAN)
+	return se ~= nil and (se.alive == nil or se:alive())
+end
+
+local function give_task(n)
+	task_manager.get_task_manager():give_task(TASKS[n], get_story_object_id(BARMAN))
+	printf("[DCH] stage %s given", n)
+end
+
+-- give_task right after a dialog closes, so the PDA update isn't lost behind it
+local function give_task_later(n)
+	CreateTimeEvent("dch_give", tostring(n), 1, function()
+		if not get_task(n) then give_task(n) end
+		return true
+	end)
+end
+
+local function complete_task(n)
+	task_manager.get_task_manager():set_task_completed(TASKS[n])
+end
+
+local function load_table(var) return load_var(db.actor, var) or {} end
+
+local function set_entry(var, key, value)
+	local t = load_table(var)
+	t[key] = value
+	save_var(db.actor, var, t)
+end
+
+---------------------------< Map spot >---------------------------
+local function clear_spot()
+	local id = load_var(db.actor, VAR_SPOT)
+	if id and level.map_has_object_spot(id, SPOT) ~= 0 then
+		level.map_remove_object_spot(id, SPOT)
+	end
+	save_var(db.actor, VAR_SPOT, nil)
+end
+
+local function mark_barman()
+	clear_spot()
+	local id = get_story_object_id(BARMAN)
+	if not id then return end
+	level.map_add_object_spot_ser(id, SPOT, tr("dch_offer_hint"))
+	save_var(db.actor, VAR_SPOT, id)
+end
+
+---------------------------< Squads >---------------------------
+local function get_squad(key)
+	local id = load_table(VAR_SQUADS)[key]
+	local se = id and alife_object(id)
+	if se and se.squad_members then return se end
+end
+
+local function squad_alive(key)
+	local squad = get_squad(key)
+	return squad ~= nil and squad:npc_count() > 0
+end
+
+-- The squad's member with this section (Lis, Grek), or nil
+local function member_by_section(key, section)
+	local squad = get_squad(key)
+	if not squad then return end
+	for k in squad:squad_members() do
+		local se = k.object or alife_object(k.id)
+		if se and se:section_name() == section then return se end
+	end
+end
+
+local function is_recent(name)
+	for _, used in ipairs(load_var(db.actor, VAR_USED) or {}) do
+		if used == name then return true end
+	end
+	return false
+end
+
+local function remember_smart(name)
+	local list = load_var(db.actor, VAR_USED) or {}
+	table.insert(list, 1, name)
+	while #list > RECENT_SMARTS do table.remove(list) end
+	save_var(db.actor, VAR_USED, list)
+end
+
+-- Squads other than the story's own at (or heading to) the smart
+local function smart_population(smart)
+	local info = SIMBOARD.smarts[smart.id]
+	if not (info and info.squads) then return 0 end
+	local own = {}
+	for _, id in pairs(load_table(VAR_SQUADS)) do own[id] = true end
+	local cnt = 0
+	for id in pairs(info.squads) do
+		if not own[id] then cnt = cnt + 1 end
+	end
+	return cnt
+end
+
+-- A smart of the list in [min, max] from origin: preferably nobody else at it, then not used lately;
+-- opts.nearest: the nearest of those (else random), opts.exclude: a smart name to skip,
+-- opts.far: at least this far from the actor when on the actor's level
+local function pick_spawn_smart(smarts, origin, min_dist, max_dist, opts)
+	opts = opts or {}
+	local best, best_key = {}, nil
+	for _, name in ipairs(smarts) do
+		local smart = name ~= opts.exclude and SIMBOARD.smarts_by_names[name]
+		if smart and opts.far and level_of(smart.m_game_vertex_id) == actor_level()
+			and smart.position:distance_to(db.actor:position()) < opts.far then
+			smart = nil
+		end
+		local dist = smart and smart.position:distance_to(origin)
+		if smart and dist >= min_dist and dist <= max_dist then
+			local key = (smart_population(smart) > 0 and 2 or 0) + (is_recent(name) and 1 or 0)
+			if not best_key or key < best_key then
+				best, best_key = { smart }, key
+			elseif key == best_key then
+				best[#best + 1] = smart
+			end
+		end
+	end
+	if #best == 0 then
+		printf("[DCH] no spawn smart found")
+		return
+	end
+	if opts.nearest then
+		table.sort(best, function(a, b) return a.position:distance_to(origin) < b.position:distance_to(origin) end)
+		return best[1]
+	end
+	return best[math.random(#best)]
+end
+
+-- First navigable point on rings around center (only on the actor's level; else the centre)
+local function point_near(smart, radii)
+	if level_of(smart.m_game_vertex_id) == actor_level() then
+		local c = smart.position
+		for _, r in ipairs(radii) do
+			local steps = r == 0 and 1 or 8
+			for i = 0, steps - 1 do
+				local a = i * (2 * math.pi / steps)
+				local p = vector():set(c.x + r * math.cos(a), c.y, c.z + r * math.sin(a))
+				local lvid = level.vertex_id(p)
+				if lvid and lvid < INVALID_LVID then
+					local vp = level.vertex_position(lvid)
+					if vp:distance_to(p) < 3 then
+						return vp, lvid, smart.m_game_vertex_id
+					end
+				end
+			end
+		end
+	end
+	return smart.position, smart.m_level_vertex_id, smart.m_game_vertex_id
+end
+
+-- Spawn a story squad at a smart. opts.hunt: it goes after the actor instead of holding the smart
+local function spawn_squad(key, section, smart, opts)
+	opts = opts or {}
+	local squad = smart and SIMBOARD:create_squad(smart, section)
+	if not squad then
+		printf("[DCH] failed to create squad %s", section)
+		return
+	end
+	squad.scripted_target = opts.hunt and "actor" or smart:name()
+	squad.force_online = true
+	sim_offline_combat.task_squads[squad.id] = true
+	set_entry(VAR_SQUADS, key, squad.id)
+	remember_smart(smart:name())
+	printf("[DCH] spawned %s (%s, id %s) at %s%s", key, section, squad.id, smart:name(), opts.hunt and ", hunting" or "")
+	return squad
+end
+
+local function remove_squad(key)
+	local squad = get_squad(key)
+	if squad then squad:remove_squad() end
+	set_entry(VAR_SQUADS, key, nil)
+end
+
+-- Remove the squad once the actor is away (so nobody vanishes in front of them)
+local function remove_squad_later(key)
+	local squad = get_squad(key)
+	if squad then
+		local list = load_var(db.actor, VAR_LEAVE) or {}
+		list[#list + 1] = squad.id
+		save_var(db.actor, VAR_LEAVE, list)
+	end
+	set_entry(VAR_SQUADS, key, nil)
+end
+
+local function update_leftovers()
+	local list = load_var(db.actor, VAR_LEAVE)
+	if not list then return end
+	local keep = {}
+	for _, id in ipairs(list) do
+		local squad = alife_object(id)
+		if squad and squad.squad_members then
+			local near = level_of(squad.m_game_vertex_id) == actor_level()
+				and squad.position:distance_to(db.actor:position()) < CLEANUP_DIST
+			if near then keep[#keep + 1] = id else squad:remove_squad() end
+		end
+	end
+	save_var(db.actor, VAR_LEAVE, #keep > 0 and keep or nil)
+end
+
+---------------------------< Relations (story NPCs only) >---------------------------
+local function goodwill_for(rel)
+	return rel == "enemy" and HOSTILE_GOODWILL or rel == "friend" and FRIEND_GOODWILL or nil
+end
+
+local function online(se_id)
+	return db.storage[se_id] and db.storage[se_id].object
+end
+
+-- Keep each story NPC's attitude to the actor as the story says (also offline ones, server side)
+local function apply_relation(key, rel, filter)
+	local squad = get_squad(key)
+	local gw = goodwill_for(rel)
+	if not (squad and gw) then return end
+	for k in squad:squad_members() do
+		local se = k.object or alife_object(k.id)
+		if se and (not filter or filter(se)) then
+			local npc = online(k.id)
+			local want = rel == "enemy" and game_object.enemy or game_object.friend
+			if npc then
+				if npc:alive() and npc:relation(db.actor) ~= want then
+					npc:force_set_goodwill(gw, db.actor)
+				end
+			elseif se.force_set_goodwill then
+				se:force_set_goodwill(gw, AC_ID)
+			end
+		end
+	end
+end
+
+local function is_lis(se) return se:section_name() == "dch_lis" end
+local function not_lis(se) return se:section_name() ~= "dch_lis" end
+
+-- Mercenaries and bandits are neutral to each other: a feud makes the story's two groups fight
+local function apply_feud()
+	local mercs, lis = get_squad("mercs"), get_squad("lis")
+	if not (mercs and lis) then return end
+	for a in mercs:squad_members() do
+		local na = online(a.id)
+		for b in lis:squad_members() do
+			local nb = online(b.id)
+			if na and nb and na:alive() and nb:alive() then
+				if na:relation(nb) ~= game_object.enemy then na:force_set_goodwill(HOSTILE_GOODWILL, nb) end
+				if nb:relation(na) ~= game_object.enemy then nb:force_set_goodwill(HOSTILE_GOODWILL, na) end
+			end
+		end
+	end
+end
+
+local function update_relations()
+	apply_relation("cemetery", "enemy")
+	local rel = load_var(db.actor, VAR_REL)
+	if not rel then return end
+	apply_relation("lis", rel.lis, is_lis)
+	apply_relation("lis", rel.guards, not_lis)
+	apply_relation("mercs", rel.mercs)
+	if rel.feud then apply_feud() end
+end
+
+-- Members of the squad the actor still has to kill (enemies by the story)
+local function hostile_left(key, filter)
+	local squad = get_squad(key)
+	if not squad then return 0 end
+	local cnt = 0
+	for k in squad:squad_members() do
+		local se = k.object or alife_object(k.id)
+		if se and (not filter or filter(se)) and (se.alive == nil or se:alive()) then cnt = cnt + 1 end
+	end
+	return cnt
+end
+
+---------------------------< Stage 3: the cemetery >---------------------------
+local function start_cemetery()
+	local origin = get_story_se_object(BARMAN).position
+	local smart = pick_spawn_smart(TRC_SMARTS, origin, 0, ANYWHERE)
+	if not spawn_squad("cemetery", "dch_cemetery_bandits", smart) then return false end
+	-- the PDA lies near them: fallen out of a truck
+	local pos, lvid, gvid = point_near(smart, { 6, 9, 12, 4, 0 })
+	local se = alife_create("dch_lis_pda", pos, lvid, gvid)
+	if se then set_entry(VAR_OBJECTS, "pda", se.id) end
+	printf("[DCH] stage 3: PDA (id %s) near %s", se and se.id or "?", smart:name())
+	return true
+end
+
+---------------------------< Stage 4: the Dead City >---------------------------
+local function mercs_hostile()
+	return game_relations.is_factions_enemies("killer", character_community(db.actor))
+end
+
+local function start_dead_city()
+	if mercs_hostile() then
+		give_info(INFO_MERCS_HOSTILE)
+		-- a dead courier outside the base, with the orders for the exchange
+		local smart = pick_spawn_smart(CIT_SMARTS, SIMBOARD.smarts_by_names[GREK_SMART].position, 0, ANYWHERE)
+		if not smart then return false end
+		local pos, lvid, gvid = point_near(smart, { 5, 8, 0 })
+		local se = alife_create("sim_default_killer_2", pos, lvid, gvid)
+		if not se then return false end
+		alife_create_item("dch_merc_orders", se)
+		se:kill()
+		set_entry(VAR_OBJECTS, "courier", se.id)
+		remember_smart(smart:name())
+		printf("[DCH] stage 4: the mercenaries are hostile, courier (id %s) near %s", se.id, smart:name())
+		return true
+	end
+	return spawn_squad("grek", "dch_grek_squad", SIMBOARD.smarts_by_names[GREK_SMART]) ~= nil
+end
+
+---------------------------< Stage 5: the exchange >---------------------------
+local function start_exchange()
+	local origin = SIMBOARD.smarts_by_names[ROS_SMARTS[1]].position
+	local smart = pick_spawn_smart(ROS_SMARTS, origin, 0, ANYWHERE)
+	if not spawn_squad("lis", "dch_lis_squad", smart) then return false end
+	-- remembered by id: a dead NPC leaves its squad, and his body carries the crate (siding with the mercs)
+	local lis = member_by_section("lis", "dch_lis")
+	set_entry(VAR_OBJECTS, "lis", lis and lis.id)
+	save_var(db.actor, VAR_REL, { lis = "friend", guards = "friend" })
+	save_var(db.actor, VAR_PHASE, "talk")
+	return true
+end
+
+local function lis_squad_smart()
+	local squad = get_squad("lis")
+	return squad and squad.scripted_target and SIMBOARD.smarts_by_names[squad.scripted_target]
+end
+
+-- The mercenaries arrive at the exchange, from the nearest other smart
+local function bring_mercs(rel)
+	local at = lis_squad_smart()
+	local origin = at and at.position or db.actor:position()
+	local smart = pick_spawn_smart(ROS_SMARTS, origin, 30, ANYWHERE, { nearest = true, exclude = at and at:name() })
+	if spawn_squad("mercs", "dch_exchange_mercs", smart, { hunt = true }) then
+		set_entry(VAR_REL, "mercs", rel)
+	end
+end
+
+local function start_snorks()
+	local smart = pick_spawn_smart(SNORK_SMARTS, db.actor:position(), 40, ANYWHERE, { nearest = true })
+	spawn_squad("snorks", "dch_snorks", smart, { hunt = true })
+	save_var(db.actor, VAR_PHASE, "snorks")
+	news("dch_snorks_news")
+end
+
+local function lis_obj()
+	local id = load_table(VAR_OBJECTS).lis
+	return id and alife_object(id)
+end
+
+local function lis_alive()
+	local se = lis_obj()
+	return se ~= nil and (se.alive == nil or se:alive())
+end
+
+-- Fight phase is over when nobody the story set against the actor is left
+local function fight_over()
+	local rel = load_var(db.actor, VAR_REL) or {}
+	if rel.lis == "enemy" and lis_alive() then return false end
+	if rel.guards == "enemy" and hostile_left("lis", not_lis) > 0 then return false end
+	if rel.mercs == "enemy" and hostile_left("mercs") > 0 then return false end
+	return true
+end
+
+local function finish_exchange()
+	save_var(db.actor, VAR_PHASE, nil)
+	if has_alife_info(INFO_CHOICE.mercs) then
+		-- Grek's men take the crate and Grek pays over the radio
+		take_items("dch_crate", 1)
+		give_money(GREK_PAY)
+		news("dch_grek_paid_news")
+	end
+	complete_task(5)
+	-- the last stage follows right away: the Barman asks the actor over
+	give_task_later(6)
+	CreateTimeEvent("dch_radio", "6", 4, function()
+		radio_msg("dch_6_call")
+		return true
+	end)
+end
+
+local function update_exchange()
+	local phase = load_var(db.actor, VAR_PHASE)
+	if phase == "fight" and fight_over() then
+		if not has_alife_info(INFO_CHOICE.mercs) or count_items("dch_crate") > 0 then
+			start_snorks()
+		end
+	elseif phase == "snorks" and not squad_alive("snorks") then
+		finish_exchange()
+	end
+end
+
+---------------------------< Prologue >---------------------------
+local prologue_scheduled = false
+
+local function try_prologue()
+	if prologue_scheduled or has_alife_info(INFO_STARTED) then return end
+	if not ALLOWED_COMMUNITIES[character_community(db.actor)] then return end
+	if level.name() ~= START_LEVEL or not barman_alive() then return end
+	prologue_scheduled = true
+	CreateTimeEvent("dch_prologue", "start", PROLOGUE_DELAY, function()
+		if level.name() == START_LEVEL and not has_alife_info(INFO_STARTED) then
+			give_info(INFO_STARTED)
+			radio_msg("dch_prologue_msg")
+			give_task(1)
+			mark_barman()
+		else
+			prologue_scheduled = false
+		end
+		return true
+	end)
+	printf("[DCH] prologue scheduled")
+end
+
+-- The Barman's call before stage 4
+local function check_call()
+	local c = load_var(db.actor, VAR_CALL)
+	if not c then return end
+	if game.get_game_time():diffSec(utils_data.CTime_from_table(c.t)) < c.delay then return end
+	if not barman_alive() then return end
+	save_var(db.actor, VAR_CALL, nil)
+	give_info(INFO_CALLED)
+	radio_msg("dch_4_call")
+	mark_barman()
+	printf("[DCH] the Barman called (stage 4 offer)")
+end
+
+---------------------------< Dialog functions >---------------------------
+-- Stage 1: the Barman's job
+function can_talk_1() return get_task(1) ~= nil end
+function turn_in_1(a, b)
+	clear_spot()
+	give_money(ADVANCE)
+	give_items(ADVANCE_ITEMS)
+	complete_task(1)
+	give_task_later(2)
+end
+
+-- Stage 2: asking around
+local function clue_count()
+	local cnt = 0
+	for key in pairs(INFORMANTS) do
+		if has_alife_info(clue_info(key)) then cnt = cnt + 1 end
+	end
+	return cnt
+end
+
+local function can_clue(key) return get_task(2) ~= nil and not has_alife_info(clue_info(key)) end
+local function take_clue(key)
+	give_info(clue_info(key))
+	news("dch_clue_news")
+	if clue_count() >= CLUES_NEEDED then
+		complete_task(2)
+		CreateTimeEvent("dch_give", "3", 2, function()
+			if not get_task(3) and start_cemetery() then
+				give_task(3)
+				news("dch_task_3_start_news")
+			end
+			return true
+		end)
+	end
+end
+function can_clue_petrenko() return can_clue("petrenko") end
+function can_clue_guide()    return can_clue("guide") end
+function can_clue_medic()    return can_clue("medic") end
+function clue_petrenko() take_clue("petrenko") end
+function clue_guide()    take_clue("guide") end
+function clue_medic()    take_clue("medic") end
+
+-- Stage 3: the PDA to the Barman, then his call an hour later
+function can_turn_in_3()
+	local tsk = get_task(3)
+	return tsk ~= nil and tsk.stage == 1
+end
+function turn_in_3(a, b)
+	take_items("dch_lis_pda", 1)
+	complete_task(3)
+	save_var(db.actor, VAR_CALL, { t = utils_data.CTime_to_table(game.get_game_time()), delay = CALL_DELAY_H * 3600 })
+end
+
+-- Stage 4: the Barman's offer, then Grek
+function can_offer_4()
+	return has_alife_info(INFO_CALLED) and not has_alife_info(done_info(4)) and not get_task(4)
+end
+function give_4(a, b)
+	clear_spot()
+	if start_dead_city() then
+		give_task_later(4)
+	end
+end
+
+function can_talk_grek() return get_task(4) ~= nil and not has_alife_info(INFO_MERCS_HOSTILE) end
+function grek_can_pay() return db.actor:money() >= GREK_PRICE end
+local function after_grek(info)
+	give_info(info)
+	complete_task(4)
+	CreateTimeEvent("dch_give", "5", 2, function()
+		if not get_task(5) and start_exchange() then give_task(5) end
+		return true
+	end)
+end
+function grek_pay(a, b)
+	dialogs.relocate_money(db.actor, GREK_PRICE, "out")
+	after_grek(INFO_PATH_A)
+end
+function grek_guard(a, b) after_grek(INFO_PATH_B) end
+
+-- Stage 5: Lis
+function can_talk_lis() return get_task(5) ~= nil and load_var(db.actor, VAR_PHASE) == "talk" end
+function lis_can_side_mercs() return has_alife_info(INFO_PATH_B) end
+local function mercs_come() return has_alife_info(INFO_PATH_B) or has_alife_info(INFO_MERCS_HOSTILE) end
+
+function decide_barman(a, b)
+	give_info(INFO_CHOICE.barman)
+	save_var(db.actor, VAR_REL, { lis = "friend", guards = "enemy" })
+	itms_manager.relocate_item_to_actor(db.actor, nil, "dch_crate", 1)
+	if mercs_come() then bring_mercs("enemy") end
+	save_var(db.actor, VAR_PHASE, "fight")
+end
+function decide_lis(a, b)
+	give_info(INFO_CHOICE.lis)
+	save_var(db.actor, VAR_REL, { lis = "friend", guards = "friend", feud = true })
+	give_money(LIS_CUT)
+	if mercs_come() then bring_mercs("enemy") end
+	save_var(db.actor, VAR_PHASE, "fight")
+end
+function decide_mercs(a, b)
+	give_info(INFO_CHOICE.mercs)
+	save_var(db.actor, VAR_REL, { lis = "enemy", guards = "enemy", feud = true })
+	local lis = lis_obj()
+	if lis then alife_create_item("dch_crate", lis) end   -- on his body when he falls
+	bring_mercs("friend")
+	save_var(db.actor, VAR_PHASE, "fight")
+end
+
+-- Stage 6: the reckoning, by the choice
+function can_end_barman()  return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.barman) and count_items("dch_crate") > 0 end
+function can_end_partner() return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.lis) end
+function can_end_mercs()   return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.mercs) end
+-- He knows Lis paid his debts or stocked up before leaving: he smells a rat
+function partner_suspicious()     return has_alife_info(clue_info("guide")) or has_alife_info(clue_info("medic")) end
+function partner_not_suspicious() return not partner_suspicious() end
+
+local function the_end(key)
+	complete_task(6)
+	CreateTimeEvent("dch_end", key, 3, function()
+		db.actor:give_game_news(tr("dch_story_end_title"), tr("dch_story_end_" .. key), "ui_inGame2_barman", 0, 20000, 0)
+		xr_sound.set_sound_play(AC_ID, "pda_tips")
+		return true
+	end)
+	printf("[DCH] ending: %s", key)
+end
+function end_barman(a, b)
+	take_items("dch_crate", 1)
+	give_money(math.random(REWARD_MONEY[1], REWARD_MONEY[2]))
+	give_items(REWARD_ITEMS)
+	for i = 1, REWARD_STASHES do
+		treasure_manager.create_random_stash(nil, nil, nil, true)
+	end
+	the_end("barman")
+end
+function end_partner(a, b) the_end("partner") end
+function end_mercs(a, b)   the_end("mercs") end
+
+-- Phrases with a "_dolg" text (dch_gen_dialogs.py)
+function actor_dolg()     return actor_is_dolg() end
+function actor_not_dolg() return not actor_is_dolg() end
+
+---------------------------< Task functors >---------------------------
+local function item_on_ground(id)
+	local se = id and alife_object(id)
+	return se and se.parent_id == 65535 and id or nil
+end
+
+local function nearest_member(key)
+	local squad = get_squad(key)
+	if not squad then return end
+	local best, best_d
+	for k in squad:squad_members() do
+		local se = k.object or alife_object(k.id)
+		if se and (se.alive == nil or se:alive()) then
+			local d = se.position:distance_to_sqr(db.actor:position())
+			if not best_d or d < best_d then best, best_d = k.id, d end
+		end
+	end
+	return best
+end
+
+local TARGETS = {
+	[1] = function() return get_story_object_id(BARMAN) end,
+	[2] = function()
+		for key, story_id in pairs(INFORMANTS) do
+			if not has_alife_info(clue_info(key)) then return get_story_object_id(story_id) end
+		end
+	end,
+	[3] = function(tsk)
+		if tsk.stage == 1 then return get_story_object_id(BARMAN) end
+		return item_on_ground(load_table(VAR_OBJECTS).pda) or nearest_member("cemetery")
+	end,
+	[4] = function()
+		if has_alife_info(INFO_MERCS_HOSTILE) then return load_table(VAR_OBJECTS).courier end
+		local grek = member_by_section("grek", "dch_grek")
+		return grek and grek.id
+	end,
+	[5] = function()
+		local phase = load_var(db.actor, VAR_PHASE)
+		if phase == "talk" then
+			return load_table(VAR_OBJECTS).lis
+		elseif phase == "snorks" then
+			return nearest_member("snorks")
+		end
+		local rel = load_var(db.actor, VAR_REL) or {}
+		if has_alife_info(INFO_CHOICE.mercs) and count_items("dch_crate") == 0 and lis_obj() then
+			return load_table(VAR_OBJECTS).lis   -- alive, or his body with the crate
+		end
+		if rel.guards == "enemy" and hostile_left("lis", not_lis) > 0 then return nearest_member("lis") end
+		if rel.mercs == "enemy" then return nearest_member("mercs") end
+	end,
+	[6] = function() return get_story_object_id(BARMAN) end,
+}
+
+-- PDA description per stage and phase (string ids from st_dch.xml)
+local function descr_id(n, tsk)
+	if n == 3 and tsk.stage == 1 then return "dch_task_3_descr_return" end
+	if n == 4 and has_alife_info(INFO_MERCS_HOSTILE) then return "dch_task_4_descr_hostile" end
+	if n == 5 then return "dch_task_5_descr_" .. (load_var(db.actor, VAR_PHASE) or "fight") end
+	return "dch_task_" .. n .. "_descr"
+end
+
+-- Objective of each stage, checked every few seconds
+local STATUS = {
+	[3] = function(tsk)
+		tsk.stage = (not squad_alive("cemetery") and count_items("dch_lis_pda") > 0) and 1 or 0
+	end,
+	[4] = function(tsk)
+		if has_alife_info(INFO_MERCS_HOSTILE) and count_items("dch_merc_orders") > 0 then
+			take_items("dch_merc_orders", 1)
+			give_info(INFO_PATH_A)   -- nobody from the mercenaries' side comes as an ally
+			CreateTimeEvent("dch_give", "5", 2, function()
+				if not get_task(5) and start_exchange() then give_task(5) end
+				return true
+			end)
+			return "complete"
+		end
+	end,
+	[5] = function(tsk)
+		update_exchange()
+	end,
+}
+
+for n = 1, #TASKS do
+	task_functor["dch_target_" .. n] = function(task_id, field, p, tsk)
+		if field ~= "target" or not tsk then return end
+		return TARGETS[n](tsk)
+	end
+	task_functor["dch_descr_" .. n] = function(task_id, field, p, tsk)
+		return text_id(descr_id(n, tsk or { stage = 0 }))
+	end
+	task_status_functor["dch_status_" .. n] = function(tsk, task_id)
+		if not barman_alive() then return "fail" end
+		update_relations()
+		local squads = load_table(VAR_SQUADS)
+		for key, id in pairs(squads) do
+			local squad = alife_object(id)
+			if squad and squad.squad_members then
+				squad.force_online = true
+				sim_offline_combat.task_squads[id] = true
+			end
+		end
+		return STATUS[n] and STATUS[n](tsk)
+	end
+end
+
+---------------------------< Effects >---------------------------
+-- on_complete / on_fail of the task sections: the stage's spawns go away
+xr_effects.dch_cleanup = function(actor, npc, p)
+	local n = tonumber(p and p[1])
+	if n == 3 then
+		remove_squad("cemetery")
+		local pda = item_on_ground(load_table(VAR_OBJECTS).pda)
+		if pda then alife_release_id(pda) end
+		set_entry(VAR_OBJECTS, "pda", nil)
+	elseif n == 4 then
+		remove_squad_later("grek")
+		set_entry(VAR_OBJECTS, "courier", nil)
+	elseif n == 5 then
+		remove_squad_later("lis")
+		remove_squad_later("mercs")
+		remove_squad("snorks")
+		save_var(db.actor, VAR_REL, nil)
+		save_var(db.actor, VAR_PHASE, nil)
+		set_entry(VAR_OBJECTS, "lis", nil)
+	end
+end
+
+---------------------------< Callbacks >---------------------------
+local tg_tick = 0
+local function actor_on_update()
+	local tg = time_global()
+	if tg < tg_tick then return end
+	tg_tick = tg + 5000
+	try_prologue()
+	check_call()
+	update_leftovers()
+end
+
+function on_game_start()
+	RegisterScriptCallback("actor_on_update", actor_on_update)
+end

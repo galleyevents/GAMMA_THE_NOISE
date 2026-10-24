@@ -1,0 +1,69 @@
+; Dead Channel - tasks. Auto-included by task_manager.ltx (#include "tm_*.ltx").
+; Stage 0: objective, stage 1: report. Rewards and the story's branches are handled in dch_main.script;
+; on_complete sets the stage's done info and cleans up its spawns. storyline = true: main story marker.
+
+[dch_task_1]
+icon                = ui_inGame2_PD_Torgovets_informatsiey
+storyline           = true
+title               = dch_task_1_name
+descr_functor       = dch_descr_1
+stage_complete      = 1
+target_functor      = dch_target_1
+status_functor      = dch_status_1
+on_complete         = %+dch_stage_1_done =dch_cleanup(1)%
+on_fail             = %=dch_cleanup(1)%
+
+[dch_task_2]
+icon                = ui_inGame2_PD_Torgovets_informatsiey
+storyline           = true
+title               = dch_task_2_name
+descr_functor       = dch_descr_2
+stage_complete      = 1
+target_functor      = dch_target_2
+status_functor      = dch_status_2
+on_complete         = %+dch_stage_2_done =dch_cleanup(2)%
+on_fail             = %=dch_cleanup(2)%
+
+[dch_task_3]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = dch_task_3_name
+descr_functor       = dch_descr_3
+stage_complete      = 1
+target_functor      = dch_target_3
+status_functor      = dch_status_3
+on_complete         = %+dch_stage_3_done =reward_random_money(4000:6000) =dch_cleanup(3)%
+on_fail             = %=dch_cleanup(3)%
+
+[dch_task_4]
+icon                = ui_inGame2_PD_Lider
+storyline           = true
+title               = dch_task_4_name
+descr_functor       = dch_descr_4
+stage_complete      = 1
+target_functor      = dch_target_4
+status_functor      = dch_status_4
+on_complete         = %+dch_stage_4_done =dch_cleanup(4)%
+on_fail             = %=dch_cleanup(4)%
+
+[dch_task_5]
+icon                = ui_inGame2_Odin_vistrel
+storyline           = true
+title               = dch_task_5_name
+descr_functor       = dch_descr_5
+stage_complete      = 1
+target_functor      = dch_target_5
+status_functor      = dch_status_5
+on_complete         = %+dch_stage_5_done =dch_cleanup(5)%
+on_fail             = %=dch_cleanup(5)%
+
+[dch_task_6]
+icon                = ui_inGame2_PD_Torgovets_informatsiey
+storyline           = true
+title               = dch_task_6_name
+descr_functor       = dch_descr_6
+stage_complete      = 1
+target_functor      = dch_target_6
+status_functor      = dch_status_6
+on_complete         = %+dch_stage_6_done =dch_cleanup(6)%
+on_fail             = %=dch_cleanup(6)%
