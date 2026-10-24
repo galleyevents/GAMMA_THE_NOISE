@@ -40,6 +40,10 @@ TRC_SMARTS = {
 -- Stage 3: spots among the wrecks where Lis's PDA may lie (picked in the game: { pos = { x, y, z }, lvid, gvid });
 -- one at random, the bandits at the cemetery smart nearest to it. Empty: the PDA lies at the bandits' smart.
 PDA_SPOTS = {
+	{ pos = { -183.01, 5.16, 93.69 },  lvid = 201852, gvid = 5240 },
+	{ pos = { -132.42, 4.44, 131.90 }, lvid = 268262, gvid = 5148 },
+	{ pos = { -78.10, 2.91, 151.09 },  lvid = 344006, gvid = 5147 },
+	{ pos = { -40.17, 2.96, 188.22 },  lvid = 388798, gvid = 5147 },
 }
 GREK_SMART = "cit_killers"   -- the mercenaries' base in the Dead City
 -- Dead City outside the base: where the courier lies (mercenaries hostile to the actor)
