@@ -117,6 +117,16 @@
 		</phrase_list>
 	</dialog>
 
+	<dialog id="dch_6_barman_dead">
+		<precondition>dch_main.can_end_barman_dead</precondition>
+		<phrase_list>
+			<phrase id="0"><text>dch_6d_0</text><next>1</next></phrase>
+			<phrase id="1"><text>dch_6d_1</text><next>2</next></phrase>
+			<phrase id="2"><text>dch_6d_2</text><next>3</next></phrase>
+			<phrase id="3"><text>dch_6d_3</text><action>dch_main.end_barman_dead</action></phrase>
+		</phrase_list>
+	</dialog>
+
 	<dialog id="dch_6_partner">
 		<precondition>dch_main.can_end_partner</precondition>
 		<phrase_list>

@@ -91,6 +91,12 @@ dialog("dch_6_barman", "can_end_barman", [
     P(2, "dch_6b_2", [3]),
     P(3, "dch_6b_3", action="end_barman"),
 ])
+dialog("dch_6_barman_dead", "can_end_barman_dead", [
+    P(0, "dch_6d_0", [1]),
+    P(1, "dch_6d_1", [2]),
+    P(2, "dch_6d_2", [3]),
+    P(3, "dch_6d_3", action="end_barman_dead"),
+])
 dialog("dch_6_partner", "can_end_partner", [
     P(0, "dch_6p_0", [1, 2]),
     P(1, "dch_6p_1", action="end_partner", pre=("partner_not_suspicious",)),

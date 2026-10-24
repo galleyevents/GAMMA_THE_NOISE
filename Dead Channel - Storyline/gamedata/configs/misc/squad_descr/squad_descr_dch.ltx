@@ -15,10 +15,11 @@ faction             = killer
 npc                 = dch_grek
 invulnerability     = true
 
-; Stage 5: Lis and his two hired guns (one squad, one faction, so they don't fight each other)
+; Stage 5: Lis and his two hired guns - loners, neutral to every faction the story is for, so the talk
+; happens; loners and mercenaries are enemies, so the two groups fight once it goes wrong
 [dch_lis_squad]:online_offline_group
-faction             = bandit
-npc                 = dch_lis, sim_default_bandit_2, sim_default_bandit_2
+faction             = stalker
+npc                 = dch_lis, sim_default_stalker_2, sim_default_stalker_2
 
 ; Stage 5: the mercenaries who come to the exchange (ally or enemy, set by the actor's choice)
 [dch_exchange_mercs]:online_offline_group

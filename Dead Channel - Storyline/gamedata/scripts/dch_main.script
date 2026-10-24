@@ -66,6 +66,9 @@ ADVANCE_ITEMS    = { {"antirad", 2}, {"medkit", 1} }
 REWARD_MONEY     = { 15000, 20000 }   -- handing Lis over: the Barman's pay
 REWARD_ITEMS     = { {"itm_repairkit_tier_1", 1}, {"gun_oil", 1}, {"glue_a", 1}, {"medkit", 2} }
 REWARD_STASHES   = 3        -- military caches from the disks: random stashes marked on the map (G.A.M.M.A.)
+-- The crate, but Lis died: the Barman pays, with distaste
+REWARD_MONEY_DEAD   = { 10000, 14000 }
+REWARD_STASHES_DEAD = 2
 HOSTILE_GOODWILL = -10000   -- per NPC towards the actor; outweighs any faction relation
 FRIEND_GOODWILL  = 10000
 CLEANUP_DIST     = 80       -- the story's leftover NPCs go away once the actor is this far (or elsewhere)
@@ -86,6 +89,7 @@ local INFO_CALLED        = "dch_called_4"
 local INFO_MERCS_HOSTILE = "dch_mercs_hostile"
 local INFO_PATH_A, INFO_PATH_B = "dch_path_a", "dch_path_b"
 local INFO_CHOICE = { barman = "dch_choice_barman", lis = "dch_choice_lis", mercs = "dch_choice_mercs" }
+local INFO_LIS_DIED = "dch_lis_died"   -- Lis died at the exchange (whatever the choice)
 local function clue_info(key) return "dch_clue_" .. key end
 
 local RECENT_SMARTS = 4
@@ -548,10 +552,44 @@ local function finish_exchange()
 	end)
 end
 
+-- Lis died before anyone talked to him: the crate is on his body, his men turn on the actor, and the crate
+-- goes to the Barman (the "crate, Lis dead" ending)
+local function lis_died_before_talk()
+	give_info(INFO_CHOICE.barman)
+	local lis = lis_obj()
+	if lis then
+		alife_create_item("dch_crate", lis)
+	else
+		-- his body is already gone (cleaned up): the crate lies where the exchange was
+		local at = lis_squad_smart()
+		local pos, lvid, gvid
+		if at then
+			pos, lvid, gvid = point_near(at, { 2, 4, 0 })
+		else
+			pos, lvid, gvid = db.actor:position(), db.actor:level_vertex_id(), db.actor:game_vertex_id()
+		end
+		local se = alife_create("dch_crate", pos, lvid, gvid)
+		if se then set_entry(VAR_OBJECTS, "crate", se.id) end
+	end
+	save_var(db.actor, VAR_REL, { guards = "enemy" })
+	if has_alife_info(INFO_PATH_B) or has_alife_info(INFO_MERCS_HOSTILE) then bring_mercs("enemy") end
+	save_var(db.actor, VAR_PHASE, "fight")
+	news("dch_lis_dead_news")
+	printf("[DCH] stage 5: Lis died before the talk")
+end
+
 local function update_exchange()
 	local phase = load_var(db.actor, VAR_PHASE)
+	if load_table(VAR_OBJECTS).lis and not lis_alive() and not has_alife_info(INFO_LIS_DIED) then
+		give_info(INFO_LIS_DIED)
+		if phase == "talk" then
+			lis_died_before_talk()
+			phase = "fight"
+		end
+	end
 	if phase == "fight" and fight_over() then
-		if not has_alife_info(INFO_CHOICE.mercs) or count_items("dch_crate") > 0 then
+		-- the crate in hand, unless the actor partnered with Lis (he keeps it)
+		if has_alife_info(INFO_CHOICE.lis) or count_items("dch_crate") > 0 then
 			start_snorks()
 		end
 	elseif phase == "snorks" and not squad_alive("snorks") then
@@ -703,7 +741,14 @@ function decide_mercs(a, b)
 end
 
 -- Stage 6: the reckoning, by the choice
-function can_end_barman()  return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.barman) and count_items("dch_crate") > 0 end
+function can_end_barman()
+	return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.barman) and count_items("dch_crate") > 0
+		and not has_alife_info(INFO_LIS_DIED)
+end
+function can_end_barman_dead()
+	return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.barman) and count_items("dch_crate") > 0
+		and has_alife_info(INFO_LIS_DIED)
+end
 function can_end_partner() return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.lis) end
 function can_end_mercs()   return get_task(6) ~= nil and has_alife_info(INFO_CHOICE.mercs) end
 -- He knows Lis paid his debts or stocked up before leaving: he smells a rat
@@ -727,6 +772,14 @@ function end_barman(a, b)
 		treasure_manager.create_random_stash(nil, nil, nil, true)
 	end
 	the_end("barman")
+end
+function end_barman_dead(a, b)
+	take_items("dch_crate", 1)
+	give_money(math.random(REWARD_MONEY_DEAD[1], REWARD_MONEY_DEAD[2]))
+	for i = 1, REWARD_STASHES_DEAD do
+		treasure_manager.create_random_stash(nil, nil, nil, true)
+	end
+	the_end("barman_dead")
 end
 function end_partner(a, b) the_end("partner") end
 function end_mercs(a, b)   the_end("mercs") end
@@ -779,8 +832,11 @@ local TARGETS = {
 			return nearest_member("snorks")
 		end
 		local rel = load_var(db.actor, VAR_REL) or {}
-		if has_alife_info(INFO_CHOICE.mercs) and count_items("dch_crate") == 0 and lis_obj() then
-			return load_table(VAR_OBJECTS).lis   -- alive, or his body with the crate
+		if not has_alife_info(INFO_CHOICE.lis) and count_items("dch_crate") == 0
+			and (has_alife_info(INFO_CHOICE.mercs) or has_alife_info(INFO_LIS_DIED)) then
+			local crate = item_on_ground(load_table(VAR_OBJECTS).crate)
+			if crate then return crate end
+			if lis_obj() then return load_table(VAR_OBJECTS).lis end   -- alive, or his body with the crate
 		end
 		if rel.guards == "enemy" and hostile_left("lis", not_lis) > 0 then return nearest_member("lis") end
 		if rel.mercs == "enemy" then return nearest_member("mercs") end
@@ -866,13 +922,40 @@ xr_effects.dch_cleanup = function(actor, npc, p)
 		save_var(db.actor, VAR_REL, nil)
 		save_var(db.actor, VAR_PHASE, nil)
 		set_entry(VAR_OBJECTS, "lis", nil)
+		set_entry(VAR_OBJECTS, "crate", nil)
 	end
 end
 
 ---------------------------< Callbacks >---------------------------
-local tg_tick = 0
+-- The story's attitude for one NPC (by its squad), or nil
+local function wanted_relation(se)
+	local squads = load_table(VAR_SQUADS)
+	local gid = se.group_id
+	if not gid or gid == 65535 then return end
+	if gid == squads.cemetery then return "enemy" end
+	local rel = load_var(db.actor, VAR_REL)
+	if not rel then return end
+	if gid == squads.lis then return is_lis(se) and rel.lis or rel.guards end
+	if gid == squads.mercs then return rel.mercs end
+end
+
+-- A story NPC coming online gets its attitude at once: until the next check it would act on its faction
+local function npc_on_net_spawn(npc, se)
+	local rel = se and wanted_relation(se)
+	local gw = goodwill_for(rel)
+	if gw then
+		npc:force_set_goodwill(gw, db.actor)
+	end
+end
+
+local tg_tick, tg_rel = 0, 0
 local function actor_on_update()
 	local tg = time_global()
+	if tg >= tg_rel then
+		tg_rel = tg + 1000
+		local n = active_stage()
+		if n == 3 or n == 5 then update_relations() end
+	end
 	if tg < tg_tick then return end
 	tg_tick = tg + 5000
 	try_prologue()
@@ -880,6 +963,19 @@ local function actor_on_update()
 	update_leftovers()
 end
 
+---------------------------< Inventory marker >---------------------------
+-- The story's quest items get the gold main-story icon in the corner of their inventory cell (also when
+-- searching a body), like The Noise's - G.A.M.M.A.'s rax_icon_layers, when it is there
+local function story_item_icon(cell, obj, sec)
+	if not (sec and string.find(sec, "^dch_")) then return end
+	local axis = utils_xml.get_item_axis(sec)
+	return { texture = "ui_inGame2_PDA_icon_Primary_mission", x = axis.w - 13, y = 1, w = 12, h = 12 }
+end
+
 function on_game_start()
 	RegisterScriptCallback("actor_on_update", actor_on_update)
+	RegisterScriptCallback("npc_on_net_spawn", npc_on_net_spawn)
+	if rax_icon_layers and rax_icon_layers.register then
+		rax_icon_layers.register("dch_story_item_icon", story_item_icon)
+	end
 end

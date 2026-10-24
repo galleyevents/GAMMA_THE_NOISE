@@ -33,7 +33,7 @@
 		<map_icon x="1" y="0"/>
 		<bio>dch_lis_bio</bio>
 		<class>dch_lis</class>
-		<community>bandit</community>
+		<community>stalker</community>
 		<terrain_sect>stalker_terrain</terrain_sect>
 		<snd_config>characters_voice\human\stalker_1\</snd_config>
 		<rank>7000</rank>

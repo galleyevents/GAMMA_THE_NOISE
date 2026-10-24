@@ -27,9 +27,11 @@
 	<string id="dch_4_call"><text>Barman here. My technicians went through that PDA, and I don't like what they found. Come to the bar.</text></string>
 	<string id="dch_snorks_news"><text>The shooting has drawn attention: something is coming out of the depot's shadows. Snorks.</text></string>
 	<string id="dch_grek_paid_news"><text>Grek's men take the crate. A transfer arrives on your PDA: Grek pays what he promised.</text></string>
+	<string id="dch_lis_dead_news"><text>Lis is dead. If the crate was with him, it still is - and his hired guns won't let anyone take it quietly.</text></string>
 	<string id="dch_6_call"><text>Barman here. Word travels fast in the Zone - I hear the depot got loud. Come and tell me yourself.</text></string>
 	<string id="dch_story_end_title"><text>Dead Channel</text></string>
 	<string id="dch_story_end_barman"><text>The crate is back in the Barman's hands and Lis is on his way to Rostok to answer for it. The caches from the disks are marked on your PDA. The story "Dead Channel" is complete.</text></string>
+	<string id="dch_story_end_barman_dead"><text>The crate is back in the Barman's hands. Lis never made it out of the depot. The caches from the disks are marked on your PDA. The story "Dead Channel" is complete.</text></string>
 	<string id="dch_story_end_partner"><text>Lis got his way out of the Zone, and you got your share. The Barman will never know the whole story. The story "Dead Channel" is complete.</text></string>
 	<string id="dch_story_end_mercs"><text>The crate went to the Dead City, Lis stayed at the depot for good, and the Barman lost his disks. The story "Dead Channel" is complete.</text></string>
 
@@ -118,6 +120,10 @@
 	<string id="dch_6b_2"><text>And the disks?</text></string>
 	<string id="dch_6b_3"><text>Some of them are mine now, some are yours - I'm not ungrateful. Here's your pay and a few things from my storeroom. And I've copied some of the coordinates to your PDA. Go and get those caches before somebody else does.</text></string>
 	<string id="dch_6b_3_dolg"><text>Some of them are mine now, some are yours - and not a word to Voronin, we agreed. Here's your pay and a few things from my storeroom. And I've copied some of the coordinates to your PDA. Go and get those caches before somebody else does.</text></string>
+	<string id="dch_6d_0"><text>Here's your crate. Lis didn't make it.</text></string>
+	<string id="dch_6d_1"><text>Didn't make it... I wanted to look him in the eye, here, in front of everyone. Well. The crate is what I paid for.</text></string>
+	<string id="dch_6d_2"><text>And my pay?</text></string>
+	<string id="dch_6d_3"><text>Here. Less than for the whole job - a man who stole from me should have answered for it in this bar, not died in the mud. A couple of the cache coordinates are on your PDA. Go and get them.</text></string>
 	<string id="dch_6p_0"><text>Lis is gone. The crate too.</text></string>
 	<string id="dch_6p_1"><text>Gone... Well. At least now we know he isn't sending signals from the other side. Thanks for trying, stalker.</text></string>
 	<string id="dch_6p_1_sus"><text>Gone, is he? Funny - a man who paid off every debt and stocked up for a week before a one-day run. And now he's gone, and you come back with nothing. I'll remember this, stalker. Now drink your vodka and go.</text></string>

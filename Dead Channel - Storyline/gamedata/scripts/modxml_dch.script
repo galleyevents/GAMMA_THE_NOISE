@@ -6,7 +6,7 @@
 local INSERTS = {
 	[ [[gameplay\character_desc_bar.xml]] ] = {
 		bar_visitors_barman_stalker_trader = {
-			"dch_1_talk", "dch_3_done", "dch_4_offer", "dch_6_barman", "dch_6_partner", "dch_6_mercs",
+			"dch_1_talk", "dch_3_done", "dch_4_offer", "dch_6_barman", "dch_6_barman_dead", "dch_6_partner", "dch_6_mercs",
 		},
 		bar_dolg_general_petrenko_stalker = { "dch_clue_petrenko" },
 		guid_bar_stalker_navigator        = { "dch_clue_guide" },
