@@ -385,9 +385,10 @@ TRANSMITTER_PARTICLES      = { "anomaly2\\electra_idle", "anomaly2\\generatory" 
 TRANSMITTER_PART_PARTICLES = { "anomaly2\\electra_idle" }
 TRANSMITTER_SPOT_PARTICLES = { "anomaly2\\electra_idle" }
 TRANSMITTER_FX_SPOTS  = { { 1.6, -0.6 }, { -1.6, -0.2 }, { 0.3, 1.9 }, { -0.2, -1.9 } }
--- Looping 3D psy sounds at the generator, same rules as the effects (X16's psy emitter, the psy antenna voices)
-TRANSMITTER_SOUNDS    = { "ambient\\x16\\x16_psy", "anomaly\\psy_antenna_voices_1_l" }
+-- Looping 3D sound at the generator, same rules as the effects: the Noise itself (snd_hum's file)
+TRANSMITTER_SOUNDS    = { "radio\\white_noise\\white_noise_heavy" }
 TRANSMITTER_SOUND_DIST = { 3, 45 }   -- full volume within the first, silent beyond the second (m)
+TRANSMITTER_SOUND_VOLUME = 1.0
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
 -- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
@@ -1286,17 +1287,18 @@ local function play_loop(key, name, pos)
 end
 
 -- sound_object has the same playing / stop as particles_object, so it lives in transmitter_fx too
+-- Range and volume apply to the playing sound, so they are set after play (before it they are lost and
+-- the file's own params stay)
 local function play_sound_loop(key, path, obj)
-	if not transmitter_fx[key] then
-		local snd = sound_object(path)
+	transmitter_fx[key] = transmitter_fx[key] or sound_object(path)
+	local snd = transmitter_fx[key]
+	if not snd:playing() then
+		snd:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
 		snd.min_distance = TRANSMITTER_SOUND_DIST[1]
 		snd.max_distance = TRANSMITTER_SOUND_DIST[2]
-		transmitter_fx[key] = snd
-	end
-	if not transmitter_fx[key]:playing() then
-		transmitter_fx[key]:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
-		printf("[SZM] transmitter sound %s: started, playing = %s, %.1f m from the actor", path,
-			tostring(transmitter_fx[key]:playing()), obj:position():distance_to(db.actor:position()))
+		snd.volume = TRANSMITTER_SOUND_VOLUME
+		printf("[SZM] transmitter sound %s: started, playing = %s, %s m from the actor", path,
+			tostring(snd:playing()), math.floor(obj:position():distance_to(db.actor:position())))
 	end
 end
 
