@@ -60,6 +60,7 @@ COLD  = "mar_smart_terrain_base_stalker_leader_marsh"
 -- corpse       = NPC section spawned dead, carrying the fetch item
 -- strike       = multi-phase: dead team at a meeting point -> picking up the fetch item spawns a squad
 --                (strike.hunt = true: that squad goes after the actor instead of holding its smart)
+-- hunt         = true: the stage's squad goes after the actor instead of holding its smart
 -- escort       = { squad, smart }: task companions spawned at the smart, they follow the actor until the turn-in
 -- fetch        = { section, amount } to bring back
 -- talk_to      = story_id of the NPC who completes the stage from a dialog (no objective of its own)
@@ -157,6 +158,7 @@ STAGES = {
 			corpse_area = { MARSH_SMARTS, 250, 550 },
 			squad       = "szm_army_squad",
 			squad_area  = { MARSH_SMARTS, 150, 400 },
+			hunt        = true,    -- "Patrol on our trail": they come back for the actor
 		},
 		rewards = { {"@medkit", 3}, {"@ammo", 3} },
 	},
@@ -174,6 +176,7 @@ STAGES = {
 			prop        = "szm_heli_wreck",          -- spawned next to the pilot, removed when the stage is turned in
 			squad       = "szm_renegade_squad",
 			squad_area  = { MARSH_SMARTS, 60, 250 },
+			hunt        = true,    -- looters heading for the crash site
 		},
 		rewards = { {"itm_basickit", 1}, {"@medkit", 2}, {"@ammo", 2} },   -- basic tools only here
 	},
@@ -251,6 +254,7 @@ STAGES = {
 		giver   = SID,
 		squad   = "szm_csky_hit_squad",
 		area    = { CORDON_SMARTS, 150, 500 },
+		hunt    = true,    -- "a Clear Sky squad is in Cordon looking for me"
 		rewards = { {"@medkit", 2}, {"@ammo", 2} },
 		next    = 23,
 	},
@@ -1966,7 +1970,7 @@ for n = 1, #STAGES do
 		if st.squad or st.strike then
 			local squad = get_squad(n)
 			if squad then
-				if st.strike and st.strike.hunt then
+				if st.hunt or (st.strike and st.strike.hunt) then
 					squad.scripted_target = "actor"   -- also squads spawned before hunt existed
 					clear_leash(n)                    -- set_leash keeps no smart for them from now on
 				end
