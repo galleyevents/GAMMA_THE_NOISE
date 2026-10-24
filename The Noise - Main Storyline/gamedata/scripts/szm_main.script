@@ -367,7 +367,7 @@ CHOICES = {
 -- if even the cap isn't, money instead: CASH_SWAP_RATIO x the cap's cost.
 GEAR_TIERS = {
 	weapon   = { "wpn_sks_b", "wpn_ak74", "wpn_abakan" },
-	outfit   = { "cs_light_outfit", "cs_medium_outfit", "cs_heavy_outfit" },
+	outfit   = { "cs_light_outfit", "cs_medium_outfit" },   -- CS-2a, CS-3a (no CS-3b: endgame heavy armor)
 	backpack = { "itm_backpack" },
 }
 UPGRADE_MARGIN  = 1.2
