@@ -400,6 +400,7 @@
 	<string id="szm_task_24_descr"><text>The transmitter is hidden deeper in the tunnels under Agroprom, guarded by mercenaries. I need to kill the guards and pull the resonator out of the transmitter. It's marked on my PDA.</text></string>
 	<string id="szm_task_24_descr_return"><text>I have the resonator.</text></string>
 	<string id="szm_transmitter_tip"><text>Pull out the resonator</text></string>
+	<string id="szm_transmitter_hint"><text>Pull out the resonator ($$ACTION_USE$$)</text></string>
 	<string id="szm_transmitter_guarded"><text>The guards are still around. I need to deal with them first.</text></string>
 
 	<!-- ===================== 25 / 26 / 27: Silence ===================== -->

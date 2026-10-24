@@ -375,6 +375,9 @@ TRANSMITTER_PROP      = "szm_transmitter"
 TRANSMITTER_PARTICLES = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
+-- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
+-- pressing the use key (a hint shows there); aiming at it and using it works too
+TRANSMITTER_USE_DIST  = 5
 
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
@@ -1287,6 +1290,33 @@ local function spawn_transmitter(n, squad)
 	printf("[SZM] stage %s: transmitter (id %s) near %s", n, se.id, smart:name())
 end
 
+-- Pull the module out (the guards must be dead)
+local function use_transmitter(t, obj)
+	if get_squad(t.n) then
+		news_manager.send_tip(db.actor, tr("szm_transmitter_guarded"), nil, nil, 6000)
+		return
+	end
+	t.taken = true
+	save_var(db.actor, VAR_TRANSMITTER, t)
+	stop_transmitter_fx()
+	obj:set_tip_text("")
+	obj:set_nonscript_usable(false)
+	local sec = STAGES[t.n].transmitter
+	alife_create_item(sec, db.actor)
+	news_manager.relocate_item(db.actor, "in", sec, 1)
+	printf("[SZM] stage %s: %s taken from the transmitter", t.n, sec)
+end
+
+-- The transmitter when the actor stands next to it with the module still in, else nil
+local function transmitter_in_reach()
+	local t = transmitter_state()
+	if not t or t.taken then return end
+	local obj = t.prop and level.object_by_id(t.prop)
+	if obj and obj:position():distance_to(db.actor:position()) <= TRANSMITTER_USE_DIST then
+		return t, obj
+	end
+end
+
 -- Every second: effects while the module is in and the actor is near; off once it is out; gone when the
 -- actor has left the level with the module
 local function update_transmitter()
@@ -1307,9 +1337,13 @@ local function update_transmitter()
 		obj:set_nonscript_usable(false)
 		return
 	end
-	if obj:position():distance_to(db.actor:position()) > TRANSMITTER_FX_DIST then
+	local dist = obj:position():distance_to(db.actor:position())
+	if dist > TRANSMITTER_FX_DIST then
 		stop_transmitter_fx()
 		return
+	end
+	if dist <= TRANSMITTER_USE_DIST then
+		actor_menu.set_msg(1, "szm_transmitter_hint", 2)   -- SetTextST: $$ACTION_USE$$ becomes the key
 	end
 	for i, name in ipairs(TRANSMITTER_PARTICLES) do
 		transmitter_fx[i] = transmitter_fx[i] or particles_object(name)
@@ -1319,23 +1353,21 @@ local function update_transmitter()
 	end
 end
 
--- Using the transmitter (its logic, configs\scripts\szm_transmitter.ltx, makes it usable)
+-- Aiming at the transmitter and using it (its logic, configs\scripts\szm_transmitter.ltx, makes it usable)
 local function physic_object_on_use_callback(obj, who)
 	local t = transmitter_state()
-	if not (t and t.prop == obj:id()) or t.taken then return end
-	if get_squad(t.n) then
-		news_manager.send_tip(db.actor, tr("szm_transmitter_guarded"), nil, nil, 6000)
-		return
+	if t and t.prop == obj:id() and not t.taken then
+		use_transmitter(t, obj)
 	end
-	t.taken = true
-	save_var(db.actor, VAR_TRANSMITTER, t)
-	stop_transmitter_fx()
-	obj:set_tip_text("")
-	obj:set_nonscript_usable(false)
-	local sec = STAGES[t.n].transmitter
-	alife_create_item(sec, db.actor)
-	news_manager.relocate_item(db.actor, "in", sec, 1)
-	printf("[SZM] stage %s: %s taken from the transmitter", t.n, sec)
+end
+
+-- The use key next to the transmitter, wherever the actor looks
+local function on_key_press(key)
+	if dik_to_bind(key) ~= key_bindings.kUSE or not db.actor then return end
+	local t, obj = transmitter_in_reach()
+	if t then
+		use_transmitter(t, obj)
+	end
 end
 
 ---------------------------< Leash >---------------------------
@@ -2321,6 +2353,7 @@ function on_game_start()
 	RegisterScriptCallback("actor_on_update", actor_on_update)
 	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
 	RegisterScriptCallback("physic_object_on_use_callback", physic_object_on_use_callback)
+	RegisterScriptCallback("on_key_press", on_key_press)
 	if rax_icon_layers and rax_icon_layers.register then
 		rax_icon_layers.register("szm_story_item_icon", story_item_icon)
 	end
