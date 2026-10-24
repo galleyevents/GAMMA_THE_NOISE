@@ -194,9 +194,57 @@ description             = szm_resonator_descr
 inv_weight              = 4.0
 visual                  = dynamics\equipments\quest\memory_module.ogf
 
-; Stage 24: the transmitter under Agroprom - Monolith's psy antenna model from Pripyat (3.8 x 4.1 x 3.3 m),
-; every bone fixed so it stands still and doesn't break apart. Spawned like szm_heli_wreck; its logic
-; (configs\scripts\szm_transmitter.ltx) makes it usable, szm_main.script does the rest.
+; Stage 24: the transmitter under Agroprom - a field radio station put together from vanilla models:
+; a diesel generator (the main part: usable, its logic is configs\scripts\szm_transmitter.ltx), a field
+; radio and two devices with antennas around it (TRANSMITTER_PARTS in szm_main.script). Every bone is
+; fixed, so they stand still where they are spawned. Spawned like szm_heli_wreck.
+[szm_transmitter_station]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_transmitter_station"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\el_tehnika\disel_generator.ogf
+startup_animation       = idle
+fixed_bones             = link, body, but_belt, l_rotor, r_rotor, tank, top_belt
+custom_data             = scripts\szm_transmitter.ltx
+
+[szm_transmitter_radio]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_transmitter_radio"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\el_tehnika\transiver.ogf
+startup_animation       = idle
+fixed_bones             = link, antena_body, antena, provod
+
+[szm_transmitter_scanner_1]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_transmitter_scanner_1"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\equipments\quest\scanner_anomaly.ogf
+startup_animation       = idle
+fixed_bones             = link, base, antenna
+
+[szm_transmitter_scanner_2]
+GroupControlSection     = spawn_group
+$spawn                  = "dynamic_objects\scene_objects\szm_transmitter_scanner_2"
+$prefetch               = 8
+class                   = O_PHYSIC
+remove_time             = 60
+script_binding          = bind_physic_object.init
+visual                  = dynamics\equipments\quest\scanner_artefact.ogf
+startup_animation       = idle
+fixed_bones             = link, base, antenna
+
+; The first transmitter (2.x test builds): Monolith's psy antenna from Pripyat. Kept for saves that
+; still have one standing - an object loads with its section's fixed_bones, which must fit its model.
 [szm_transmitter]
 GroupControlSection     = spawn_group
 $spawn                  = "dynamic_objects\scene_objects\szm_transmitter"

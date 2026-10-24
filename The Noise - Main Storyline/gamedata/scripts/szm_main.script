@@ -368,11 +368,23 @@ SELF_DEFENSE_RADIUS = 20
 -- that doesn't treat the actor as an enemy.
 HOSTILE_GOODWILL = -10000
 
--- Stage 24's transmitter: looping anomaly effects around it while the actor is within TRANSMITTER_FX_DIST
--- and its module is still in; TRANSMITTER_LEVEL is where it stands (it goes away when the actor leaves)
-TRANSMITTER_PROP      = "szm_transmitter"
--- Names must exist in particles.xr: a missing one is a fatal engine error (checked against G.A.M.M.A.'s)
+-- Stage 24's transmitter: a field radio station - TRANSMITTER_PROP (the generator, the part that is used)
+-- and TRANSMITTER_PARTS around it, { section, x, z offset in m, looping particle }. While its module is
+-- in and the actor is within TRANSMITTER_FX_DIST: looping electric effects at every part, and each second a
+-- TRANSMITTER_FLASH_CHANCE of a flash at a random part. TRANSMITTER_LEVEL is where it stands (it goes
+-- away when the actor leaves with the module).
+-- Particle names must exist in particles.xr: a missing one is a fatal engine error. All of these are in
+-- both particles.xr files of G.A.M.M.A. (Particles Cinematic VFX, Boomsticks and Sharpsticks).
+TRANSMITTER_PROP      = "szm_transmitter_station"   -- (szm_transmitter: the old antenna, kept for saves)
 TRANSMITTER_PARTICLES = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
+TRANSMITTER_PARTS     = {
+	{ "szm_transmitter_radio",     1.3,  0.4, "anomaly2\\effects\\anomaly_electra_idle_sparks" },
+	{ "szm_transmitter_scanner_1", -1.3, 0.8, "anomaly2\\effects\\electra2_trails" },
+	{ "szm_transmitter_scanner_2", -1.2, -0.9, "amik\\anomaly\\electra\\electra2_sparks" },
+}
+TRANSMITTER_FLASHES   = { "anomaly2\\effects\\electra2_flash", "amik\\anomaly\\electra\\electra_flash",
+                          "anomaly2\\effects\\electra2_sparks", "amik\\anomaly\\electra\\sparks_emiter_glow" }
+TRANSMITTER_FLASH_CHANCE = 0.6
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
 -- The model's collision is low down, so it is used by standing within TRANSMITTER_USE_DIST (m) of it and
@@ -491,7 +503,7 @@ local VAR_NEXT     = "szm_next_stage"   -- Act V: { n, t = game time it was sche
 local VAR_USED     = "szm_used_smarts"  -- names of recently used spawn smarts
 local VAR_SPOT     = "szm_offer_spot"   -- id of the NPC carrying the "next offer" map spot
 local VAR_GEAR     = "szm_best_gear"    -- { weapon = cost, outfit = cost, backpack = cost }: best ever equipped
-local VAR_TRANSMITTER = "szm_transmitter" -- { prop = id, n = stage, taken = true once the module is out }
+local VAR_TRANSMITTER = "szm_transmitter" -- { prop = id, parts = { ids }, n = stage, taken = true once the module is out }
 
 local function done_info(n)  return "szm_stage_" .. n .. "_done" end
 local INFO_STARTED  = "szm_started"
@@ -1249,24 +1261,34 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 end
 
 ---------------------------< Transmitter (stage 24) >---------------------------
-local transmitter_fx = {}   -- particle objects (not saved)
+local transmitter_fx = {}       -- looping particle objects, by key (not saved)
+local transmitter_flashes = {}  -- the last few one-shot flashes, kept so they play to the end
 
 local function transmitter_state()
 	return load_var(db.actor, VAR_TRANSMITTER)
 end
 
 local function stop_transmitter_fx()
-	for i, p in pairs(transmitter_fx) do
+	for k, p in pairs(transmitter_fx) do
 		if p:playing() then p:stop() end
-		transmitter_fx[i] = nil
+		transmitter_fx[k] = nil
+	end
+end
+
+local function play_loop(key, name, pos)
+	transmitter_fx[key] = transmitter_fx[key] or particles_object(name)
+	if not transmitter_fx[key]:playing() then
+		transmitter_fx[key]:play_at_pos(pos)
 	end
 end
 
 local function remove_transmitter()
 	stop_transmitter_fx()
 	local t = transmitter_state()
-	if t and t.prop and alife_object(t.prop) then
-		alife_release_id(t.prop)
+	for _, id in ipairs(t and { t.prop, unpack(t.parts or {}) } or {}) do
+		if alife_object(id) then
+			alife_release_id(id)
+		end
 	end
 	save_var(db.actor, VAR_TRANSMITTER, nil)
 	printf("[SZM] transmitter removed")
@@ -1286,8 +1308,22 @@ local function spawn_transmitter(n, squad)
 		printf("[SZM] stage %s: failed to create %s", n, TRANSMITTER_PROP)
 		return
 	end
-	save_var(db.actor, VAR_TRANSMITTER, { prop = se.id, n = n })
-	printf("[SZM] stage %s: transmitter (id %s) near %s", n, se.id, smart:name())
+	-- the other parts around it, on the ground where the AI grid has a point close below them
+	local parts = {}
+	for _, part in ipairs(TRANSMITTER_PARTS) do
+		local p, v = vector():set(pos.x + part[2], pos.y, pos.z + part[3]), lvid
+		local pv = level_of(smart.m_game_vertex_id) == actor_level() and level.vertex_id(p)
+		if pv and pv < INVALID_LVID then
+			local vp = level.vertex_position(pv)
+			if math.abs(vp.y - pos.y) < 1.5 then
+				p, v = vector():set(p.x, vp.y, p.z), pv
+			end
+		end
+		local se_part = alife_create(part[1], p, v, smart.m_game_vertex_id)
+		if se_part then parts[#parts + 1] = se_part.id end
+	end
+	save_var(db.actor, VAR_TRANSMITTER, { prop = se.id, parts = parts, n = n })
+	printf("[SZM] stage %s: transmitter (id %s, %s parts) near %s", n, se.id, #parts, smart:name())
 end
 
 -- Pull the module out (the guards must be dead)
@@ -1345,11 +1381,24 @@ local function update_transmitter()
 	if dist <= TRANSMITTER_USE_DIST then
 		actor_menu.set_msg(1, "szm_transmitter_hint", 2)   -- SetTextST: $$ACTION_USE$$ becomes the key
 	end
+	local spots = { obj:position() }
 	for i, name in ipairs(TRANSMITTER_PARTICLES) do
-		transmitter_fx[i] = transmitter_fx[i] or particles_object(name)
-		if not transmitter_fx[i]:playing() then
-			transmitter_fx[i]:play_at_pos(obj:position())
+		play_loop("main" .. i, name, obj:position())
+	end
+	for i, id in ipairs(t.parts or {}) do
+		local part = level.object_by_id(id)
+		local cfg = TRANSMITTER_PARTS[i]
+		if part and cfg then
+			play_loop("part" .. i, cfg[4], part:position())
+			spots[#spots + 1] = part:position()
 		end
+	end
+	if math.random() < TRANSMITTER_FLASH_CHANCE then
+		local at = spots[math.random(#spots)]
+		local flash = particles_object(TRANSMITTER_FLASHES[math.random(#TRANSMITTER_FLASHES)])
+		flash:play_at_pos(vector():set(at.x, at.y + 0.5, at.z))
+		table.insert(transmitter_flashes, 1, flash)
+		transmitter_flashes[7] = nil
 	end
 end
 
