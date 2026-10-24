@@ -371,7 +371,8 @@ HOSTILE_GOODWILL = -10000
 -- Stage 24's transmitter: looping anomaly effects around it while the actor is within TRANSMITTER_FX_DIST
 -- and its module is still in; TRANSMITTER_LEVEL is where it stands (it goes away when the actor leaves)
 TRANSMITTER_PROP      = "szm_transmitter"
-TRANSMITTER_PARTICLES = { "zones\\generator\\generator_electra", "anomaly2\\generatory" }
+-- Names must exist in particles.xr: a missing one is a fatal engine error (checked against G.A.M.M.A.'s)
+TRANSMITTER_PARTICLES = { "anomaly2\\electra_idle", "anomaly2\\generatory" }
 TRANSMITTER_FX_DIST   = 150
 TRANSMITTER_LEVEL     = "l03u_agr_underground"
 
