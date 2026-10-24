@@ -72,6 +72,8 @@ LIS_CUT          = 10000    -- partner with Lis: his advance
 LIS_PRICE        = 5000     -- "the Barman gets his crate": Lis sells it back for this
 FLEE_DIST        = 20       -- refusing to pay: Lis and his men run, and turn on the actor this far away (m)
 FLEE_TIMEOUT     = 10       -- ...or after this many seconds at most; then they come back to fight
+LIS_LEASH        = 30       -- until the talk: Lis and his men ignore enemies this far from the fire (m)...
+LIS_SELF_DEFENSE = 15       -- ...unless the enemy is this close to them
 GREK_PAY         = 15000    -- side with the mercenaries
 ADVANCE          = 3000     -- the Barman's advance, with ADVANCE_ITEMS
 ADVANCE_ITEMS    = { {"antirad", 2}, {"medkit", 1} }
@@ -628,6 +630,32 @@ end
 local function lis_squad_smart()
 	local squad = get_squad("lis")
 	return squad and squad.scripted_target and SIMBOARD.smarts_by_names[squad.scripted_target]
+end
+
+-- Until the talk, a leash: npc id -> the fire's position (their smart's without the fire). on_enemy_eval
+-- keeps them from chasing enemies across the map; not saved, set again every second.
+local leash = {}
+
+local function update_leash()
+	leash = {}
+	local squad = get_squad("lis")
+	if not squad then return end
+	local id = load_table(VAR_OBJECTS).fire
+	local fire = id and alife_object(id)
+	local smart = not fire and lis_squad_smart()
+	local pos = fire and fire.position or smart and smart.position
+	if not pos then return end
+	for k in squad:squad_members() do leash[k.id] = pos end
+end
+
+local function on_enemy_eval(obj, enemy, flags)
+	local pos = leash[obj:id()]
+	if not pos or enemy:id() == AC_ID then return end
+	if enemy:position():distance_to_sqr(pos) > LIS_LEASH * LIS_LEASH
+		and enemy:position():distance_to_sqr(obj:position()) > LIS_SELF_DEFENSE * LIS_SELF_DEFENSE then
+		flags.override = true
+		flags.result = false
+	end
 end
 
 -- The mercenaries arrive at the exchange: close to the actor, going for the actor (ally or enemy); the
@@ -1202,7 +1230,12 @@ local function actor_on_update()
 		local n = active_stage()
 		if n == 3 or n == 5 then update_relations() end
 		local phase = n == 5 and load_var(db.actor, VAR_PHASE)
-		if phase == "talk" then drop_old_waiting() end
+		if phase == "talk" then
+			drop_old_waiting()
+			update_leash()
+		elseif next(leash) then
+			leash = {}   -- the talk is over: no leash in the fight or the flight
+		end
 		if phase == "flee" then update_flee() end   -- every second: the turn comes on time
 	end
 	if tg < tg_tick then return end
@@ -1224,6 +1257,7 @@ end
 function on_game_start()
 	RegisterScriptCallback("actor_on_update", actor_on_update)
 	RegisterScriptCallback("npc_on_net_spawn", npc_on_net_spawn)
+	RegisterScriptCallback("on_enemy_eval", on_enemy_eval)
 	RegisterScriptCallback("npc_on_net_spawn", claim_on_net_spawn)
 	RegisterScriptCallback("monster_on_net_spawn", claim_on_net_spawn)
 	RegisterScriptCallback("npc_on_death_callback", claim_on_death)
