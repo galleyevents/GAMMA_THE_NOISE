@@ -349,6 +349,13 @@ RECENT_SMARTS = 6
 LEASH_RADIUS        = 60
 SELF_DEFENSE_RADIUS = 20
 
+-- Story squads with relationship = enemy must fight the actor of any faction. The squad script sets a
+-- personal goodwill of -1000 once, which a positive faction relation (the table, or GAMMA's dynamic one)
+-- plus rank and reputation can outweigh: an NPC is an enemy only at an attitude of -999 or less.
+-- So each member gets HOSTILE_GOODWILL at spawn, and the status functor sets it again on any member
+-- that doesn't treat the actor as an enemy.
+HOSTILE_GOODWILL = -10000
+
 -- Act IV rewards; money/goodwill in tm_szm.ltx is common, the rest is here
 CHOICES = {
 	cold = { info = "szm_end_cold", rewards = { {"@gear", "outfit"}, {"@medkit", 3} },   -- CS-2a or better
@@ -1117,6 +1124,35 @@ end
 
 ---------------------------< Spawning >---------------------------
 -- section/area default to STAGES[n].squad / .area; carry = item put on the commander
+---------------------------< Hostility >---------------------------
+local function squad_is_hostile(squad)
+	return ini_sys:r_string_ex(squad:section_name(), "relationship") == "enemy"
+end
+
+-- npc id -> true once logged (not saved: only for the log)
+local hostile_logged = {}
+
+-- HOSTILE_GOODWILL towards the actor on every member: online ones that don't see the actor as an enemy,
+-- and (all = true, at spawn) offline ones on the server side
+local function force_hostile(squad, all)
+	if not squad_is_hostile(squad) then return end
+	for k in squad:squad_members() do
+		local npc = db.storage[k.id] and db.storage[k.id].object
+		if npc then
+			if npc:alive() and npc:relation(db.actor) ~= game_object.enemy then
+				npc:force_set_goodwill(HOSTILE_GOODWILL, db.actor)
+				if not hostile_logged[k.id] then
+					hostile_logged[k.id] = true
+					printf("[SZM] %s (%s, squad %s) was not hostile to the actor: goodwill set to %s",
+						npc:name(), npc:character_community(), squad:section_name(), HOSTILE_GOODWILL)
+				end
+			end
+		elseif all and k.object then
+			k.object:force_set_goodwill(HOSTILE_GOODWILL, AC_ID)
+		end
+	end
+end
+
 local function spawn_squad(n, origin, section, area, exclude, carry)
 	section = section or STAGES[n].squad
 	local smart = pick_spawn_smart(n, origin, area, exclude)
@@ -1127,6 +1163,7 @@ local function spawn_squad(n, origin, section, area, exclude, carry)
 		printf("[SZM] stage %s: failed to create squad %s", n, section)
 		return
 	end
+	force_hostile(squad, true)
 	-- keep it at its smart, out of offline combat, and online at any hour (night predators otherwise
 	-- stay offline 6:00-18:00); force_online is not saved, the status functor sets it again
 	squad.scripted_target = smart:name()
@@ -1926,6 +1963,7 @@ for n = 1, #STAGES do
 				squad.force_online = true
 				sim_offline_combat.task_squads[squad.id] = true
 				set_leash(n, squad)
+				force_hostile(squad)
 			end
 		end
 		if st.hum_on_fetch and not has_alife_info("szm_hum_heard_" .. n) and has_fetch(n) then
