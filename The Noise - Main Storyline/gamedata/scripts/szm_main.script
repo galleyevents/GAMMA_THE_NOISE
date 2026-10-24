@@ -1265,6 +1265,7 @@ end
 
 ---------------------------< Transmitter (stage 24) >---------------------------
 local transmitter_fx = {}   -- looping particle objects, by key (not saved)
+local transmitter_status    -- last state written to the log
 
 local function transmitter_state()
 	return load_var(db.actor, VAR_TRANSMITTER)
@@ -1294,6 +1295,8 @@ local function play_sound_loop(key, path, obj)
 	end
 	if not transmitter_fx[key]:playing() then
 		transmitter_fx[key]:play_at_pos(obj, obj:position(), 0, sound_object.s3d + sound_object.looped)
+		printf("[SZM] transmitter sound %s: started, playing = %s, %.1f m from the actor", path,
+			tostring(transmitter_fx[key]:playing()), obj:position():distance_to(db.actor:position()))
 	end
 end
 
@@ -1379,6 +1382,11 @@ local function update_transmitter()
 		return
 	end
 	local obj = t.prop and level.object_by_id(t.prop)
+	local status = not obj and "offline" or t.taken and "off (module out)" or "on"
+	if status ~= transmitter_status then
+		transmitter_status = status
+		printf("[SZM] transmitter %s: %s", tostring(t.prop), status)
+	end
 	if not obj then
 		stop_transmitter_fx()
 		return
