@@ -83,6 +83,7 @@ HOSTILE_GOODWILL = -10000   -- per NPC towards the actor; outweighs any faction 
 FRIEND_GOODWILL  = 10000
 CLEANUP_DIST     = 80       -- the story's leftover NPCs go away once the actor is this far (or elsewhere)
 SNORK_DIST       = { 25, 35 }   -- stage 5: the snorks come out this far from the actor (m) - an ambush
+MERCS_DIST       = { 40, 60 }   -- stage 5: the mercenaries arrive this far from the actor (m), on the attack
 
 ---------------------------< Save vars / infos >---------------------------
 local VAR_SQUADS  = "dch_squads"   -- key -> squad id (cemetery, grek, lis, mercs, snorks)
@@ -101,6 +102,7 @@ local INFO_MERCS_HOSTILE = "dch_mercs_hostile"
 local INFO_PATH_A, INFO_PATH_B = "dch_path_a", "dch_path_b"
 local INFO_CHOICE = { barman = "dch_choice_barman", lis = "dch_choice_lis", mercs = "dch_choice_mercs" }
 local INFO_LIS_DIED = "dch_lis_died"   -- Lis died at the exchange (whatever the choice)
+local INFO_LIS_DIED_EARLY = "dch_lis_died_early"   -- ...before anyone talked to him
 local function clue_info(key) return "dch_clue_" .. key end
 
 local RECENT_SMARTS = 4
@@ -615,12 +617,20 @@ local function lis_squad_smart()
 	return squad and squad.scripted_target and SIMBOARD.smarts_by_names[squad.scripted_target]
 end
 
--- The mercenaries arrive at the exchange, from the nearest other smart
+-- The mercenaries arrive at the exchange: close to the actor, going for the actor (ally or enemy); the
+-- nearest other smart only if there's no spot around the actor
 local function bring_mercs(rel)
-	local at = lis_squad_smart()
-	local origin = at and at.position or db.actor:position()
-	local smart = pick_spawn_smart(ROS_SMARTS, origin, 30, ANYWHERE, { nearest = true, exclude = at and at:name() })
-	if spawn_squad("mercs", "dch_exchange_mercs", smart, { hunt = true }) then
+	local squad
+	local pos, lvid, gvid = point_around_actor(MERCS_DIST[1], MERCS_DIST[2])
+	if pos then
+		squad = spawn_squad_at("mercs", "dch_exchange_mercs", pos, lvid, gvid)
+	else
+		local at = lis_squad_smart()
+		local origin = at and at.position or db.actor:position()
+		local smart = pick_spawn_smart(ROS_SMARTS, origin, 30, ANYWHERE, { nearest = true, exclude = at and at:name() })
+		squad = spawn_squad("mercs", "dch_exchange_mercs", smart, { hunt = true })
+	end
+	if squad then
 		set_entry(VAR_REL, "mercs", rel)
 		news(rel == "friend" and "dch_mercs_arrive_friend_news" or "dch_mercs_arrive_enemy_news")
 	end
@@ -678,6 +688,7 @@ end
 -- Lis died before anyone talked to him: the crate is on his body, his men turn on the actor, and the crate
 -- goes to the Barman (the "crate, Lis dead" ending)
 local function lis_died_before_talk()
+	give_info(INFO_LIS_DIED_EARLY)
 	give_info(INFO_CHOICE.barman)
 	local lis = lis_obj()
 	if lis then
@@ -983,7 +994,7 @@ local function descr_id(n, tsk)
 		local phase = load_var(db.actor, VAR_PHASE) or "fight"
 		if phase == "fight" then
 			local why = has_alife_info(INFO_CHOICE.mercs) and "mercs" or has_alife_info(INFO_CHOICE.lis) and "lis"
-				or has_alife_info(INFO_LIS_DIED) and "dead" or "barman"
+				or has_alife_info(INFO_LIS_DIED_EARLY) and "dead" or "barman"
 			return "dch_task_5_descr_fight_" .. why
 		end
 		return "dch_task_5_descr_" .. (phase == "pending" and "talk" or phase)
